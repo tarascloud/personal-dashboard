@@ -1205,7 +1205,7 @@ def init_db():
         conn.execute("CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions(category)")
 
         # ── Additional performance indexes (task #11) ──
-        conn.execute("CREATE INDEX IF NOT EXISTS idx_custom_accounts_name ON custom_accounts(name)")
+        # Note: idx_custom_accounts_name is created after the custom_accounts migration below
         conn.execute("CREATE INDEX IF NOT EXISTS idx_recurring_tx_active_day ON recurring_transactions(active, day_of_month)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_budgets_cat_month ON budgets(category, month)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_transactions_year_month ON transactions(year, month)")
@@ -1260,6 +1260,9 @@ def init_db():
         _ca_cols_bal = _get_table_columns(conn, "custom_accounts")
         if "initial_balance" not in _ca_cols_bal:
             conn.execute("ALTER TABLE custom_accounts ADD COLUMN initial_balance REAL NOT NULL DEFAULT 0")
+
+        # Index on name — created here (after schema migration) to guarantee column exists
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_custom_accounts_name ON custom_accounts(name)")
 
         # Auto-populate custom_accounts from existing transaction accounts
         _acc_count = conn.execute("SELECT COUNT(*) FROM custom_accounts").fetchone()[0]

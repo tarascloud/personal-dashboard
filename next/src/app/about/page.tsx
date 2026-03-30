@@ -536,7 +536,7 @@ export default function AboutPage() {
                   <TechBadge icon={<Server className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="Docker" />
                   <TechBadge icon={<Globe className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="3 Languages" />
                   <TechBadge icon={<Lock className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="NextAuth 5" />
-                  <TechBadge icon={<Lock className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="SOPS + age" />
+                  <TechBadge icon={<Lock className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="Infisical" />
                   <TechBadge icon={<Calculator className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="Playwright + Vitest" />
                 </div>
               </div>

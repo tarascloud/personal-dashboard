@@ -575,7 +575,7 @@ def job_sync_monobank():
                     result = sync_monobank(
                         token=token,
                         account_id=acc_id,
-                        days=1,
+                        days=3,
                         account_name=acc_name,
                     )
                     if result["synced"] > 0:
