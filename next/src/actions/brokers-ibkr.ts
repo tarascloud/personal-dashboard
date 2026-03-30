@@ -292,12 +292,12 @@ export async function importFlexStatement(queryId: string): Promise<{ ok: boolea
   const reqRes = await flexStatementRequest(token, queryId);
   if (reqRes.error || !reqRes.data) return { ok: false, message: reqRes.error ?? "Request failed" };
 
-  // Step 2: Poll for result (max 3 attempts, 3s apart)
+  // Step 2: Poll for result (max 6 attempts, 5s apart — IBKR can take up to 30s in 2026)
   let xml: string | null = null;
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 6; i++) {
     const getRes = await flexStatementGet(token, reqRes.data.referenceCode);
     if (getRes.error === "GENERATING") {
-      await new Promise(r => setTimeout(r, 3000));
+      await new Promise(r => setTimeout(r, 5000));
       continue;
     }
     if (getRes.error) return { ok: false, message: getRes.error };
@@ -313,28 +313,46 @@ export async function importFlexStatement(queryId: string): Promise<{ ok: boolea
     return m?.[1] ?? "";
   }
 
+  // Helper: parse float with fallback to 0
+  function numAttr(tag: string, ...names: string[]): number {
+    for (const name of names) {
+      const v = attr(tag, name);
+      if (v !== "") {
+        const n = parseFloat(v);
+        if (!isNaN(n)) return n;
+      }
+    }
+    return 0;
+  }
+
   const positionTags = xml.match(/<OpenPosition\s[^>]*?\/>/g) || [];
   const now = new Date();
 
-  // Build all positions, then batch insert
+  // Build all positions, then batch insert.
+  // 2026 format: "positionValueInBase" replaces "positionValue" for EUR-denominated accounts;
+  // "costBasisMoney" may also appear as "costBasisPrice" * quantity. We try both attribute names.
   const positionsData = positionTags
     .map(tag => {
       const symbol = attr(tag, "symbol");
       const qty = attr(tag, "position");
       if (!symbol || !qty || parseFloat(qty) === 0) return null;
+      const qtyNum = parseFloat(qty);
+      const costBasis = numAttr(tag, "costBasisMoney", "costBasisPrice");
+      const avgCost = costBasis !== 0 ? (attr(tag, "costBasisMoney") !== "" ? costBasis / qtyNum : costBasis) : 0;
       return {
         userId: user.id,
         broker: "IBKR" as const,
         symbol,
         name: attr(tag, "description"),
         conid: attr(tag, "conid"),
-        quantity: parseFloat(qty),
-        avgCost: parseFloat(attr(tag, "costBasisMoney")) / parseFloat(qty) || 0,
-        marketPrice: parseFloat(attr(tag, "markPrice")),
-        marketValue: parseFloat(attr(tag, "positionValue")),
-        unrealizedPnl: parseFloat(attr(tag, "fifoPnlUnrealized")),
+        quantity: qtyNum,
+        avgCost: avgCost || 0,
+        // 2026: positionValueInBase is the EUR equivalent; fall back to positionValue
+        marketPrice: numAttr(tag, "markPrice"),
+        marketValue: numAttr(tag, "positionValueInBase", "positionValue"),
+        unrealizedPnl: numAttr(tag, "fifoPnlUnrealizedInBase", "fifoPnlUnrealized"),
         realizedPnl: 0,
-        currency: attr(tag, "currency"),
+        currency: attr(tag, "currency") || "EUR",
         assetClass: attr(tag, "assetCategory") || "STK",
         lastSyncedAt: now,
       };
@@ -348,15 +366,36 @@ export async function importFlexStatement(queryId: string): Promise<{ ok: boolea
   ]);
   const posCount = positionsData.length;
 
-  // Step 4: Parse NAV from EquitySummaryByReportDateInBase (last entry)
+  // Step 4: Parse NAV from EquitySummaryByReportDateInBase (last entry).
+  // Attribute names changed in the January 2026 Flex report format:
+  //   Old: cash, stock, total
+  //   New 2026: cashLong + cashShort (net cash), equityWithLoanValueLong (stock), netAssetValue (total)
+  // We try new names first and fall back to the old ones for backward compatibility.
   const navTags = xml.match(/<EquitySummaryByReportDateInBase\s[^>]*?\/>/g) || [];
   const lastNavTag = navTags[navTags.length - 1];
 
   if (lastNavTag) {
     const accountId = await getSecret("ibkr_account_id") || "IBKR";
-    const cash = parseFloat(attr(lastNavTag, "cash"));
-    const stock = parseFloat(attr(lastNavTag, "stock"));
-    const total = parseFloat(attr(lastNavTag, "total"));
+
+    // Cash: 2026 splits into cashLong / cashShort; net = cashLong + cashShort
+    const cashLong = numAttr(lastNavTag, "cashLong");
+    const cashShort = numAttr(lastNavTag, "cashShort");
+    const cashLegacy = numAttr(lastNavTag, "cash");
+    const cash = cashLong !== 0 || cashShort !== 0 ? cashLong + cashShort : cashLegacy;
+
+    // Stock / equity: 2026 uses equityWithLoanValueLong; old format uses "stock"
+    const stock = numAttr(lastNavTag, "equityWithLoanValueLong", "stock");
+
+    // Total NAV: 2026 uses "netAssetValue"; old format uses "total"
+    const total = numAttr(lastNavTag, "netAssetValue", "total");
+
+    // Currency: read from tag; default to EUR for IBKR EUR-denominated accounts
+    const navCurrency = attr(lastNavTag, "currency") || "EUR";
+
+    // Aggregate unrealized P&L from positions if any exist
+    const unrealizedPnl = posCount > 0
+      ? (await prisma.brokerPosition.aggregate({ where: { userId: user.id, broker: "IBKR" }, _sum: { unrealizedPnl: true } }))._sum.unrealizedPnl ?? 0
+      : 0;
 
     await prisma.brokerAccountSummary.upsert({
       where: { userId_broker_accountId: { userId: user.id, broker: "IBKR", accountId } },
@@ -364,9 +403,9 @@ export async function importFlexStatement(queryId: string): Promise<{ ok: boolea
         netLiquidation: total,
         totalCashValue: cash,
         grossPositionValue: stock,
-        unrealizedPnl: posCount > 0 ? (await prisma.brokerPosition.aggregate({ where: { userId: user.id, broker: "IBKR" }, _sum: { unrealizedPnl: true } }))._sum.unrealizedPnl || 0 : 0,
+        unrealizedPnl,
         realizedPnl: 0,
-        currency: "EUR",
+        currency: navCurrency,
         syncedAt: new Date(),
       },
       create: {
@@ -378,7 +417,7 @@ export async function importFlexStatement(queryId: string): Promise<{ ok: boolea
         grossPositionValue: stock,
         unrealizedPnl: 0,
         realizedPnl: 0,
-        currency: "EUR",
+        currency: navCurrency,
         syncedAt: new Date(),
       },
     });
@@ -387,13 +426,17 @@ export async function importFlexStatement(queryId: string): Promise<{ ok: boolea
   // Step 5: Parse dividends from OpenDividendAccrual
   const divMatches = xml.matchAll(/<OpenDividendAccrual[^>]*?symbol="([^"]*)"[^>]*?grossAmount="([^"]*)"[^>]*?tax="([^"]*)"[^>]*?netAmount="([^"]*)"[^>]*?\/>/g);
   let divCount = 0;
-  for (const m of divMatches) {
+  for (const _m of divMatches) {
     divCount++;
   }
 
   const parts: string[] = [];
   if (posCount > 0) parts.push(`${posCount} positions`);
-  if (lastNavTag) parts.push(`NAV EUR ${parseFloat(attr(lastNavTag, "total")).toFixed(0)}`);
+  if (lastNavTag) {
+    const navTotal = numAttr(lastNavTag, "netAssetValue", "total");
+    const navCurr = attr(lastNavTag, "currency") || "EUR";
+    parts.push(`NAV ${navCurr} ${navTotal.toFixed(0)}`);
+  }
   if (divCount > 0) parts.push(`${divCount} dividend accruals`);
 
   return { ok: true, message: parts.length > 0 ? `Synced: ${parts.join(", ")}` : "No data in Flex statement" };

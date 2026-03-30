@@ -180,6 +180,83 @@ describe("parseIbkrCsvReport", () => {
     expect(report.dividends).toBe(30.33);
     expectRounded(report);
   });
+
+  // ─── 2026 Flex format (Currency column added) ────────────────────────────
+
+  it("2026 format: parses Currency column in Dividends section", () => {
+    // Q1 2026: IBKR added explicit Currency column as col[2], shifting Date/Symbol/Description
+    const csv = [
+      "Dividends,Header,Currency,Date,Symbol,Description,Amount",
+      "Dividends,Data,EUR,2026-03-15,VWCE,VWCE Cash Dividend,42.00",
+      "Dividends,Data,USD,2026-03-20,CSPX,CSPX Cash Dividend,18.50",
+    ].join("\n");
+    const report = parseIbkrCsvReport(csv, 2026);
+
+    expect(report.dividends).toBe(60.50);
+    const divs = report.transactions.filter(t => t.type === "DIVIDEND");
+    expect(divs).toHaveLength(2);
+    expect(divs[0].currency).toBe("EUR");
+    expect(divs[0].symbol).toBe("VWCE");
+    expect(divs[0].date).toBe("2026-03-15");
+    expect(divs[1].currency).toBe("USD");
+    expect(divs[1].symbol).toBe("CSPX");
+  });
+
+  it("2026 format: parses Currency column in Withholding Tax section", () => {
+    const csv = [
+      "Withholding Tax,Header,Currency,Date,Symbol,Description,Amount",
+      "Withholding Tax,Data,EUR,2026-03-15,VWCE,VWCE Cash Dividend - IE Tax,-6.30",
+    ].join("\n");
+    const report = parseIbkrCsvReport(csv, 2026);
+
+    expect(report.withheldTax).toBe(6.30);
+    const wht = report.transactions.filter(t => t.type === "WITHHOLDING");
+    expect(wht).toHaveLength(1);
+    expect(wht[0].currency).toBe("EUR");
+    expect(wht[0].symbol).toBe("VWCE");
+    expect(wht[0].withheldTax).toBe(6.30);
+  });
+
+  it("2026 format: parses Currency column in Interest section", () => {
+    const csv = [
+      "Interest,Header,Currency,Date,Description,Amount",
+      "Interest,Data,EUR,2026-01-31,EUR Credit Interest,15.20",
+      "Interest,Data,EUR,2026-02-28,EUR Credit Interest,14.80",
+    ].join("\n");
+    const report = parseIbkrCsvReport(csv, 2026);
+
+    expect(report.interestIncome).toBe(30.00);
+    const interest = report.transactions.filter(t => t.type === "INTEREST");
+    expect(interest).toHaveLength(2);
+    expect(interest[0].currency).toBe("EUR");
+    expect(interest[0].amount).toBe(15.20);
+  });
+
+  it("2026 format: full Q1 2026 report with all sections and Currency column", () => {
+    const csv = [
+      "Dividends,Header,Currency,Date,Symbol,Description,Amount",
+      "Dividends,Data,EUR,2026-03-15,VWCE,VWCE Cash Dividend,42.00",
+      "Dividends,SubTotal,,,,,42.00",
+      "Withholding Tax,Header,Currency,Date,Symbol,Description,Amount",
+      "Withholding Tax,Data,EUR,2026-03-15,VWCE,IE Tax,-6.30",
+      "Withholding Tax,SubTotal,,,,,-6.30",
+      "Interest,Header,Currency,Date,Description,Amount",
+      "Interest,Data,EUR,2026-01-31,EUR Credit Interest,15.20",
+      "Interest,SubTotal,,,,,15.20",
+      "Realized & Unrealized Performance Summary,Header,AssetCategory,Symbol,Description,Qty,Realized P&L,Unrealized P&L,Code",
+      "Realized & Unrealized Performance Summary,Data,Stocks,AAPL,Apple Inc,5,200.00,0,",
+      "Fees,Header,Currency,Date,Description,Amount",
+      "Fees,Data,EUR,2026-03-31,Annual Fee,-12.00",
+    ].join("\n");
+    const report = parseIbkrCsvReport(csv, 2026);
+
+    expect(report.dividends).toBe(42.00);
+    expect(report.withheldTax).toBe(6.30);
+    expect(report.interestIncome).toBe(15.20);
+    expect(report.realizedGains).toBe(200.00);
+    expect(report.fees).toBe(12.00);
+    expectRounded(report);
+  });
 });
 
 // ─── IBKR PDF Report Parser ─────────────────────────────────────────────────

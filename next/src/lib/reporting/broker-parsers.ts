@@ -151,50 +151,63 @@ export function parseIbkrCsvReport(csvText: string, year: number): BrokerTaxRepo
   const lines = csvText.split("\n");
   let section = "";
 
+  // Column index maps per section — populated when we see a Header row.
+  // IBKR CSV header columns vary by section and by report year.
+  // 2026 format added a "Currency" column as col[2] in Dividends/Withholding/Interest sections,
+  // shifting Date → col[3], Symbol → col[4], Description → col[5].
+  // Old format: Section,Data,Date,Symbol,Description,Amount
+  // New format: Section,Data,Currency,Date,Symbol,Description,Amount
+  type ColMap = { currency: number; date: number; symbol: number; description: number };
+  let sectionCols: ColMap = { currency: -1, date: 2, symbol: 3, description: 4 };
+
   for (const line of lines) {
     const cols = line.split(",").map(c => c.replace(/"/g, "").trim());
     if (cols.length < 2) continue;
 
-    // Detect section headers
-    if (cols[0] === "Dividends" && cols[1] === "Header") {
-      section = "dividends";
-      continue;
-    }
-    if (cols[0] === "Withholding Tax" && cols[1] === "Header") {
-      section = "withholding";
-      continue;
-    }
-    if (cols[0] === "Interest" && cols[1] === "Header") {
-      section = "interest";
-      continue;
-    }
-    if (cols[0] === "Realized & Unrealized Performance Summary" && cols[1] === "Header") {
-      section = "realized";
-      continue;
-    }
-    if (cols[0] === "Fees" && cols[1] === "Header") {
-      section = "fees";
-      continue;
-    }
-    if (cols[1] === "Header" || cols[1] === "SubTotal" || cols[1] === "Total") {
+    // Detect section headers — also parse column positions from header row
+    if (cols[1] === "Header") {
+      const headerCols = cols.map(c => c.toLowerCase());
+      // Detect column positions dynamically to handle both old and new format
+      const currIdx = headerCols.findIndex(h => h === "currency" && headerCols.indexOf(h) > 1);
+      const dateIdx = headerCols.findIndex((h, i) => i > 1 && (h === "date" || /^\d{4}-/.test(h)));
+      const symIdx = headerCols.findIndex((h, i) => i > 1 && (h === "symbol" || h === "ticker"));
+      const descIdx = headerCols.findIndex((h, i) => i > 1 && (h === "description" || h.includes("descri")));
+      sectionCols = {
+        currency: currIdx >= 0 ? currIdx : -1,
+        date: dateIdx >= 0 ? dateIdx : 2,
+        symbol: symIdx >= 0 ? symIdx : (currIdx >= 0 ? 4 : 3),
+        description: descIdx >= 0 ? descIdx : (currIdx >= 0 ? 5 : 4),
+      };
+
+      if (cols[0] === "Dividends") { section = "dividends"; continue; }
+      if (cols[0] === "Withholding Tax") { section = "withholding"; continue; }
+      if (cols[0] === "Interest") { section = "interest"; continue; }
+      if (cols[0] === "Realized & Unrealized Performance Summary") { section = "realized"; continue; }
+      if (cols[0] === "Fees") { section = "fees"; continue; }
       continue;
     }
 
+    if (cols[1] === "SubTotal" || cols[1] === "Total") continue;
     if (cols[1] !== "Data") continue;
 
     const amount = parseFloat(cols[cols.length - 1]) || parseFloat(cols[cols.length - 2]) || 0;
 
+    // Resolve currency: use detected currency column if present, otherwise default to EUR
+    const currency = sectionCols.currency >= 0 && cols[sectionCols.currency]?.length === 3
+      ? cols[sectionCols.currency]
+      : "EUR";
+
     if (section === "dividends" && amount !== 0) {
-      const symbol = cols[3] || "";
-      const desc = cols[4] || cols[3] || "";
+      const symbol = cols[sectionCols.symbol] || "";
+      const desc = cols[sectionCols.description] || symbol;
       dividends += Math.abs(amount);
       transactions.push({
-        date: cols[2] || "",
+        date: cols[sectionCols.date] || "",
         type: "DIVIDEND",
         symbol,
         description: desc,
         amount: Math.abs(amount),
-        currency: cols[2]?.length === 3 ? cols[2] : "EUR",
+        currency,
         withheldTax: 0,
       });
     }
@@ -202,12 +215,12 @@ export function parseIbkrCsvReport(csvText: string, year: number): BrokerTaxRepo
     if (section === "withholding" && amount !== 0) {
       withheldTax += Math.abs(amount);
       transactions.push({
-        date: cols[2] || "",
+        date: cols[sectionCols.date] || "",
         type: "WITHHOLDING",
-        symbol: cols[3] || "",
-        description: cols[4] || "",
+        symbol: cols[sectionCols.symbol] || "",
+        description: cols[sectionCols.description] || "",
         amount: 0,
-        currency: "EUR",
+        currency,
         withheldTax: Math.abs(amount),
       });
     }
@@ -215,12 +228,12 @@ export function parseIbkrCsvReport(csvText: string, year: number): BrokerTaxRepo
     if (section === "interest" && amount !== 0) {
       interestIncome += Math.abs(amount);
       transactions.push({
-        date: cols[2] || "",
+        date: cols[sectionCols.date] || "",
         type: "INTEREST",
         symbol: "",
-        description: cols[3] || "Interest",
+        description: cols[sectionCols.symbol] || "Interest",
         amount: Math.abs(amount),
-        currency: "EUR",
+        currency,
         withheldTax: 0,
       });
     }
