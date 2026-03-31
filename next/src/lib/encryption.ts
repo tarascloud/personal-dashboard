@@ -20,14 +20,15 @@ function getKey(): Buffer | null {
 /**
  * Encrypt a plaintext string using AES-256-GCM.
  * Returns format: `iv:authTag:ciphertext` (all base64-encoded).
+ * Throws in all environments when ENCRYPTION_KEY is missing — no plaintext fallback.
  */
 export function encrypt(plaintext: string): string {
   const key = getKey();
   if (!key) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error("[SECURITY] ENCRYPTION_KEY not set in production — refusing to store secrets unencrypted");
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("[SECURITY] ENCRYPTION_KEY not set — refusing to store secrets unencrypted");
     }
-    return plaintext;
+    throw new Error("[SECURITY] ENCRYPTION_KEY not configured — cannot encrypt value");
   }
   const iv = randomBytes(IV_LENGTH);
   const cipher = createCipheriv(ALGORITHM, key, iv, {
@@ -50,10 +51,13 @@ export function encrypt(plaintext: string): string {
 /**
  * Decrypt a ciphertext string produced by encrypt().
  * Expects format: `iv:authTag:ciphertext` (all base64-encoded).
+ * Throws when ENCRYPTION_KEY is missing — no plaintext fallback.
  */
 export function decrypt(ciphertext: string): string {
   const key = getKey();
-  if (!key) return ciphertext; // No encryption key configured — return as-is
+  if (!key) {
+    throw new Error("[SECURITY] ENCRYPTION_KEY not configured — cannot decrypt value");
+  }
   const parts = ciphertext.split(":");
   if (parts.length !== 3) {
     throw new Error("Invalid encrypted format — expected iv:authTag:ciphertext");
@@ -103,11 +107,13 @@ export function decryptGraceful(value: string): string {
 
 /**
  * Create an HMAC-signed OAuth state parameter: `email.signature`
- * Uses ENCRYPTION_KEY as HMAC secret (falls back to base64 if key not set).
+ * Uses ENCRYPTION_KEY as HMAC secret. Throws if key is not configured.
  */
 export function createOAuthState(email: string): string {
   const key = getKey();
-  if (!key) return Buffer.from(email).toString("base64");
+  if (!key) {
+    throw new Error("[SECURITY] ENCRYPTION_KEY not configured — cannot create signed OAuth state");
+  }
   const data = Buffer.from(email).toString("base64url");
   const sig = createHmac("sha256", key).update(data).digest("base64url");
   return `${data}.${sig}`;
@@ -115,13 +121,13 @@ export function createOAuthState(email: string): string {
 
 /**
  * Verify and extract email from HMAC-signed OAuth state.
- * Returns null if signature is invalid.
+ * Returns null if signature is invalid or key is not configured.
  */
 export function verifyOAuthState(state: string): string | null {
   const key = getKey();
   if (!key) {
-    // Fallback: plain base64
-    try { return Buffer.from(state, "base64").toString(); } catch { return null; }
+    console.error("[SECURITY] ENCRYPTION_KEY not configured — cannot verify OAuth state signature");
+    return null;
   }
   const dotIndex = state.indexOf(".");
   if (dotIndex < 0) return null;

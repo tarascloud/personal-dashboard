@@ -15,6 +15,8 @@ import type {
   PublicKeyCredentialRequestOptionsJSON,
 } from "@simplewebauthn/server";
 import { cookies } from "next/headers";
+import { randomBytes } from "crypto";
+import { redis } from "@/lib/redis";
 
 const RP_NAME = "Personal Dashboard";
 
@@ -132,6 +134,59 @@ export async function verifyPasskeyRegistration(
   }
 }
 
+// ── Passkey sign-in nonce (replay protection) ─────────────────────────────
+// After WebAuthn challenge verification succeeds we need to call NextAuth's
+// signIn("credentials") with a token that the authorize() callback can verify.
+// A static prefix ("__magic_link__passkey_<id>") would be replayable if the
+// credentials provider were ever called directly.  Instead we generate a
+// single-use, short-lived nonce, store it in Redis, and consume it in auth.ts.
+
+const PASSKEY_NONCE_TTL_SECONDS = 30; // generous but short window
+const PASSKEY_NONCE_PREFIX = "passkey_nonce:";
+
+/**
+ * Create a one-time nonce tied to `passkeyId` and store it in Redis.
+ * Falls back to in-memory Map when Redis is unavailable (dev/test only).
+ */
+const inMemoryNonceStore = new Map<string, { passkeyId: string; expiresAt: number }>();
+
+async function createPasskeyNonce(passkeyId: string): Promise<string> {
+  const nonce = randomBytes(32).toString("hex");
+  const key = PASSKEY_NONCE_PREFIX + nonce;
+
+  if (redis) {
+    await redis.set(key, passkeyId, "EX", PASSKEY_NONCE_TTL_SECONDS);
+  } else {
+    // In-memory fallback (single-process dev only — not suitable for production clusters)
+    inMemoryNonceStore.set(nonce, {
+      passkeyId,
+      expiresAt: Date.now() + PASSKEY_NONCE_TTL_SECONDS * 1000,
+    });
+  }
+
+  return nonce;
+}
+
+/**
+ * Verify and consume a passkey nonce.
+ * Returns the associated passkeyId on success, null if invalid/expired.
+ */
+export async function consumePasskeyNonce(nonce: string): Promise<string | null> {
+  const key = PASSKEY_NONCE_PREFIX + nonce;
+
+  if (redis) {
+    // Atomic get-and-delete: consume is a one-time operation
+    const [passkeyId] = await redis.pipeline().get(key).del(key).exec() as [[null, string | null], [null, number]];
+    return passkeyId[1] ?? null;
+  } else {
+    const entry = inMemoryNonceStore.get(nonce);
+    if (!entry) return null;
+    inMemoryNonceStore.delete(nonce);
+    if (entry.expiresAt < Date.now()) return null;
+    return entry.passkeyId;
+  }
+}
+
 /* ── Authentication (login with passkey) ── */
 
 export async function getPasskeyAuthenticationOptions(): Promise<{ options?: PublicKeyCredentialRequestOptionsJSON; error?: string }> {
@@ -189,11 +244,14 @@ export async function verifyPasskeyAuthentication(response: AuthenticationRespon
       },
     });
 
-    // Sign in via NextAuth credentials with magic link token
+    // Sign in via NextAuth credentials using a single-use nonce.
+    // The nonce is stored in Redis and consumed by auth.ts authorize(),
+    // preventing replay attacks against the credentials provider.
+    const nonce = await createPasskeyNonce(passkey.id);
     try {
       await signIn("credentials", {
         email: passkey.user.email,
-        password: `__magic_link__passkey_${passkey.id}`,
+        password: `__magic_link__passkey_nonce_${nonce}`,
         redirect: false,
       });
     } catch (e: unknown) {

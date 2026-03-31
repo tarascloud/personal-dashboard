@@ -683,6 +683,8 @@
     "expenses_chart_label": "Gastos",
     "steps_active_min": "Pasos y minutos activos",
     "mood_no_data": "Anade entradas de animo para ver el grafico",
+    "sleep_score": "Puntuacion del Sueno",
+    "sleep_trend_7d": "Tendencia 7 dias",
     "stress": "Estres",
     "mood_level": "Nivel",
     "daily_records": "Registros de Calidad de Vida"

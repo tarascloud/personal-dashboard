@@ -429,6 +429,8 @@ export function DashboardPage({
           calories: t("calories"),
           activeCalories: t("active_calories"),
           restingCalories: t("resting_calories"),
+          sleepScore: t("sleep_score"),
+          sleepTrend7d: t("sleep_trend_7d"),
         }}
       />
       )}

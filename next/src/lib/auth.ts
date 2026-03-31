@@ -3,6 +3,7 @@ import Google from "next-auth/providers/google";
 import GitHub from "next-auth/providers/github";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "./db";
+import { consumePasskeyNonce } from "@/actions/passkey";
 
 const oauthProviders = [
   Google({
@@ -37,17 +38,35 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (!email || !password) return null;
 
-        // Passkey flow: password starts with __magic_link__passkey_
-        if (!password.startsWith("__magic_link__")) return null;
+        // Passkey flow: password is a single-use nonce token
+        // Format: __magic_link__passkey_nonce_<hex-nonce>
+        const NONCE_PREFIX = "__magic_link__passkey_nonce_";
+        if (!password.startsWith(NONCE_PREFIX)) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email: email.toLowerCase().trim() },
+        const nonce = password.slice(NONCE_PREFIX.length);
+        if (!nonce) return null;
+
+        // Consume the nonce — this is a one-time operation that prevents replay
+        const passkeyId = await consumePasskeyNonce(nonce);
+        if (!passkeyId) {
+          console.warn("[auth] passkey nonce invalid or already used for email:", email);
+          return null;
+        }
+
+        // Verify the passkey belongs to the claimed email address
+        const passkey = await prisma.passkey.findUnique({
+          where: { id: passkeyId },
+          include: { user: true },
         });
-        if (!user) return null;
+        if (!passkey || passkey.user.email.toLowerCase() !== email.toLowerCase().trim()) {
+          console.warn("[auth] passkey nonce/email mismatch");
+          return null;
+        }
+
         return {
-          id: String(user.id),
-          email: user.email,
-          name: user.name,
+          id: String(passkey.user.id),
+          email: passkey.user.email,
+          name: passkey.user.name,
         };
       },
     }),

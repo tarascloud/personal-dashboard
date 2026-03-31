@@ -162,7 +162,18 @@ async function proxyToFreqtrade(
       headers,
       body: body ? JSON.stringify(body) : undefined,
       signal: AbortSignal.timeout(10000),
+      // Do not follow redirects — a redirect could point to an internal/SSRF target
+      // that passed the initial hostname check (DNS rebinding, open redirect, etc.)
+      redirect: "manual",
     });
+
+    // Treat redirects as errors — Freqtrade API should never redirect
+    if (res.status >= 300 && res.status < 400) {
+      return NextResponse.json(
+        { error: "Freqtrade returned an unexpected redirect — request blocked" },
+        { status: 502 },
+      );
+    }
 
     const data = await res.json().catch(() => null);
 

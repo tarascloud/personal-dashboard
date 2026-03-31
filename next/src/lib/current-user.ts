@@ -6,7 +6,9 @@ import { verifyDemoToken, DEMO_COOKIE } from "./demo-token";
 const DEMO_EMAIL = "demo@example.com";
 
 // In-memory user cache (short TTL to reduce DB queries on dashboard load)
-const USER_CACHE_TTL_MS = 30_000; // 30 seconds
+// 5 seconds: fast enough for burst requests, short enough that role changes
+// propagate quickly (avoids stale privilege escalation window).
+const USER_CACHE_TTL_MS = 5_000; // 5 seconds
 const userCache = new Map<string, { user: NonNullable<Awaited<ReturnType<typeof prisma.user.findUnique>>>; expiresAt: number }>();
 
 export async function getCurrentUser() {
@@ -84,4 +86,13 @@ export async function isCurrentUserDemo(): Promise<boolean> {
   const cookieStore = await cookies();
   const demoToken = cookieStore.get(DEMO_COOKIE)?.value;
   return verifyDemoToken(demoToken);
+}
+
+/**
+ * Immediately remove a user from the in-memory cache.
+ * Call this after role or permission changes so the next request re-fetches
+ * from the database instead of serving a stale cached record.
+ */
+export function invalidateUserCache(email: string): void {
+  userCache.delete(email);
 }

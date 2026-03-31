@@ -3,6 +3,11 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
+# --legacy-peer-deps is required because next-auth@5.0.0-beta.30 declares a
+# peerOptional dependency on @simplewebauthn/browser@^9.0.1, but we use v13.x
+# (which is a breaking major change in the simplewebauthn API).  This conflict
+# cannot be resolved until next-auth ships a stable release that supports
+# @simplewebauthn/browser v13+.  Track: https://github.com/nextauthjs/next-auth/issues
 RUN npm install --legacy-peer-deps
 COPY . .
 ARG DATABASE_URL

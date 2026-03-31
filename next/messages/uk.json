@@ -722,6 +722,8 @@
     "expenses_chart_label": "Витрати",
     "steps_active_min": "Кроки та активні хвилини",
     "mood_no_data": "Додайте записи настрою для відображення графіка",
+    "sleep_score": "Оцінка сну",
+    "sleep_trend_7d": "Тренд 7 днів",
     "portfolio_history": "Історія портфеля",
     "total_nav": "Капітал",
     "invested": "Інвестиції"

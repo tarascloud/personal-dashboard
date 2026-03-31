@@ -27,6 +27,7 @@ import {
 import type { GarminHealthTrends, HRVTrendPoint } from "@/actions/dashboard";
 import { useChartColors } from "@/hooks/use-chart-colors";
 import { EmptyState } from "@/components/shared/empty-state";
+import { SleepScoreWidget } from "./sleep-score-widget";
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
@@ -73,6 +74,8 @@ export interface GarminHealthChartsProps {
     calories: string;
     activeCalories: string;
     restingCalories: string;
+    sleepScore: string;
+    sleepTrend7d: string;
   };
 }
 
@@ -103,6 +106,23 @@ export function GarminHealthCharts({
 
   return (
     <>
+      {/* Sleep Score Widget — compact summary card */}
+      {garminHealth.sleep.length > 0 && (
+        <SleepScoreWidget
+          sleep={garminHealth.sleep}
+          tooltipStyle={tooltipStyle}
+          labels={{
+            title: labels.sleepQuality,
+            deep: labels.deep,
+            rem: labels.rem,
+            duration: labels.sleepDuration,
+            score: labels.score,
+            trend7d: labels.sleepTrend7d,
+            noData: labels.connectGarminHint,
+          }}
+        />
+      )}
+
       {/* Body Battery & Sleep Quality */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Body Battery Trend */}

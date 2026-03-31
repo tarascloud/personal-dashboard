@@ -310,7 +310,7 @@ _garmin_mfa_pending: dict[int, tuple] = {}  # user_id -> (client, client_state)
 
 # Garmin 429 backoff tracking: user_id -> timestamp of last 429 error
 _garmin_429_backoff: dict[int, float] = {}
-_GARMIN_BACKOFF_SECONDS = 30 * 60  # 30 minutes backoff after 429
+_GARMIN_BACKOFF_SECONDS = 6 * 60 * 60  # 6 hours backoff after 429
 
 
 def job_sync_garmin():
@@ -318,7 +318,7 @@ def job_sync_garmin():
 
     Includes exponential backoff on 429 Too Many Requests:
     - Tracks last 429 time per user in memory
-    - Skips sync if within 30-minute backoff window
+    - Skips sync if within 6-hour backoff window
     - Prefers garth session resume over fresh login to reduce API calls
     """
     import time as _time
@@ -1504,7 +1504,7 @@ def job_prod_to_dev_sync():
 def main():
     scheduler = BlockingScheduler(timezone="UTC")
 
-    scheduler.add_job(job_sync_garmin,    CronTrigger(minute="*/15", hour="8-23"), id="sync_garmin")
+    scheduler.add_job(job_sync_garmin,    CronTrigger(hour="8,10,12,18,20,0", minute=0), id="sync_garmin")
     scheduler.add_job(job_sync_withings,  CronTrigger(minute="*/15"),              id="sync_withings")
     scheduler.add_job(job_sync_monobank,  CronTrigger(minute="*/10", hour="7-23"), id="sync_monobank")
     scheduler.add_job(job_sync_bunq,      CronTrigger(minute="*/10", hour="7-23"), id="sync_bunq")

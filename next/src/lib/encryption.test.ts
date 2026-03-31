@@ -101,25 +101,17 @@ describe("encryption", () => {
       delete process.env.ENCRYPTION_KEY;
     });
 
-    it("encrypt returns plaintext as-is in non-production", () => {
-      const plaintext = "not encrypted";
-      expect(encrypt(plaintext)).toBe(plaintext);
+    it("encrypt throws when ENCRYPTION_KEY is missing", () => {
+      expect(() => encrypt("not encrypted")).toThrow("ENCRYPTION_KEY not configured");
     });
 
-    it("decrypt returns ciphertext as-is", () => {
-      const raw = "some:thing:here";
-      expect(decrypt(raw)).toBe(raw);
+    it("decrypt throws when ENCRYPTION_KEY is missing", () => {
+      expect(() => decrypt("some:thing:here")).toThrow("ENCRYPTION_KEY not configured");
     });
 
-    it("encrypt throws in production without key", () => {
-      Object.defineProperty(process.env, "NODE_ENV", { value: "production", writable: true, configurable: true });
-      expect(() => encrypt("secret")).toThrow("ENCRYPTION_KEY not set");
-      Object.defineProperty(process.env, "NODE_ENV", { value: "test", writable: true, configurable: true });
-    });
-
-    it("encrypt returns plaintext with invalid key length", () => {
+    it("encrypt throws with invalid key length", () => {
       process.env.ENCRYPTION_KEY = "too-short";
-      expect(encrypt("hello")).toBe("hello");
+      expect(() => encrypt("hello")).toThrow("ENCRYPTION_KEY not configured");
     });
   });
 
@@ -187,11 +179,15 @@ describe("encryption", () => {
       expect(verifyOAuthState("nodothere")).toBeNull();
     });
 
-    it("works without encryption key (base64 fallback)", () => {
+    it("throws without encryption key (no fallback)", () => {
       delete process.env.ENCRYPTION_KEY;
-      const email = "user@test.com";
-      const state = createOAuthState(email);
-      expect(verifyOAuthState(state)).toBe(email);
+      expect(() => createOAuthState("user@test.com")).toThrow("ENCRYPTION_KEY not configured");
+    });
+
+    it("verifyOAuthState returns null without encryption key", () => {
+      delete process.env.ENCRYPTION_KEY;
+      // verifyOAuthState logs an error and returns null when key is missing
+      expect(verifyOAuthState("somedata.somesig")).toBeNull();
     });
   });
 });

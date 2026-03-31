@@ -25,6 +25,7 @@ _VIEW_DDL = {
     "mv_monthly_spending": """
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_monthly_spending AS
 SELECT
+    user_id,
     date_trunc('month', date::date) AS month,
     category,
     type,
@@ -32,14 +33,15 @@ SELECT
     COUNT(*) AS tx_count
 FROM transactions
 WHERE type IN ('EXPENSE', 'INCOME')
-GROUP BY 1, 2, 3;
+GROUP BY 1, 2, 3, 4;
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_mv_monthly_spending
-ON mv_monthly_spending(month, category, type);
+ON mv_monthly_spending(user_id, month, category, type);
 """,
     "mv_daily_health": """
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_daily_health AS
 SELECT
+    g.user_id,
     g.date,
     g.steps,
     g.calories_total,
@@ -53,15 +55,22 @@ SELECT
     w.fat_ratio,
     w.bmi
 FROM garmin_daily g
-LEFT JOIN garmin_sleep gs ON gs.date = g.date
-LEFT JOIN withings_measurements w ON w.date = g.date;
+LEFT JOIN LATERAL (
+    SELECT sleep_score, duration_seconds
+    FROM garmin_sleep
+    WHERE date = g.date AND user_id = g.user_id
+    ORDER BY duration_seconds DESC NULLS LAST
+    LIMIT 1
+) gs ON true
+LEFT JOIN withings_measurements w ON w.date = g.date AND w.user_id = g.user_id;
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_mv_daily_health
-ON mv_daily_health(date);
+ON mv_daily_health(user_id, date);
 """,
     "mv_weekly_activity": """
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_weekly_activity AS
 SELECT
+    user_id,
     date_trunc('week', date::date) AS week,
     COUNT(*) AS activity_count,
     SUM(duration_seconds) AS total_duration,
@@ -69,10 +78,10 @@ SELECT
     SUM(distance_m) AS total_distance,
     AVG(avg_hr) AS avg_heart_rate
 FROM garmin_activities
-GROUP BY 1;
+GROUP BY 1, 2;
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_mv_weekly_activity
-ON mv_weekly_activity(week);
+ON mv_weekly_activity(user_id, week);
 """,
 }
 
