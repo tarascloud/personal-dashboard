@@ -2,6 +2,15 @@
 // These have no DB or auth dependencies and are fully unit-testable.
 
 // ---------------------------------------------------------------------------
+// Prisma helpers
+// ---------------------------------------------------------------------------
+
+/** Prisma where clause: exclude TRANSFER but include NULL sub_type */
+export const notTransfer = {
+  OR: [{ subType: { not: "TRANSFER" as string } }, { subType: null }],
+};
+
+// ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 

@@ -5,6 +5,7 @@ import { requireUser } from "@/lib/current-user";
 import { cached } from "@/lib/cache";
 import { pearsonR } from "./utils";
 import { toDateOnly, dateToString } from "@/lib/date-utils";
+import { notTransfer } from "@/actions/finance/finance-utils";
 
 export interface CorrelationPoint {
   date: string;
@@ -199,7 +200,7 @@ export async function getExtendedCorrelations(period: {
       orderBy: { date: "asc" },
     }),
     prisma.transaction.findMany({
-      where: { userId: user.id, date: { gte: toDateOnly(from), lte: toDateOnly(to) }, type: "EXPENSE", NOT: { subType: "TRANSFER" } },
+      where: { userId: user.id, date: { gte: toDateOnly(from), lte: toDateOnly(to) }, type: "EXPENSE", ...notTransfer },
       select: { date: true, amountEur: true },
     }),
     prisma.gymWorkout.findMany({

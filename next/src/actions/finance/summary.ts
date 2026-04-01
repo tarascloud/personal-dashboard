@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/current-user";
 import type { FinanceSummaryResult, CategoryEntry } from "./finance-utils";
+import { notTransfer } from "./finance-utils";
 import { z, ZodError } from "zod";
 import { dateSchema, periodSchema } from "@/lib/validations";
 import { toDateOnly } from "@/lib/date-utils";
@@ -53,7 +54,7 @@ export async function getFinanceSummary(monthOrRange?: string | { dateFrom?: str
       where: {
         userId: user.id,
         type: "INCOME",
-        NOT: { subType: "TRANSFER" },
+        ...notTransfer,
         ...(hasDateFilter ? { date: dateFilter } : {}),
       },
       _sum: { amountEur: true },
@@ -63,7 +64,7 @@ export async function getFinanceSummary(monthOrRange?: string | { dateFrom?: str
       where: {
         userId: user.id,
         type: "EXPENSE",
-        NOT: { subType: "TRANSFER" },
+        ...notTransfer,
         ...(hasDateFilter ? { date: dateFilter } : {}),
       },
       _sum: { amountEur: true },
@@ -74,7 +75,7 @@ export async function getFinanceSummary(monthOrRange?: string | { dateFrom?: str
       where: {
         userId: user.id,
         type: "EXPENSE",
-        NOT: { subType: "TRANSFER" },
+        ...notTransfer,
         category: { not: null },
         ...(hasDateFilter ? { date: dateFilter } : {}),
       },

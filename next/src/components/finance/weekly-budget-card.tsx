@@ -22,8 +22,10 @@ export function WeeklyBudgetCard({ weeklyBudget }: WeeklyBudgetCardProps) {
   const todayDay = now.getDate();
   const dayPct = (todayDay / daysInMonth) * 100;
 
-  const statusColor = pct > 100 ? "text-red-500" : pct > 75 ? "text-yellow-500" : "text-green-500";
-  const barColor = pct > 100 ? "bg-red-500" : pct > 75 ? "bg-yellow-500" : "bg-green-500";
+  // Color based on spending pace vs time elapsed (dot position)
+  const statusColor = pct > dayPct ? "text-red-500" : pct >= dayPct - 2 ? "text-yellow-500" : "text-green-500";
+  const barColor = pct > dayPct ? "bg-red-500" : pct >= dayPct - 2 ? "bg-yellow-500" : "bg-green-500";
+  const remainingColor = pct > dayPct ? "text-expense" : pct >= dayPct - 2 ? "text-yellow-500" : "text-income";
 
   return (
     <Card size="sm">
@@ -38,7 +40,7 @@ export function WeeklyBudgetCard({ weeklyBudget }: WeeklyBudgetCardProps) {
           {/* Main remaining amount - prominent display */}
           <div className="flex items-baseline justify-between">
             <span className="text-muted-foreground font-medium">{t("discretionary_remaining")}</span>
-            <span className={`text-xl font-bold tabular-nums ${weeklyBudget.remaining >= 0 ? "text-income" : "text-expense"}`}>
+            <span className={`text-xl font-bold tabular-nums ${remainingColor}`}>
               {formatEur(weeklyBudget.remaining)}
             </span>
           </div>

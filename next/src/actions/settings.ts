@@ -7,6 +7,7 @@ import { z, ZodError } from "zod";
 import { userPreferenceSchema } from "@/lib/validations";
 import { ALL_MODULE_KEYS } from "@/lib/modules";
 import { toDateOnly, dateToString } from "@/lib/date-utils";
+import { notTransfer } from "@/actions/finance/finance-utils";
 
 // ── Modules ──
 
@@ -174,7 +175,7 @@ export async function getCategoryTypes(): Promise<Record<string, "EXPENSE" | "IN
   const user = await requireUser();
   const result = await prisma.transaction.groupBy({
     by: ["category", "type"],
-    where: { userId: user.id, category: { not: null }, NOT: { subType: "TRANSFER" } },
+    where: { userId: user.id, category: { not: null }, ...notTransfer },
     _count: { id: true },
   });
   const map: Record<string, Set<string>> = {};

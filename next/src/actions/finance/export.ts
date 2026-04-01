@@ -28,7 +28,7 @@ export async function exportTransactionsCsv(filters: {
       where.subType = "TRANSFER";
     } else {
       where.type = filters.type;
-      where.subType = { not: "TRANSFER" };
+      where.OR = [{ subType: { not: "TRANSFER" } }, { subType: null }];
     }
   }
   if (filters.account) where.account = filters.account;

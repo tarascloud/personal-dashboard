@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/current-user";
 import { toDateOnly, dateToString } from "@/lib/date-utils";
+import { notTransfer } from "@/actions/finance/finance-utils";
 
 export interface RecentActivityItem {
   id: string;
@@ -122,7 +123,7 @@ export async function getMonthlyDeepDive(period: {
       userId: user.id,
       date: { gte: toDateOnly(from), lte: toDateOnly(to) },
       type: "EXPENSE",
-      NOT: { subType: "TRANSFER" },
+      ...notTransfer,
     },
     select: { date: true, category: true, amountEur: true },
   });

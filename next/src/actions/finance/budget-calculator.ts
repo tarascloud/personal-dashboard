@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/current-user";
 import { toDateOnly } from "@/lib/date-utils";
+import { notTransfer } from "./finance-utils";
 
 // ---------- Budget Auto-Calculator ----------
 
@@ -106,8 +107,7 @@ export async function getMandatoryCategorySpending(period: string) {
     where: {
       userId: user.id,
       type: "EXPENSE",
-      NOT: { subType: "TRANSFER" },
-      OR: categoryFilter,
+      AND: [notTransfer, { OR: categoryFilter }],
       date: { gte: toDateOnly(dateFrom), lte: toDateOnly(dateTo) },
     },
     _sum: { amountEur: true },
@@ -149,7 +149,7 @@ export async function calculateWeeklyBudget(mandatoryPeriod: string = "last_mont
         where: {
           userId: user.id,
           type: "INCOME",
-          NOT: { subType: "TRANSFER" },
+          ...notTransfer,
           ...(config.limitType === "pct_current_income"
             ? { date: { gte: toDateOnly(firstOfMonth), lte: toDateOnly(today) } }
             : {}),
@@ -166,7 +166,7 @@ export async function calculateWeeklyBudget(mandatoryPeriod: string = "last_mont
       where: {
         userId: user.id,
         type: "EXPENSE",
-        NOT: { subType: "TRANSFER" },
+        ...notTransfer,
         date: { gte: toDateOnly(firstOfMonth), lte: toDateOnly(today) },
       },
       _sum: { amountEur: true },
@@ -200,8 +200,7 @@ export async function calculateWeeklyBudget(mandatoryPeriod: string = "last_mont
       where: {
         userId: user.id,
         type: "EXPENSE",
-        NOT: { subType: "TRANSFER" },
-        OR: mandCatFilter,
+        AND: [notTransfer, { OR: mandCatFilter }],
         date: { gte: toDateOnly(firstOfMonth), lte: toDateOnly(today) },
       },
       _sum: { amountEur: true },
@@ -220,7 +219,7 @@ export async function calculateWeeklyBudget(mandatoryPeriod: string = "last_mont
   // Use mandatory average (from selected period) for budget planning
   const discretionaryBudget = Math.max(0, monthlyLimit - mandatoryAvg);
   const weeklyBudget = discretionaryBudget / weeksRemaining;
-  const remaining = discretionaryBudget - discretionarySpent;
+  const remaining = monthlyLimit - mandatoryAvg - discretionarySpent;
 
   return {
     monthlyLimit,

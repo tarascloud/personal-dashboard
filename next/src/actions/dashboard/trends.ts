@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/current-user";
 import { cached } from "@/lib/cache";
 import { toDateOnly, dateToString } from "@/lib/date-utils";
+import { notTransfer } from "@/actions/finance/finance-utils";
 
 export interface MonthlyTrend {
   month: number;
@@ -39,18 +40,18 @@ export async function getMonthlyTrends(year: number): Promise<MonthlyTrend[]> {
     // Income grouped by month
     prisma.transaction.groupBy({
       by: ["date"],
-      where: { ...baseWhere, type: "INCOME", NOT: { subType: "TRANSFER" } },
+      where: { ...baseWhere, type: "INCOME", ...notTransfer },
       _sum: { amountEur: true },
     }),
     // Expenses grouped by month
     prisma.transaction.groupBy({
       by: ["date"],
-      where: { ...baseWhere, type: "EXPENSE", NOT: { subType: "TRANSFER" } },
+      where: { ...baseWhere, type: "EXPENSE", ...notTransfer },
       _sum: { amountEur: true },
     }),
     // Expenses grouped by category + month
     prisma.transaction.findMany({
-      where: { ...baseWhere, type: "EXPENSE", NOT: { subType: "TRANSFER" } },
+      where: { ...baseWhere, type: "EXPENSE", ...notTransfer },
       select: { date: true, category: true, amountEur: true },
     }),
     // Workouts — just need count per month
