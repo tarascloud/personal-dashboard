@@ -1,6 +1,12 @@
 # PD services for Mini server (/opt/docker/)
-# This file documents how PD components run on Mini.
-# The actual docker-compose.yml is at /opt/docker/docker-compose.yml on Mini.
+# Uses external networks from the main docker-compose.yml.
+# Redis override: .pd-prod.env has stale Redis config, override via .pd-redis-override.env
+
+networks:
+  docker_backend:
+    external: true
+  docker_frontend:
+    external: true
 
 services:
   pd-prod:
@@ -8,13 +14,17 @@ services:
     container_name: pd-prod
     restart: unless-stopped
     ports:
-      - "8003:3000"
+      - "8003:3333"
     env_file:
       - /opt/docker/secrets/.pd-prod.env
+      - /opt/docker/secrets/.pd-redis-override.env
     environment:
       - NODE_ENV=production
+    networks:
+      - docker_backend
+      - docker_frontend
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:3333/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -25,13 +35,19 @@ services:
     container_name: pd-dev
     restart: unless-stopped
     ports:
-      - "8002:3000"
+      - "8002:3333"
     env_file:
       - /opt/docker/secrets/.pd-dev.env
+      - /opt/docker/secrets/.pd-redis-override.env
     environment:
       - NODE_ENV=production
+      - DATABASE_URL=postgresql://pd:pd@pg:5432/pd_dev
+      - DIRECT_DATABASE_URL=postgresql://pd:pd@pg:5432/pd_dev
+    networks:
+      - docker_backend
+      - docker_frontend
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:3333/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -46,6 +62,12 @@ services:
     restart: unless-stopped
     env_file:
       - /opt/docker/secrets/.pd-prod.env
+      - /opt/docker/secrets/.pd-redis-override.env
+    environment:
+      - DB_BACKEND=postgres
+    networks:
+      - docker_backend
+      - docker_frontend
     # CMD: python deploy/scheduler.py (from Dockerfile)
 
   pd-bot:
@@ -55,8 +77,11 @@ services:
     command: python bot.py
     env_file:
       - /opt/docker/secrets/.pd-prod.env
+      - /opt/docker/secrets/.pd-redis-override.env
+    environment:
+      - DB_BACKEND=postgres
+    networks:
+      - docker_backend
+      - docker_frontend
     # Same image as scheduler, different entry point (bot.py)
     # Runs Telegram bot with polling mode
-    # 22 commands: /start /help /exp /stats /balance /budget /week
-    #   /mood /health /garmin /food /eat /pr /goal /list /buy /bought
-    #   /cancel /task /tasks /myid /connect

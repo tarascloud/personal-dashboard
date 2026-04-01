@@ -25,6 +25,8 @@ interface UseTransactionFormParams {
   setTotalCount: React.Dispatch<React.SetStateAction<number>>;
   startTransition: React.TransitionStartFunction;
   fetchData: (newPage?: number) => void;
+  filterType: string;
+  setFilterType: (v: string) => void;
 }
 
 export function useTransactionForm({
@@ -36,6 +38,8 @@ export function useTransactionForm({
   setTotalCount,
   startTransition,
   fetchData,
+  filterType,
+  setFilterType,
 }: UseTransactionFormParams) {
   const tc = useTranslations("common");
 
@@ -166,6 +170,10 @@ export function useTransactionForm({
     setTransactions((prev) => [optimisticTx, ...prev]);
     setTotalCount((prev) => prev + 1);
     setAddDialogOpen(false);
+    // Switch filter to match the new transaction type so it's visible
+    if (filterType && filterType !== formType) {
+      setFilterType("");
+    }
     resetForm();
 
     startTransition(async () => {

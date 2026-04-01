@@ -9,8 +9,8 @@ import sys
 import os
 import signal
 
-# Add project root to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+# Add project root to path (/app when running as `python deploy/scheduler.py`)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from dotenv import load_dotenv
 
@@ -40,7 +40,7 @@ def _get_pool():
     global _pool
     if _pool is None:
         _pool = psycopg2.pool.ThreadedConnectionPool(
-            minconn=1, maxconn=3,
+            minconn=1, maxconn=10,
             dsn=os.environ["DATABASE_URL"],
         )
     return _pool
@@ -232,9 +232,11 @@ def _build_daily_report() -> str | None:
                 else:
                     lines.append("No transactions today.")
 
-                # Mood/daily log
+                # Mood/daily log — filter by owner user_id to avoid reading demo data
                 cur.execute(
-                    "SELECT mood_delta, level FROM daily_log WHERE date = %s LIMIT 1",
+                    "SELECT mood_delta, level FROM daily_log"
+                    " WHERE date = %s AND user_id = (SELECT id FROM users WHERE role = 'owner' LIMIT 1)"
+                    " LIMIT 1",
                     (today,),
                 )
                 mood_row = cur.fetchone()
@@ -310,7 +312,7 @@ _garmin_mfa_pending: dict[int, tuple] = {}  # user_id -> (client, client_state)
 
 # Garmin 429 backoff tracking: user_id -> timestamp of last 429 error
 _garmin_429_backoff: dict[int, float] = {}
-_GARMIN_BACKOFF_SECONDS = 6 * 60 * 60  # 6 hours backoff after 429
+_GARMIN_BACKOFF_SECONDS = 4 * 60 * 60  # 4 hours backoff after 429
 
 
 def job_sync_garmin():
@@ -710,7 +712,13 @@ def job_mood_reminder():
         today = date.today().isoformat()
         with get_conn() as conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT id FROM daily_log WHERE date = %s LIMIT 1", (today,))
+                # Filter by owner user_id to avoid matching demo user data
+                cur.execute(
+                    "SELECT id FROM daily_log"
+                    " WHERE date = %s AND user_id = (SELECT id FROM users WHERE role = 'owner' LIMIT 1)"
+                    " LIMIT 1",
+                    (today,),
+                )
                 if cur.fetchone() is not None:
                     logger.info("Mood already logged for %s.", today)
                     return

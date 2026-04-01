@@ -53,7 +53,7 @@ export async function getFinanceSummary(monthOrRange?: string | { dateFrom?: str
       where: {
         userId: user.id,
         type: "INCOME",
-        subType: { not: "TRANSFER" },
+        NOT: { subType: "TRANSFER" },
         ...(hasDateFilter ? { date: dateFilter } : {}),
       },
       _sum: { amountEur: true },
@@ -63,7 +63,7 @@ export async function getFinanceSummary(monthOrRange?: string | { dateFrom?: str
       where: {
         userId: user.id,
         type: "EXPENSE",
-        subType: { not: "TRANSFER" },
+        NOT: { subType: "TRANSFER" },
         ...(hasDateFilter ? { date: dateFilter } : {}),
       },
       _sum: { amountEur: true },
@@ -74,7 +74,7 @@ export async function getFinanceSummary(monthOrRange?: string | { dateFrom?: str
       where: {
         userId: user.id,
         type: "EXPENSE",
-        subType: { not: "TRANSFER" },
+        NOT: { subType: "TRANSFER" },
         category: { not: null },
         ...(hasDateFilter ? { date: dateFilter } : {}),
       },

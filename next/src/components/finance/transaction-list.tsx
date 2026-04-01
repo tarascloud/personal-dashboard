@@ -40,7 +40,6 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import { formatAmount } from "./finance-types";
 import type { Transaction, AccountData } from "./finance-types";
@@ -296,21 +295,11 @@ export function TransactionList({
               CSV
             </Button>
 
-            {/* Add dialog (bottom sheet) */}
-            <Sheet open={addDialogOpen} onOpenChange={onAddDialogOpenChange}>
-              <SheetTrigger
-                render={<Button size="sm" onClick={onResetForm} />}
-              >
-                <PlusIcon className="mr-1 size-3" />
-                {tc("add")}
-              </SheetTrigger>
-              <SheetContent side="bottom" className="max-h-[85dvh] overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle>{t("add_expense")}</SheetTitle>
-                </SheetHeader>
-                {renderTransactionForm(onAdd, tc("save"))}
-              </SheetContent>
-            </Sheet>
+            {/* Add trigger button */}
+            <Button size="sm" onClick={() => { onResetForm(); onAddDialogOpenChange(true); }}>
+              <PlusIcon className="mr-1 size-3" />
+              {tc("add")}
+            </Button>
           </div>
         </div>
         <CardContent>
@@ -563,6 +552,16 @@ export function TransactionList({
         </CardContent>
       </div>
       </>)}
+
+      {/* Add dialog (bottom sheet) — outside isOpen so FAB can open it */}
+      <Sheet open={addDialogOpen} onOpenChange={onAddDialogOpenChange}>
+        <SheetContent side="bottom" className="max-h-[85dvh] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>{t("add_expense")}</SheetTitle>
+          </SheetHeader>
+          {renderTransactionForm(onAdd, tc("save"))}
+        </SheetContent>
+      </Sheet>
     </Card>
   );
 }

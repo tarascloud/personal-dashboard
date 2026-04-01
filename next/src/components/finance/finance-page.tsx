@@ -87,6 +87,8 @@ export function FinancePage({
     setTotalCount: data.setTotalCount,
     startTransition: data.startTransition,
     fetchData: data.fetchData,
+    filterType: data.filterType,
+    setFilterType: data.setFilterType,
   });
 
   // --- Transaction actions hook ---

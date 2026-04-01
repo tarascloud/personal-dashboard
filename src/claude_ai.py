@@ -9,7 +9,7 @@ from src.database import get_db_schema, execute_readonly_query
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models"
 GEMINI_MODEL = "gemini-2.5-flash"
 
-SYSTEM_PROMPT = """You are a personal financial and lifestyle analyst. You have DIRECT READ-ONLY access to a SQLite database.
+SYSTEM_PROMPT = """You are a personal financial and lifestyle analyst. You have DIRECT READ-ONLY access to a PostgreSQL database.
 
 DATABASE SCHEMA:
 {db_schema}
@@ -20,26 +20,28 @@ KEY TABLES AND USEFUL QUERIES:
    - Columns: date, type (INCOME/EXPENSE), account, category, subcategory, amount_eur, amount_original, currency, note
    - Example: SELECT category, SUM(amount_eur) FROM transactions WHERE type='EXPENSE' AND date >= '2025-01-01' GROUP BY category ORDER BY 2 DESC
 
-2. **daily_log** — daily mood, energy, stress, notes
-   - Columns: date, mood (1-5), energy (1-5), stress (1-5), notes, user_email
-   - Example: SELECT date, mood, energy, stress FROM daily_log ORDER BY date DESC LIMIT 30
+2. **daily_log** — daily mood, energy, stress, lifestyle tracking
+   - Columns: id, user_id, date, level (mood 1-10), mood_delta, sex_count, bj_count, kids_hours, general_note, energy_level (1-10), stress_level (1-10), focus_quality (1-10), alcohol, caffeine, created_at, user_email
+   - Example: SELECT date, level, energy_level, stress_level FROM daily_log ORDER BY date DESC LIMIT 30
+   - NOTE: There is NO table called "quality_of_life". Sex/intimacy data is in daily_log (sex_count, bj_count columns).
 
 3. **gym_workouts** — workout sessions
-   - Columns: id, date, start_time, end_time, workout_type (Push/Pull/Legs/Full Body), notes
-   - Related: gym_exercises (workout_id, exercise_name, order_num), gym_sets (exercise_id, set_number, reps, weight, intensity)
+   - Columns: id, user_id, date, workout_name, duration_minutes, notes
+   - Related: gym_workout_exercises (workout_id, exercise_id, order_num), gym_sets (workout_exercise_id, set_number, reps, weight_kg)
 
 4. **garmin_daily** — Garmin health metrics
-   - Columns: date, steps, total_distance_m, resting_hr, avg_stress, body_battery_high, body_battery_low, sleep_seconds, training_readiness_score
-   - Example: SELECT date, steps, resting_hr, body_battery_high FROM garmin_daily ORDER BY date DESC LIMIT 14
+   - Columns: date, user_id, steps, calories_total, calories_active, distance_m, resting_hr, avg_hr, max_hr, avg_stress, body_battery_high, body_battery_low, sleep_seconds, sleep_score, hrv_last_night, hrv_weekly_avg, training_readiness_score, training_load, vo2max_running, fitness_age
+   - Example: SELECT date, steps, avg_hr, sleep_score, avg_stress FROM garmin_daily WHERE user_id = 1 ORDER BY date DESC LIMIT 14
+   - NOTE: The column is "avg_hr" (NOT "heart_rate_avg"). There is no "total_distance_m" column, use "distance_m".
 
 5. **garmin_activities** — Garmin activities (running, cycling, etc.)
-   - Columns: activity_id, date, activity_type, distance_m, duration_s, avg_hr, calories
+   - Columns: activity_id, user_id, date, activity_type, distance_m, duration_s, avg_hr, calories
 
 6. **food_log** — food intake with macros
-   - Columns: date, meal_type, description, calories, protein, carbs, fat
+   - Columns: id, user_id, date, meal_type, description, calories, protein_g, carbs_g, fat_g
 
 7. **shopping_items** — shopping list
-   - Columns: name, quantity, bought (0/1), category
+   - Columns: id, user_id, name, quantity, bought (boolean), category
 
 8. **budgets** — monthly budget limits per category
 9. **savings_goals** — savings targets
@@ -72,14 +74,19 @@ Available chart_focus values: "monthly_bars", "category_treemap", "category_pie"
 IMPORTANT language rule: Reply in the SAME language as the user's message. If the user writes in Ukrainian — respond in Ukrainian. If in English — respond in English.
 Be specific, use numbers. Format responses with markdown."""
 
-SQL_GENERATION_PROMPT = """You have access to a SQLite database. Given the user's question, generate 1-3 SQL SELECT queries that will provide the data needed to answer.
+SQL_GENERATION_PROMPT = """You have access to a PostgreSQL database. Given the user's question, generate 1-3 SQL SELECT queries that will provide the data needed to answer.
 
 DATABASE SCHEMA:
 {db_schema}
 
+CRITICAL COLUMN NAMES (use exactly these):
+- garmin_daily: use "avg_hr" (NOT "heart_rate_avg"), "distance_m" (NOT "total_distance_m"), "sleep_score", "avg_stress"
+- daily_log: use "level" for mood, "energy_level", "stress_level", "sex_count", "bj_count", "kids_hours" (NOT mood/energy/stress)
+- THERE IS NO "quality_of_life" TABLE — sex/intimacy data is in daily_log (sex_count, bj_count columns)
+
 RULES:
 - Only SELECT queries (read-only)
-- Use proper SQLite syntax
+- Use proper PostgreSQL syntax
 - Return ONLY a JSON array of SQL strings, nothing else
 - If no query is needed (greeting, general question), return []
 - Keep queries efficient, use LIMIT when appropriate

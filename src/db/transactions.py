@@ -504,12 +504,12 @@ def migrate_categories():
 # ─── Daily Log ────────────────────────────────────────────────────────────────
 
 def get_all_daily_logs(user_email: str | None = None, days: int | None = None) -> pd.DataFrame:
+    # user_email param is kept for backwards compat but ignored in PG mode —
+    # user scoping is handled automatically by _inject_user_id via set_current_user().
+    # The old "user_email" column does not exist in PostgreSQL; filtering it would crash.
     sql = "SELECT * FROM daily_log"
     params: list = []
     conditions: list[str] = []
-    if user_email:
-        conditions.append("user_email = ?")
-        params.append(user_email)
     if days:
         from datetime import date as _d, timedelta as _td
         conditions.append("date >= ?")
@@ -526,16 +526,18 @@ def get_all_daily_logs(user_email: str | None = None, days: int | None = None) -
 
 
 def get_daily_log_by_date(date: str) -> dict | None:
-    with get_conn() as conn:
-        row = conn.execute(
-            "SELECT * FROM daily_log WHERE date = ?", (date,)
-        ).fetchone()
-    if row is None:
-        return None
+    # Explicit column list avoids mismatch with user_id in PostgreSQL multi-tenant schema.
     cols = ["id", "date", "level", "mood_delta", "sex_count", "sex_note",
             "bj_count", "bj_note", "kids_hours", "kids_note", "general_note",
             "energy_level", "stress_level", "focus_quality", "alcohol", "caffeine",
             "created_at"]
+    col_sql = ", ".join(cols)
+    with get_conn() as conn:
+        row = conn.execute(
+            f"SELECT {col_sql} FROM daily_log WHERE date = ?", (date,)
+        ).fetchone()
+    if row is None:
+        return None
     return dict(zip(cols, row))
 
 
