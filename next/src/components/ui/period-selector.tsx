@@ -111,7 +111,7 @@ export function PeriodSelector({
             key={preset}
             variant={value === preset ? "default" : "outline"}
             size="sm"
-            className="text-xs h-7"
+            className="text-xs h-9"
             onClick={() => {
               if (preset === "custom") {
                 onChange(preset, {
@@ -132,7 +132,7 @@ export function PeriodSelector({
         <div className="flex items-center gap-2">
           <Popover open={calFromOpen} onOpenChange={setCalFromOpen}>
             <PopoverTrigger
-              render={<Button variant="outline" size="sm" className="text-xs h-7 gap-1" />}
+              render={<Button variant="outline" size="sm" className="text-xs h-9 gap-1" />}
             >
               <CalendarIcon className="size-3" />
               {customFrom || "From"}
@@ -156,7 +156,7 @@ export function PeriodSelector({
           <span className="text-xs text-muted-foreground">—</span>
           <Popover open={calToOpen} onOpenChange={setCalToOpen}>
             <PopoverTrigger
-              render={<Button variant="outline" size="sm" className="text-xs h-7 gap-1" />}
+              render={<Button variant="outline" size="sm" className="text-xs h-9 gap-1" />}
             >
               <CalendarIcon className="size-3" />
               {customTo || "To"}

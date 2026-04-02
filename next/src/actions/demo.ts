@@ -51,15 +51,15 @@ async function refreshDemoDataIfNeeded() {
     // The digest must be updated whenever daily-demo-data.sql is intentionally changed.
     // Generate with: openssl dgst -sha256 scripts/daily-demo-data.sql
     const EXPECTED_DIGEST = process.env.DEMO_SQL_SHA256;
-    if (EXPECTED_DIGEST) {
-      const actual = crypto.createHash("sha256").update(sql, "utf-8").digest("hex");
-      if (!crypto.timingSafeEqual(Buffer.from(actual, "hex"), Buffer.from(EXPECTED_DIGEST, "hex"))) {
-        console.error("[demo] daily-demo-data.sql checksum mismatch — refusing to execute");
-        return;
-      }
-    } else {
-      // No checksum configured — log a warning so operators know to set DEMO_SQL_SHA256
-      console.warn("[demo] DEMO_SQL_SHA256 not set; skipping checksum verification of demo SQL");
+    if (!EXPECTED_DIGEST) {
+      console.error("[demo] DEMO_SQL_SHA256 env var is not set — refusing to execute demo SQL without checksum verification");
+      return;
+    }
+
+    const actual = crypto.createHash("sha256").update(sql, "utf-8").digest("hex");
+    if (!crypto.timingSafeEqual(Buffer.from(actual, "hex"), Buffer.from(EXPECTED_DIGEST, "hex"))) {
+      console.error("[demo] daily-demo-data.sql checksum mismatch — refusing to execute");
+      return;
     }
 
     console.info("[demo] Refreshing demo data via daily-demo-data.sql");

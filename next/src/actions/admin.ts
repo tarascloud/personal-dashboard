@@ -1,5 +1,6 @@
 "use server";
 
+import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { requireOwner } from "@/lib/current-user";
 
@@ -288,13 +289,12 @@ export async function getDataOverview(): Promise<DataOverview> {
 
   let counts: Record<string, number> = {};
   try {
-    const rows = await prisma.$queryRawUnsafe<
+    const rows = await prisma.$queryRaw<
       Array<{ relname: string; count: number }>
     >(
-      `SELECT relname, GREATEST(reltuples, 0)::int as count
+      Prisma.sql`SELECT relname, GREATEST(reltuples, 0)::int as count
        FROM pg_class
-       WHERE relname IN (${tableNames.map((_, i) => `$${i + 1}`).join(', ')})`,
-      ...tableNames,
+       WHERE relname IN (${Prisma.join(tableNames)})`,
     );
     for (const row of rows) {
       counts[row.relname] = Number(row.count);

@@ -52,7 +52,7 @@ export default async function DashboardLayout({
             <div className="flex items-center justify-between px-3 py-2">
               <div className="flex items-center gap-2">
                 <Image src="/PD.png" alt="Personal Dashboard" width={28} height={28} className="rounded" />
-                <span className="text-sm font-semibold truncate">Personal Dashboard</span>
+                <span className="hidden sm:inline text-sm font-semibold truncate">Personal Dashboard</span>
               </div>
               <div className="flex items-center gap-2">
                 <Sidebar
@@ -66,19 +66,26 @@ export default async function DashboardLayout({
               </div>
             </div>
 
-            {/* Horizontal nav */}
-            <BottomNav userRole={role} />
+            {/* Horizontal nav — desktop only */}
+            <div className="hidden sm:block">
+              <BottomNav userRole={role} />
+            </div>
           </header>
 
           {isDemo && <DemoBanner />}
 
           <KeyboardShortcutsProvider>
-            <main className="flex-1 px-3 py-3 md:p-6 animate-page-in">
+            <main className="flex-1 px-3 py-3 md:p-6 animate-page-in pb-20 sm:pb-0">
               <ErrorBoundary module="Page">
                 {children}
               </ErrorBoundary>
             </main>
           </KeyboardShortcutsProvider>
+
+          {/* Bottom nav — mobile only (thumb zone) */}
+          <nav className="fixed bottom-0 inset-x-0 z-40 bg-card/95 backdrop-blur-md border-t border-border/50 sm:hidden pb-safe">
+            <BottomNav userRole={role} />
+          </nav>
 
           <HealthAutoSync />
         </div>

@@ -312,7 +312,7 @@ _garmin_mfa_pending: dict[int, tuple] = {}  # user_id -> (client, client_state)
 
 # Garmin 429 backoff tracking: user_id -> timestamp of last 429 error
 _garmin_429_backoff: dict[int, float] = {}
-_GARMIN_BACKOFF_SECONDS = 4 * 60 * 60  # 4 hours backoff after 429
+_GARMIN_BACKOFF_SECONDS = 24 * 60 * 60  # 24 hours backoff after 429
 
 
 def job_sync_garmin():

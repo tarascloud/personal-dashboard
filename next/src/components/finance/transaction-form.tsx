@@ -186,7 +186,7 @@ export function TransactionForm({
           value={formType}
           onValueChange={(v) => onFormTypeChange(v as string)}
         >
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="h-10 w-full">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -207,7 +207,7 @@ export function TransactionForm({
               value={formFromAccount}
               onValueChange={(v) => onFormFromAccountChange(v as string)}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="h-10 w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -240,7 +240,7 @@ export function TransactionForm({
               value={formToAccount}
               onValueChange={(v) => onFormToAccountChange(v as string)}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="h-10 w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -294,7 +294,7 @@ export function TransactionForm({
                 }
               }}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="h-10 w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -314,7 +314,7 @@ export function TransactionForm({
               value={formCategory}
               onValueChange={(v) => onFormCategoryChange(v as string)}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="h-10 w-full">
                 <SelectValue placeholder={t("category")} />
               </SelectTrigger>
               <SelectContent>
@@ -348,7 +348,7 @@ export function TransactionForm({
                 value={formCurrency}
                 onValueChange={(v) => onFormCurrencyChange(v as string)}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="h-10 w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

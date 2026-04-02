@@ -13,6 +13,7 @@ import {
   ChevronDownIcon,
   DownloadIcon,
   WalletIcon,
+  EllipsisVerticalIcon,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,12 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { formatAmount } from "./finance-types";
 import type { Transaction, AccountData } from "./finance-types";
 
@@ -115,7 +122,7 @@ export function TransactionList({
   const t = useTranslations("finance");
   const tc = useTranslations("common");
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   const ROW_HEIGHT = 40;
   const TABLE_MAX_HEIGHT = 600;
@@ -191,7 +198,7 @@ export function TransactionList({
                 value={filterType}
                 onValueChange={(v) => onFilterTypeChange(v as string)}
               >
-                <SelectTrigger size="sm" className="w-[110px]">
+                <SelectTrigger className="h-9 w-[110px]">
                   <SelectValue placeholder={tc("all")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -210,7 +217,7 @@ export function TransactionList({
                 value={filterAccount}
                 onValueChange={(v) => onFilterAccountChange(v as string)}
               >
-                <SelectTrigger size="sm" className="w-[130px]">
+                <SelectTrigger className="h-9 w-[130px]">
                   <SelectValue placeholder={t("all_accounts")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -231,7 +238,7 @@ export function TransactionList({
                 value={filterCategory}
                 onValueChange={(v) => onFilterCategoryChange(v as string)}
               >
-                <SelectTrigger size="sm" className="w-[130px]">
+                <SelectTrigger className="h-9 w-[130px]">
                   <SelectValue placeholder={tc("all")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -254,7 +261,7 @@ export function TransactionList({
                   value={searchQuery}
                   onChange={(e) => onSearchQueryChange(e.target.value)}
                   placeholder={tc("search")}
-                  className="h-7 w-[140px] pl-7 text-xs"
+                  className="h-9 w-full sm:w-[140px] pl-7 text-xs"
                   onKeyDown={(e) => e.key === "Enter" && onApplyFilters()}
                 />
               </div>
@@ -323,7 +330,7 @@ export function TransactionList({
               <div
                 ref={mobileParentRef}
                 className="sm:hidden overflow-auto"
-                style={{ maxHeight: TABLE_MAX_HEIGHT }}
+                style={{ maxHeight: "calc(100dvh - 280px)" }}
               >
                 <div
                   style={{
@@ -380,16 +387,25 @@ export function TransactionList({
                             <p className="text-xs text-muted-foreground mt-0.5 truncate">{tx.description}</p>
                           )}
                         </div>
-                        <div className="flex flex-col gap-1">
-                          <Button variant="ghost" size="icon-xs" onClick={() => onEdit(tx)}>
-                            <PencilIcon className="size-3" />
-                            <span className="sr-only">{tc("edit")}</span>
-                          </Button>
-                          <Button variant="ghost" size="icon-xs" onClick={() => onDelete(tx.id)}>
-                            <Trash2Icon className="size-3" />
-                            <span className="sr-only">{tc("delete")}</span>
-                          </Button>
-                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                            <EllipsisVerticalIcon className="size-4" />
+                            <span className="sr-only">Actions</span>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => onEdit(tx)}>
+                              <PencilIcon className="mr-2 size-3" />
+                              {tc("edit")}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => onDelete(tx.id)}
+                              className="text-destructive focus:text-destructive"
+                            >
+                              <Trash2Icon className="mr-2 size-3" />
+                              {tc("delete")}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     );
                   })}

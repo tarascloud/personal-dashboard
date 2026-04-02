@@ -52,7 +52,15 @@ export async function getTransactions(filters: {
     }
   }
   if (filters.account) where.account = filters.account;
-  if (filters.category) where.category = filters.category;
+  if (filters.category) {
+    const catCondition = {
+      OR: [
+        { category: filters.category },
+        { category: { startsWith: filters.category + " / " } },
+      ],
+    };
+    where.AND = [...((where.AND as Record<string, unknown>[]) ?? []), catCondition];
+  }
   if (filters.search) {
     where.description = { contains: filters.search, mode: "insensitive" };
   }

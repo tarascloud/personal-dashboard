@@ -48,7 +48,7 @@ export function AccountBalancesCard({ accountBalances }: AccountBalancesCardProp
                 {accs.map((ab) => (
                   <div
                     key={ab.name}
-                    className="flex items-center justify-between text-sm py-0.5"
+                    className="flex items-center justify-between text-sm py-2 min-h-[44px]"
                   >
                     <Link
                       href={`/finance/transactions?account=${encodeURIComponent(ab.name)}`}
