@@ -2,14 +2,70 @@
 
 import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PencilIcon, TrashIcon, ExternalLinkIcon } from "lucide-react";
+import {
+  PencilIcon,
+  TrashIcon,
+  ExternalLinkIcon,
+  CalendarIcon,
+  TrendingUpIcon,
+  ReceiptIcon,
+} from "lucide-react";
+import Link from "next/link";
 import { Switch } from "@/components/ui/switch";
-import { type SubscriptionData } from "@/actions/finance/subscriptions";
+import {
+  type SubscriptionData,
+  type SubscriptionSpending,
+} from "@/actions/finance/subscriptions";
+import { cn } from "@/lib/utils";
+
+// ---------- Brand color map ----------
+
+const BRAND_COLORS: Record<string, { bg: string; text: string }> = {
+  "Claude Pro": { bg: "bg-[#d97706]", text: "text-white" },
+  "Netflix": { bg: "bg-[#E50914]", text: "text-white" },
+  "Spotify": { bg: "bg-[#1DB954]", text: "text-white" },
+  "iCloud": { bg: "bg-[#3693F3]", text: "text-white" },
+  "YouTube Premium": { bg: "bg-[#FF0000]", text: "text-white" },
+  "GitHub": { bg: "bg-[#24292e]", text: "text-white" },
+  "Cloudflare": { bg: "bg-[#F38020]", text: "text-white" },
+  "Google One": { bg: "bg-[#4285F4]", text: "text-white" },
+  "OpenAI": { bg: "bg-[#10a37f]", text: "text-white" },
+  "Forus": { bg: "bg-[#2563eb]", text: "text-white" },
+  "TIE": { bg: "bg-[#1e3a5f]", text: "text-white" },
+  "Amazon Prime": { bg: "bg-[#FF9900]", text: "text-black" },
+  "Docker": { bg: "bg-[#2496ED]", text: "text-white" },
+  "Duolingo": { bg: "bg-[#58CC02]", text: "text-white" },
+  "HomeMoney": { bg: "bg-[#22c55e]", text: "text-white" },
+  "Xbox Game Pass": { bg: "bg-[#107C10]", text: "text-white" },
+};
+
+const DEFAULT_BRAND = { bg: "bg-muted", text: "text-muted-foreground" };
+
+function getBrandColors(name: string) {
+  if (BRAND_COLORS[name]) return BRAND_COLORS[name];
+  for (const key of Object.keys(BRAND_COLORS)) {
+    if (name.toLowerCase().includes(key.toLowerCase())) return BRAND_COLORS[key];
+  }
+  return DEFAULT_BRAND;
+}
+
+function getAbbreviation(name: string): string {
+  const words = name.trim().split(/\s+/);
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return words
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+}
+
+// ---------- Types ----------
+
+type SubWithSpending = SubscriptionData & { spending: SubscriptionSpending | null };
 
 interface SubscriptionListProps {
-  subscriptions: SubscriptionData[];
+  subscriptions: SubWithSpending[];
   isPending: boolean;
   onEdit: (sub: SubscriptionData) => void;
   onDelete: (sub: SubscriptionData) => void;
@@ -21,6 +77,8 @@ const CYCLE_LABELS: Record<string, string> = {
   yearly: "yearly",
   weekly: "weekly",
 };
+
+// ---------- Component ----------
 
 export function SubscriptionList({
   subscriptions,
@@ -43,101 +101,159 @@ export function SubscriptionList({
 
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      {subscriptions.map((sub) => (
-        <Card
-          key={sub.id}
-          className={sub.isActive ? "" : "opacity-60"}
-        >
-          <CardContent className="p-4 space-y-3">
-            {/* Header: name + provider */}
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <h3 className="font-semibold truncate">{sub.name}</h3>
-                <p className="text-sm text-muted-foreground truncate">{sub.provider}</p>
-              </div>
-              <Badge variant={sub.isActive ? "default" : "secondary"}>
-                {sub.isActive ? t("active") : t("inactive")}
-              </Badge>
-            </div>
+      {subscriptions.map((sub) => {
+        const brand = getBrandColors(sub.name);
+        const abbr = getAbbreviation(sub.name);
+        const cycleKey = CYCLE_LABELS[sub.billingCycle] ?? "monthly";
 
-            {/* Amount + billing cycle */}
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-xl font-bold tabular-nums">
-                {sub.amount.toFixed(2)}
-              </span>
-              <span className="text-sm text-muted-foreground">
-                {sub.currency}
-              </span>
-              <span className="text-sm text-muted-foreground">
-                / {t(CYCLE_LABELS[sub.billingCycle] as Parameters<typeof t>[0] ?? "monthly")}
-              </span>
-            </div>
-
-            {/* Details */}
-            <div className="space-y-1 text-sm text-muted-foreground">
-              {sub.category && (
-                <div className="flex justify-between">
-                  <span>{t("category")}:</span>
-                  <span className="capitalize">
-                    {t.has(sub.category) ? t(sub.category as Parameters<typeof t>[0]) : sub.category}
-                  </span>
+        return (
+          <Card
+            key={sub.id}
+            className={cn(
+              "transition-opacity duration-200",
+              !sub.isActive && "opacity-50",
+            )}
+          >
+            <CardContent className="p-4 space-y-3">
+              {/* Header: avatar + name/provider + toggle */}
+              <div className="flex items-start gap-3">
+                {/* Brand avatar */}
+                <div
+                  className={cn(
+                    "flex-shrink-0 h-11 w-11 rounded-xl flex items-center justify-center font-bold text-sm select-none",
+                    brand.bg,
+                    brand.text,
+                  )}
+                  aria-hidden="true"
+                >
+                  {abbr}
                 </div>
-              )}
-              {sub.nextBilling && (
-                <div className="flex justify-between">
-                  <span>{t("next_billing")}:</span>
-                  <span>{sub.nextBilling}</span>
-                </div>
-              )}
-              {sub.notes && (
-                <p className="pt-1 text-xs italic">{sub.notes}</p>
-              )}
-            </div>
 
-            {/* Actions */}
-            <div className="flex items-center justify-between pt-1 border-t">
-              <div className="flex items-center gap-2">
+                {/* Name + provider */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold leading-tight truncate">{sub.name}</h3>
+                  {sub.provider && sub.provider !== sub.name && (
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                      {sub.provider}
+                    </p>
+                  )}
+                </div>
+
+                {/* Active toggle */}
                 <Switch
                   checked={sub.isActive}
                   onCheckedChange={() => onToggleActive(sub)}
                   disabled={isPending}
                   aria-label={sub.isActive ? t("active") : t("inactive")}
+                  className="flex-shrink-0 mt-0.5"
                 />
               </div>
-              <div className="flex items-center gap-1">
-                {sub.url && (
-                  <a
-                    href={sub.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                  >
-                    <ExternalLinkIcon className="h-4 w-4" />
-                  </a>
-                )}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => onEdit(sub)}
-                  disabled={isPending}
-                >
-                  <PencilIcon className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-destructive hover:text-destructive"
-                  onClick={() => onDelete(sub)}
-                  disabled={isPending}
-                >
-                  <TrashIcon className="h-4 w-4" />
-                </Button>
+
+              {/* Amount */}
+              <div className="flex items-baseline gap-1">
+                <span className="text-2xl font-bold tabular-nums tracking-tight">
+                  {sub.amount.toFixed(2)}
+                </span>
+                <span className="text-sm font-medium text-muted-foreground">
+                  {sub.currency}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  / {t(cycleKey as Parameters<typeof t>[0])}
+                </span>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+
+              {/* Meta: next billing + spending */}
+              <div className="space-y-1.5 text-xs text-muted-foreground">
+                {sub.nextBilling && (
+                  <div className="flex items-center gap-1.5">
+                    <CalendarIcon className="h-3.5 w-3.5 flex-shrink-0" />
+                    <span>
+                      {t("next_billing")}:{" "}
+                      <span className="text-foreground font-medium">{sub.nextBilling}</span>
+                    </span>
+                  </div>
+                )}
+
+                {sub.spending && (
+                  <div className="flex items-center gap-1.5">
+                    <TrendingUpIcon className="h-3.5 w-3.5 flex-shrink-0" />
+                    <span>
+                      {t("total_spent")}:{" "}
+                      <span className="text-foreground font-medium">
+                        €{sub.spending.totalSpent.toFixed(2)}
+                      </span>
+                      {" "}
+                      <span className="opacity-70">
+                        {t("since")} {sub.spending.firstDate}
+                      </span>
+                    </span>
+                  </div>
+                )}
+
+                {sub.notes && (
+                  <p className="italic opacity-70 truncate">{sub.notes}</p>
+                )}
+              </div>
+
+              {/* Action row */}
+              <div className="flex items-center justify-between pt-2 border-t border-border/60">
+                {/* Status chip */}
+                <span
+                  className={cn(
+                    "text-xs font-medium px-2 py-0.5 rounded-full",
+                    sub.isActive
+                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                      : "bg-muted text-muted-foreground",
+                  )}
+                >
+                  {sub.isActive ? t("active") : t("inactive")}
+                </span>
+
+                {/* Icon actions */}
+                <div className="flex items-center gap-0.5">
+                  {sub.spending && (
+                    <Link
+                      href={`/finance/transactions?category=${encodeURIComponent("Підписки")}&search=${encodeURIComponent(sub.name)}`}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                      title={t("transactions_count", { count: sub.spending.transactionCount })}
+                    >
+                      <ReceiptIcon className="h-3.5 w-3.5" />
+                    </Link>
+                  )}
+                  {sub.url && (
+                    <a
+                      href={sub.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                    >
+                      <ExternalLinkIcon className="h-3.5 w-3.5" />
+                    </a>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => onEdit(sub)}
+                    disabled={isPending}
+                  >
+                    <PencilIcon className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                    onClick={() => onDelete(sub)}
+                    disabled={isPending}
+                  >
+                    <TrashIcon className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }

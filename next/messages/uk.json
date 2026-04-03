@@ -296,7 +296,11 @@
     "other": "Інше",
     "delete_confirm": "Видалити цю підписку?",
     "saved": "Підписку збережено",
-    "deleted": "Підписку видалено"
+    "deleted": "Підписку видалено",
+    "total_spent": "Витрачено всього",
+    "since": "З",
+    "transactions_count": "{count} транзакцій",
+    "no_spending_data": "Немає даних"
   },
   "my_day": {
     "title": "Мій день",

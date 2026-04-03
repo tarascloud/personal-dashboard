@@ -1,46 +1,18 @@
 "use client";
 
-import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { type SubscriptionData } from "@/actions/finance/subscriptions";
-
-function toMonthly(amount: number, cycle: string): number {
-  if (cycle === "yearly") return amount / 12;
-  if (cycle === "weekly") return amount * (52 / 12);
-  return amount;
-}
+import { type SubscriptionAnalytics } from "@/actions/finance/subscriptions";
 
 interface SubscriptionSummaryProps {
-  subscriptions: SubscriptionData[];
+  analytics: SubscriptionAnalytics;
 }
 
-export function SubscriptionSummary({ subscriptions }: SubscriptionSummaryProps) {
+export function SubscriptionSummary({ analytics }: SubscriptionSummaryProps) {
   const t = useTranslations("subscriptions");
 
-  const { monthlyCost, yearlyCost, byCategory } = useMemo(() => {
-    let monthly = 0;
-    const catMap: Record<string, number> = {};
-
-    for (const sub of subscriptions) {
-      const m = toMonthly(sub.amount, sub.billingCycle);
-      monthly += m;
-      const cat = sub.category || "other";
-      catMap[cat] = (catMap[cat] || 0) + m;
-    }
-
-    return {
-      monthlyCost: monthly,
-      yearlyCost: monthly * 12,
-      byCategory: Object.entries(catMap)
-        .sort((a, b) => b[1] - a[1])
-        .map(([category, amount]) => ({ category, amount })),
-    };
-  }, [subscriptions]);
-
   return (
-    <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
-      {/* Monthly Cost */}
+    <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -49,12 +21,11 @@ export function SubscriptionSummary({ subscriptions }: SubscriptionSummaryProps)
         </CardHeader>
         <CardContent>
           <p className="text-2xl font-bold tabular-nums">
-            {monthlyCost.toFixed(2)} EUR
+            {analytics.totalMonthly.toFixed(2)} EUR
           </p>
         </CardContent>
       </Card>
 
-      {/* Yearly Cost */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -63,12 +34,24 @@ export function SubscriptionSummary({ subscriptions }: SubscriptionSummaryProps)
         </CardHeader>
         <CardContent>
           <p className="text-2xl font-bold tabular-nums">
-            {yearlyCost.toFixed(2)} EUR
+            {analytics.totalYearly.toFixed(2)} EUR
           </p>
         </CardContent>
       </Card>
 
-      {/* Active count */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium text-muted-foreground">
+            {t("total_spent")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-2xl font-bold tabular-nums">
+            {analytics.totalAllTime.toFixed(2)} EUR
+          </p>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -76,37 +59,14 @@ export function SubscriptionSummary({ subscriptions }: SubscriptionSummaryProps)
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-bold tabular-nums">{subscriptions.length}</p>
+          <p className="text-2xl font-bold tabular-nums">
+            {analytics.activeCount}{" "}
+            <span className="text-base font-normal text-muted-foreground">
+              / {analytics.inactiveCount}
+            </span>
+          </p>
         </CardContent>
       </Card>
-
-      {/* Category breakdown */}
-      {byCategory.length > 0 && (
-        <Card className="sm:col-span-3">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {t("by_category")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
-              {byCategory.map(({ category, amount }) => (
-                <div
-                  key={category}
-                  className="flex items-center justify-between rounded-md border px-3 py-2"
-                >
-                  <span className="text-sm capitalize">
-                    {t.has(category) ? t(category as Parameters<typeof t>[0]) : category}
-                  </span>
-                  <span className="text-sm font-medium tabular-nums">
-                    {amount.toFixed(2)} EUR/mo
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

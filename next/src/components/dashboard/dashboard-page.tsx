@@ -237,7 +237,7 @@ export function DashboardPage({
           const rangeYear = new Date(range.from).getFullYear();
           const [newKpis, newTrends, newCorrelations, newDeepDive, newGarminHealth, newMoodTimeline, newHRVTrend, newWeeklyMuscle, newExtCorr] =
             await Promise.all([
-              getDashboardKPIs(range),
+              getDashboardKPIs({ ...range, preset }),
               getMonthlyTrends(rangeYear),
               getLifestyleCorrelations(range),
               getMonthlyDeepDive(range),

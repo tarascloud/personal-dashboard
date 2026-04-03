@@ -63,7 +63,7 @@ async function PrimaryDashboardContent({ tab }: { tab: "life" | "finance" | "tra
   const weeks = Math.max(1, Math.ceil(daysFromStart / 7));
 
   // Start ALL fetches in parallel immediately
-  const kpisPromise = getDashboardKPIs(period);
+  const kpisPromise = getDashboardKPIs({ ...period, preset: "this_year" });
   const lifePromise = Promise.all([
     getGarminHealthTrends(daysFromStart),
     getMoodTimeline(yearRange),

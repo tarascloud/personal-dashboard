@@ -1,28 +1,32 @@
 "use client";
 
-import { useState, useTransition, useMemo } from "react";
+import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { PlusIcon } from "lucide-react";
 import { Fab } from "@/components/ui/fab";
+import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
+  type SubscriptionAnalytics,
   type SubscriptionData,
   addSubscription,
   updateSubscription,
   deleteSubscription,
+  getSubscriptionAnalytics,
 } from "@/actions/finance/subscriptions";
 import { SubscriptionSummary } from "./subscription-summary";
 import { SubscriptionList } from "./subscription-list";
 import { SubscriptionDialog } from "./subscription-dialog";
 
 interface SubscriptionsPageProps {
-  initialSubscriptions: SubscriptionData[];
+  initialAnalytics: SubscriptionAnalytics;
 }
 
-export function SubscriptionsPage({ initialSubscriptions }: SubscriptionsPageProps) {
+export function SubscriptionsPage({ initialAnalytics }: SubscriptionsPageProps) {
   const t = useTranslations("subscriptions");
   const tc = useTranslations("common");
-  const [subscriptions, setSubscriptions] = useState(initialSubscriptions);
+  const [analytics, setAnalytics] = useState(initialAnalytics);
   const [isPending, startTransition] = useTransition();
 
   // Dialog state
@@ -32,10 +36,10 @@ export function SubscriptionsPage({ initialSubscriptions }: SubscriptionsPagePro
   // Confirm delete
   const [deleteTarget, setDeleteTarget] = useState<SubscriptionData | null>(null);
 
-  const activeSubscriptions = useMemo(
-    () => subscriptions.filter((s) => s.isActive),
-    [subscriptions],
-  );
+  async function reload() {
+    const fresh = await getSubscriptionAnalytics();
+    setAnalytics(fresh);
+  }
 
   function handleAdd() {
     setEditingSub(null);
@@ -55,9 +59,7 @@ export function SubscriptionsPage({ initialSubscriptions }: SubscriptionsPagePro
     startTransition(async () => {
       try {
         await updateSubscription(sub.id, { isActive: !sub.isActive });
-        setSubscriptions((prev) =>
-          prev.map((s) => (s.id === sub.id ? { ...s, isActive: !s.isActive } : s)),
-        );
+        await reload();
         toast.success(t("saved"));
       } catch {
         toast.error("Error");
@@ -70,9 +72,6 @@ export function SubscriptionsPage({ initialSubscriptions }: SubscriptionsPagePro
       try {
         if (editingSub) {
           await updateSubscription(editingSub.id, data);
-          setSubscriptions((prev) =>
-            prev.map((s) => (s.id === editingSub.id ? { ...s, ...data } : s)),
-          );
         } else {
           await addSubscription({
             name: data.name,
@@ -86,11 +85,8 @@ export function SubscriptionsPage({ initialSubscriptions }: SubscriptionsPagePro
             url: data.url ?? undefined,
             notes: data.notes ?? undefined,
           });
-          // Reload from server to get the new ID
-          const { getSubscriptions } = await import("@/actions/finance/subscriptions");
-          const fresh = await getSubscriptions();
-          setSubscriptions(fresh);
         }
+        await reload();
         setDialogOpen(false);
         setEditingSub(null);
         toast.success(t("saved"));
@@ -105,7 +101,7 @@ export function SubscriptionsPage({ initialSubscriptions }: SubscriptionsPagePro
     startTransition(async () => {
       try {
         await deleteSubscription(deleteTarget.id);
-        setSubscriptions((prev) => prev.filter((s) => s.id !== deleteTarget.id));
+        await reload();
         setDeleteTarget(null);
         toast.success(t("deleted"));
       } catch {
@@ -116,12 +112,18 @@ export function SubscriptionsPage({ initialSubscriptions }: SubscriptionsPagePro
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <h1 className="sr-only">{t("title")}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="sr-only">{t("title")}</h1>
+        <Button onClick={handleAdd} size="sm" className="hidden sm:inline-flex gap-1.5 ml-auto">
+          <PlusIcon className="size-4" />
+          {t("add")}
+        </Button>
+      </div>
 
-      <SubscriptionSummary subscriptions={activeSubscriptions} />
+      <SubscriptionSummary analytics={analytics} />
 
       <SubscriptionList
-        subscriptions={subscriptions}
+        subscriptions={analytics.subscriptions}
         isPending={isPending}
         onEdit={handleEdit}
         onDelete={handleDeleteRequest}

@@ -296,7 +296,11 @@
     "other": "Other",
     "delete_confirm": "Delete this subscription?",
     "saved": "Subscription saved",
-    "deleted": "Subscription deleted"
+    "deleted": "Subscription deleted",
+    "total_spent": "Total Spent",
+    "since": "Since",
+    "transactions_count": "{count} transactions",
+    "no_spending_data": "No data"
   },
   "my_day": {
     "title": "My Day",

@@ -4,18 +4,54 @@
  * that can be safely exported without "use server".
  */
 
+import type { PeriodPreset } from "@/components/ui/period-selector";
+
+const fmt = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
 /**
- * Compute the previous period range of equal length ending the day before `from`.
+ * Compute the comparison period for KPI changes.
+ * When a known preset is provided, compares with the same period one year/month/week/day ago.
+ * Falls back to equal-length previous period for custom/all/unknown presets.
  */
-export function previousPeriodRange(from: string, to: string): { from: string; to: string } {
+export function previousPeriodRange(
+  from: string,
+  to: string,
+  preset?: PeriodPreset,
+): { from: string; to: string } {
   const fromDate = new Date(from + "T00:00:00");
   const toDate = new Date(to + "T00:00:00");
-  const days = Math.round((toDate.getTime() - fromDate.getTime()) / 86400000) + 1;
-  const prevTo = new Date(fromDate.getTime() - 86400000);
-  const prevFrom = new Date(prevTo.getTime() - (days - 1) * 86400000);
-  const fmt = (d: Date) =>
-    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  return { from: fmt(prevFrom), to: fmt(prevTo) };
+
+  const shiftDays = (days: number) => {
+    const ms = days * 86400000;
+    return { from: fmt(new Date(fromDate.getTime() - ms)), to: fmt(new Date(toDate.getTime() - ms)) };
+  };
+
+  switch (preset) {
+    case "today":
+      return shiftDays(1);
+    case "this_week":
+    case "prev_week":
+      return shiftDays(7);
+    case "this_month":
+    case "prev_month":
+      return shiftDays(30);
+    case "this_year":
+    case "prev_year": {
+      const prevFrom = new Date(fromDate);
+      prevFrom.setFullYear(prevFrom.getFullYear() - 1);
+      const prevTo = new Date(toDate);
+      prevTo.setFullYear(prevTo.getFullYear() - 1);
+      return { from: fmt(prevFrom), to: fmt(prevTo) };
+    }
+    default: {
+      // Fallback: equal-length previous period
+      const days = Math.round((toDate.getTime() - fromDate.getTime()) / 86400000) + 1;
+      const prevTo = new Date(fromDate.getTime() - 86400000);
+      const prevFrom = new Date(prevTo.getTime() - (days - 1) * 86400000);
+      return { from: fmt(prevFrom), to: fmt(prevTo) };
+    }
+  }
 }
 
 /**

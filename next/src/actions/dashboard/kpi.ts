@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/current-user";
 import { cached, invalidateCache } from "@/lib/cache";
 import { previousPeriodRange } from "./utils";
+import type { PeriodPreset } from "@/components/ui/period-selector";
 import { toDateOnly } from "@/lib/date-utils";
 import { notTransfer } from "@/actions/finance/finance-utils";
 
@@ -141,15 +142,16 @@ async function fetchKpiPeriodData(
 export async function getDashboardKPIs(period: {
   from: string;
   to: string;
+  preset?: PeriodPreset;
 }): Promise<DashboardKPIs> {
   const user = await requireUser();
-  const { from, to } = period;
+  const { from, to, preset } = period;
 
   return cached<DashboardKPIs>(
-    `kpi:${user.id}:${from}:${to}`,
+    `kpi:${user.id}:${from}:${to}:${preset ?? ""}`,
     300, // 5 minutes
     async () => {
-      const prevRange = previousPeriodRange(from, to);
+      const prevRange = previousPeriodRange(from, to, preset);
 
       const [current, previous] = await Promise.all([
         fetchKpiPeriodData(user.id, from, to),

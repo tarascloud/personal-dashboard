@@ -38,6 +38,7 @@ export function TransactionsPage({
   // Pre-fill from URL params
   const paramAccount = searchParams.get("account") ?? "";
   const paramCategory = searchParams.get("category") ?? "";
+  const paramSearch = searchParams.get("search") ?? "";
 
   // Data
   const [transactions, setTransactions] = useState(initialTransactions);
@@ -46,12 +47,12 @@ export function TransactionsPage({
   const [categories, setCategories] = useState(initialCategories);
 
   // Filters
-  const [dateFrom, setDateFrom] = useState(initialDateFrom);
+  const [dateFrom, setDateFrom] = useState(paramSearch ? "" : initialDateFrom);
   const [dateTo, setDateTo] = useState("");
   const [filterAccount, setFilterAccount] = useState(paramAccount);
   const [filterCategory, setFilterCategory] = useState(paramCategory);
   const [filterType, setFilterType] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(paramSearch);
 
   // Edit/delete
   const [editTx, setEditTx] = useState<Transaction | null>(null);

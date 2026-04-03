@@ -19,6 +19,8 @@ import {
 import { ShoppingSummary } from "./shopping-summary";
 import { ShoppingCard } from "./shopping-card";
 import { ShoppingDialog } from "./shopping-dialog";
+import { PlusIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const STATUS_TABS = ["active", "purchased", "cancelled"] as const;
@@ -186,7 +188,8 @@ export function ShoppingPage({ initialItems }: ShoppingPageProps) {
 
       <ShoppingSummary items={activeItems} />
 
-      {/* Status tabs */}
+      {/* Status tabs + Add button */}
+      <div className="flex items-center justify-between gap-2">
       <div className="flex gap-1 rounded-lg bg-muted p-[3px] w-fit">
         {STATUS_TABS.map((tab) => (
           <button
@@ -202,6 +205,11 @@ export function ShoppingPage({ initialItems }: ShoppingPageProps) {
             {t(`tab_${tab}`)}
           </button>
         ))}
+      </div>
+        <Button onClick={handleAdd} size="sm" className="hidden sm:inline-flex gap-1.5">
+          <PlusIcon className="size-4" />
+          {t("add")}
+        </Button>
       </div>
 
       {/* Items grid */}
