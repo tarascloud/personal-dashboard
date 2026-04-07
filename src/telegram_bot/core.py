@@ -14,11 +14,11 @@ from telegram.ext import (
     filters,
 )
 
-from src.database import init_db
+from src.database import init_shared_db
 
 import src.telegram_bot.config as config
 from src.telegram_bot.config import (
-    _load_allowed_users, ALLOWED_USER_IDS, SHOPPING_GROUP_ID,
+    _load_allowed_users, ALLOWED_USER_IDS,
 )
 from src.telegram_bot.handlers.commands import (
     cmd_myid, cmd_connect, cmd_start, cmd_help, cmd_mood, cmd_stats,
@@ -153,7 +153,9 @@ def run_bot():
         return
 
     _load_allowed_users()
-    init_db()
+    # init_db() is called per-user in _set_user_context(); only shared DB at startup
+    from src.database import init_shared_db as _init_shared
+    _init_shared()
 
     app = Application.builder().token(token).build()
 
@@ -198,8 +200,8 @@ def run_bot():
     app.add_handler(CallbackQueryHandler(handle_food_callback, pattern="^food:"))
 
     # Shopping group handlers (must be before general handlers, use group filter)
-    if SHOPPING_GROUP_ID:
-        _shop_filter = filters.Chat(chat_id=SHOPPING_GROUP_ID)
+    if config.SHOPPING_GROUP_ID:
+        _shop_filter = filters.Chat(chat_id=config.SHOPPING_GROUP_ID)
         app.add_handler(MessageHandler(
             _shop_filter & (filters.VOICE | filters.AUDIO),
             handle_shopping_voice,

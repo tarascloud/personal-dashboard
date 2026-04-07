@@ -37,7 +37,34 @@ export async function removeUser(email: string) {
   if (email === owner.email) {
     throw new Error("Cannot delete yourself");
   }
+  const target = await prisma.user.findUnique({ where: { email }, select: { id: true } });
+  if (!target) throw new Error("User not found");
+
+  // Discover all tables with a user_id/user_email column and delete dependent rows.
+  // Not every column has a FK constraint in DB, so we match by column name.
+  const idTables = await prisma.$queryRaw<Array<{ table_name: string }>>`
+    SELECT table_name FROM information_schema.columns
+    WHERE column_name = 'user_id' AND table_schema = 'public' AND table_name != 'users'
+  `;
+  const emailTables = await prisma.$queryRaw<Array<{ table_name: string }>>`
+    SELECT table_name FROM information_schema.columns
+    WHERE column_name = 'user_email' AND table_schema = 'public' AND table_name != 'users'
+  `;
+
   await prisma.$transaction(async (tx) => {
+    for (const { table_name } of idTables) {
+      await tx.$executeRawUnsafe(
+        `DELETE FROM "${table_name}" WHERE user_id = $1`,
+        target.id,
+      );
+    }
+    for (const { table_name } of emailTables) {
+      if (table_name === 'audit_log') continue; // keep audit history
+      await tx.$executeRawUnsafe(
+        `DELETE FROM "${table_name}" WHERE user_email = $1`,
+        email,
+      );
+    }
     await tx.user.delete({ where: { email } });
     await tx.auditLog.create({
       data: {

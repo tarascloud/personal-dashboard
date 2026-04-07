@@ -1512,7 +1512,8 @@ def job_prod_to_dev_sync():
 def main():
     scheduler = BlockingScheduler(timezone="UTC")
 
-    scheduler.add_job(job_sync_garmin,    CronTrigger(hour="8,10,12,18,20,0", minute=0), id="sync_garmin")
+    # TEMPORARILY DISABLED: Garmin 429 rate limit — re-enable after fresh garth session from Mac
+    # scheduler.add_job(job_sync_garmin,    CronTrigger(hour="8,10,12,18,20,0", minute=0), id="sync_garmin")
     scheduler.add_job(job_sync_withings,  CronTrigger(minute="*/15"),              id="sync_withings")
     scheduler.add_job(job_sync_monobank,  CronTrigger(minute="*/10", hour="7-23"), id="sync_monobank")
     scheduler.add_job(job_sync_bunq,      CronTrigger(minute="*/10", hour="7-23"), id="sync_bunq")

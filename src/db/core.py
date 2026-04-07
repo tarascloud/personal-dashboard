@@ -978,13 +978,13 @@ def init_shared_db():
         # Pre-seed owner user
         conn.execute(
             "INSERT OR IGNORE INTO users (email, name, role) VALUES (?, ?, ?)",
-            ("${OWNER_EMAIL:-admin@example.com}", "Taras", "owner"),
+            (_os.environ.get("OWNER_EMAIL", "admin@example.com"), "Taras", "owner"),
         )
         # Migrate existing hardcoded telegram links
         conn.execute(
             "INSERT OR IGNORE INTO telegram_links (telegram_id, user_email, telegram_username) "
             "VALUES (?, ?, ?)",
-            (int(_os.environ.get("TELEGRAM_TARAS_ID", "0") or "0"), "${OWNER_EMAIL:-admin@example.com}", "tapacp"),
+            (int(_os.environ.get("TELEGRAM_TARAS_ID", "0") or "0"), _os.environ.get("OWNER_EMAIL", "admin@example.com"), "tapacp"),
         )
         _tatiana_id = _os.environ.get("TELEGRAM_TATIANA_ID", "")
         if _tatiana_id:
@@ -1394,7 +1394,7 @@ def migrate_legacy_db():
     from .settings import CREATE_BUDGETS_SQL, CREATE_RECURRING_SQL, CREATE_SAVINGS_GOALS_SQL, \
         CREATE_CHAT_HISTORY_SQL, CREATE_BUDGET_CONFIG_SQL, CREATE_MANDATORY_CATEGORIES_SQL
 
-    owner_email = "${OWNER_EMAIL:-admin@example.com}"
+    owner_email = _os.environ.get("OWNER_EMAIL", "admin@example.com")
     owner_path = _user_db_path(owner_email)
 
     # Check if already migrated: shared has data AND user DB has transactions

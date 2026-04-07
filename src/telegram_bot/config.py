@@ -95,7 +95,7 @@ def _load_allowed_users():
         TARAS_USER_ID = int(taras_id)
         ALLOWED_USER_IDS.add(TARAS_USER_ID)
         USER_ACCOUNTS[TARAS_USER_ID] = "Taras Mono"
-        USER_EMAILS[TARAS_USER_ID] = "${OWNER_EMAIL:-admin@example.com}"
+        USER_EMAILS[TARAS_USER_ID] = os.environ.get("OWNER_EMAIL", "admin@example.com")
 
     # Tatiana (env var fallback)
     tatiana_id = os.getenv("TELEGRAM_TATIANA_ID", "")
@@ -115,7 +115,7 @@ def _load_allowed_users():
                 ALLOWED_USER_IDS.add(tid)
                 USER_EMAILS[tid] = link["user_email"]
                 # Set TARAS_USER_ID if this is the owner
-                if link["user_email"] == "${OWNER_EMAIL:-admin@example.com}":
+                if link["user_email"] == os.environ.get("OWNER_EMAIL", "admin@example.com"):
                     TARAS_USER_ID = tid
     except Exception as e:
         logger.warning("Could not load telegram_links from DB: %s", e)
@@ -139,7 +139,7 @@ def _is_allowed(update: Update) -> bool:
         ALLOWED_USER_IDS.add(user.id)
         if user.username.lower() == "tapacp":
             USER_ACCOUNTS[user.id] = "Taras Mono"
-            USER_EMAILS[user.id] = "${OWNER_EMAIL:-admin@example.com}"
+            USER_EMAILS[user.id] = os.environ.get("OWNER_EMAIL", "admin@example.com")
         elif user.username.lower() == "taba777":
             USER_ACCOUNTS[user.id] = "Tatiana Sence"
             USER_EMAILS[user.id] = "tatiana@pd-app.local"

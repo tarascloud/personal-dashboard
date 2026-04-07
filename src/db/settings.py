@@ -1,6 +1,8 @@
 """Custom accounts, custom categories, favourites, preferences, budgets, savings goals,
 recurring transactions, chat history, budget calculator."""
 
+import os
+
 from .core import get_conn, _get_table_columns, read_sql, CREATE_CUSTOM_ACCOUNTS_SQL
 
 
@@ -591,7 +593,8 @@ def get_chat_history(limit: int = 50, user_email: str | None = None) -> list[dic
         # Ensure user_email column exists
         _cols = _get_table_columns(conn, "chat_history")
         if "user_email" not in _cols:
-            conn.execute("ALTER TABLE chat_history ADD COLUMN user_email TEXT DEFAULT '${OWNER_EMAIL:-admin@example.com}'")
+            _owner = os.environ.get("OWNER_EMAIL", "admin@example.com")
+            conn.execute(f"ALTER TABLE chat_history ADD COLUMN user_email TEXT DEFAULT '{_owner}'")
         if user_email:
             rows = conn.execute(
                 "SELECT role, content, created_at FROM chat_history WHERE user_email = ? ORDER BY id DESC LIMIT ?",
@@ -610,10 +613,11 @@ def add_chat_message(role: str, content: str, user_email: str | None = None):
         conn.execute(CREATE_CHAT_HISTORY_SQL)
         _cols = _get_table_columns(conn, "chat_history")
         if "user_email" not in _cols:
-            conn.execute("ALTER TABLE chat_history ADD COLUMN user_email TEXT DEFAULT '${OWNER_EMAIL:-admin@example.com}'")
+            _owner = os.environ.get("OWNER_EMAIL", "admin@example.com")
+            conn.execute(f"ALTER TABLE chat_history ADD COLUMN user_email TEXT DEFAULT '{_owner}'")
         conn.execute(
             "INSERT INTO chat_history (role, content, user_email) VALUES (?, ?, ?)",
-            (role, content, user_email or "${OWNER_EMAIL:-admin@example.com}"),
+            (role, content, user_email or os.environ.get("OWNER_EMAIL", "admin@example.com")),
         )
 
 
