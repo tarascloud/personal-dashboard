@@ -1512,8 +1512,10 @@ def job_prod_to_dev_sync():
 def main():
     scheduler = BlockingScheduler(timezone="UTC")
 
-    # TEMPORARILY DISABLED: Garmin 429 rate limit — re-enable after fresh garth session from Mac
-    # scheduler.add_job(job_sync_garmin,    CronTrigger(hour="8,10,12,18,20,0", minute=0), id="sync_garmin")
+    # Garmin: DISABLED until fresh garth session restored from Mac (VPN/hotspot to avoid home-IP 429).
+    # Target schedule: CronTrigger(hour=6, minute=0) — once/day at 06:00 UTC (= 08:00 Madrid CEST).
+    # Re-enable after scp tokens to /opt/docker/pd-scheduler/garth_sessions/1/.
+    # scheduler.add_job(job_sync_garmin,    CronTrigger(hour=6, minute=0),            id="sync_garmin")
     scheduler.add_job(job_sync_withings,  CronTrigger(minute="*/15"),              id="sync_withings")
     scheduler.add_job(job_sync_monobank,  CronTrigger(minute="*/10", hour="7-23"), id="sync_monobank")
     scheduler.add_job(job_sync_bunq,      CronTrigger(minute="*/10", hour="7-23"), id="sync_bunq")

@@ -59,6 +59,7 @@ export interface GarminHealthChartsProps {
     max: string;
     avg: string;
     fitnessAge: string;
+    trainingReadiness: string;
     weeklyAvg: string;
     bmi: string;
     activeMin: string;
@@ -257,7 +258,7 @@ export function GarminHealthCharts({
           </Card>
         )}
 
-        {/* Sleep Consistency (bedtime & wake time) */}
+        {/* Sleep Consistency (bedtime → wake as range bars) */}
         {garminHealth.sleep.some(s => s.sleepStartHour != null) && (
           <Card>
             <CardHeader>
@@ -270,37 +271,39 @@ export function GarminHealthCharts({
               <div className="h-48 sm:h-[300px]">
                 <figure role="img" style={{ height: "100%" }} aria-label="Sleep Consistency">
                 <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={garminHealth.sleep.map((s) => {
+                  <BarChart data={garminHealth.sleep.map((s) => {
                     const bedtime = s.sleepStartHour != null ? (s.sleepStartHour < 12 ? s.sleepStartHour + 24 : s.sleepStartHour) : null;
-                    const wake = s.sleepEndHour;
-                    return { date: s.date.slice(5), bedtime, wake };
+                    const wake = s.sleepEndHour != null ? (s.sleepEndHour < 12 ? s.sleepEndHour + 24 : s.sleepEndHour) : null;
+                    return { date: s.date.slice(5), range: bedtime != null && wake != null ? [Math.min(bedtime, wake), Math.max(bedtime, wake)] as [number, number] : null };
                   })}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis dataKey="date" className="text-xs" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
                     <YAxis
-                      reversed
-                      domain={[5, 27]}
+                      domain={[20, 34]}
                       className="text-xs"
                       tickFormatter={(v: number) => {
                         const h = v >= 24 ? v - 24 : v;
                         return `${String(Math.floor(h)).padStart(2, "0")}:00`;
                       }}
-                      ticks={[6, 8, 10, 21, 23, 25]}
+                      ticks={[21, 23, 25, 27, 29, 31, 33]}
                     />
                     <Tooltip
                       contentStyle={tooltipStyle}
-                      formatter={(value, name) => {
-                        const v = Number(value);
-                        const h = v >= 24 ? v - 24 : v;
-                        const hours = Math.floor(h);
-                        const mins = Math.round((h % 1) * 60);
-                        return [`${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`, name];
+                      formatter={(value: unknown) => {
+                        if (!Array.isArray(value)) return [String(value), ""];
+                        const fmt = (v: number) => {
+                          const h = v >= 24 ? v - 24 : v;
+                          const hours = Math.floor(h);
+                          const mins = Math.round((h % 1) * 60);
+                          return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
+                        };
+                        const bedtime = Math.min(value[0], value[1]);
+                        const wake = Math.max(value[0], value[1]);
+                        return [`${fmt(bedtime)} → ${fmt(wake)}`, labels.sleepConsistency];
                       }}
                     />
-                    <Legend wrapperStyle={{ fontSize: 11 }} />
-                    <Bar dataKey="bedtime" fill={CC.sleepBedtime} name={labels.bedtime} radius={[2, 2, 0, 0]} />
-                    <Bar dataKey="wake" fill={CC.sleepWakeTime} name={labels.wakeTime} radius={[2, 2, 0, 0]} />
-                  </ComposedChart>
+                    <Bar dataKey="range" fill={CC.sleepBedtime} name={labels.sleepConsistency} radius={[2, 2, 2, 2]} />
+                  </BarChart>
                 </ResponsiveContainer>
                 </figure>
               </div>
@@ -337,26 +340,33 @@ export function GarminHealthCharts({
             </CardContent>
           </Card>
         )}
-        {/* Fitness Age Trend */}
-        {garminHealth.daily.some(d => d.fitnessAge != null) && (
+
+        {/* Training Readiness */}
+        {garminHealth.daily.some(d => d.trainingReadiness != null) && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">{labels.fitnessAge}</CardTitle>
+              <CardTitle className="text-base">{labels.trainingReadiness}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-44 sm:h-64">
-                <figure role="img" style={{ height: "100%" }} aria-label="Графік Fitness Age">
+                <figure role="img" style={{ height: "100%" }} aria-label="Training Readiness">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={garminHealth.daily.filter(d => d.fitnessAge != null).map((d) => ({
+                  <BarChart data={garminHealth.daily.filter(d => d.trainingReadiness != null).map((d) => ({
                     date: d.date.slice(5),
-                    fitnessAge: d.fitnessAge,
+                    readiness: d.trainingReadiness,
                   }))}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis dataKey="date" className="text-xs" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
-                    <YAxis domain={["dataMin - 5", "dataMax + 5"]} className="text-xs" />
+                    <YAxis domain={[0, 100]} className="text-xs" />
                     <Tooltip contentStyle={tooltipStyle} />
-                    <Line type="monotone" dataKey="fitnessAge" stroke={CC.accent} strokeWidth={2} dot={{ r: 3 }} name={labels.fitnessAge} connectNulls />
-                  </LineChart>
+                    <ReferenceLine y={70} stroke="#22c55e" strokeDasharray="3 3" strokeOpacity={0.5} />
+                    <ReferenceLine y={50} stroke="#f59e0b" strokeDasharray="3 3" strokeOpacity={0.5} />
+                    <Bar dataKey="readiness" name={labels.trainingReadiness} radius={[2, 2, 0, 0]}>
+                      {garminHealth.daily.filter(d => d.trainingReadiness != null).map((d, i) => (
+                        <Cell key={i} fill={d.trainingReadiness != null && d.trainingReadiness >= 70 ? "#22c55e" : d.trainingReadiness != null && d.trainingReadiness >= 50 ? "#f59e0b" : "#ef4444"} />
+                      ))}
+                    </Bar>
+                  </BarChart>
                 </ResponsiveContainer>
                 </figure>
               </div>

@@ -26,13 +26,16 @@ const chatRequestSchema = z.object({
 
 async function saveChat(role: string, content: string, email: string) {
   try {
-    // Use raw SQL because chat_history has user_id NOT NULL which Prisma schema doesn't model
     const user = await prisma.user.findUnique({ where: { email } });
     if (user) {
-      await prisma.$executeRaw`
-        INSERT INTO chat_history (user_id, role, content, user_email)
-        VALUES (${user.id}, ${role}, ${content}, ${email})
-      `;
+      await prisma.chatHistory.create({
+        data: {
+          userId: user.id,
+          role,
+          content,
+          userEmail: email,
+        },
+      });
     }
   } catch (e) {
     console.error("[Chat] saveChat error:", e);

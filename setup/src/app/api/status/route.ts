@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { execSync } from "child_process";
+import { verifySetupToken } from "@/lib/setup-auth";
 
 interface ContainerStatus {
   name: string;
@@ -7,7 +8,9 @@ interface ContainerStatus {
   health: string;
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  const authError = verifySetupToken(req);
+  if (authError) return authError;
   try {
     const output = execSync(
       'docker ps --format "{{.Names}}|{{.Status}}" --filter "name=pd-app" --filter "name=pg" --filter "name=redis"',

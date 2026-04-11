@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
+import { timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/db";
 import { checkRateLimit, RateLimitError, rateLimitResponse } from "@/lib/rate-limit";
 
@@ -18,8 +19,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "GARMIN_MFA_API_TOKEN not configured" }, { status: 500 });
     }
 
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader || authHeader !== `Bearer ${apiToken}`) {
+    const authHeader = request.headers.get("authorization") || "";
+    const expected = `Bearer ${apiToken}`;
+    const authBuf = Buffer.from(authHeader, "utf-8");
+    const expectedBuf = Buffer.from(expected, "utf-8");
+    if (
+      authBuf.length !== expectedBuf.length ||
+      !timingSafeEqual(authBuf, expectedBuf)
+    ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -49,41 +56,51 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid or missing MFA code" }, { status: 400 });
     }
 
-    // Find user waiting for MFA (garmin_mfa_status = "required")
-    // If body.garminEmail provided, match by garmin_email secret for exact user
-    // Otherwise find any user with pending MFA status
-    let targetUserId: number | null = null;
+    // Require an explicit userId — no "any pending user" fallback.
+    // Previously, a caller with the API token could submit an MFA code
+    // without knowing which user it belonged to, and the handler would
+    // pick "any user with status=required". That made it possible to
+    // hijack another user's Garmin login with a stolen/brute-forced
+    // code, or to deliver the wrong code to the wrong user.
+    //
+    // Resolution order for the target user:
+    //   1. body.userId (from Email Worker that is aware of the user)
+    //   2. GARMIN_MFA_DEFAULT_USER_ID env var (single-user deployments)
+    // If neither resolves to a user with garmin_mfa_status = "required",
+    // the request is rejected.
+    let requestedUserId: number | null = null;
+    if (typeof body.userId === "number" && Number.isInteger(body.userId)) {
+      requestedUserId = body.userId;
+    } else if (process.env.GARMIN_MFA_DEFAULT_USER_ID) {
+      const parsed = parseInt(process.env.GARMIN_MFA_DEFAULT_USER_ID, 10);
+      if (Number.isInteger(parsed)) requestedUserId = parsed;
+    }
 
-    if (body.userId && typeof body.userId === "number") {
-      // Explicit userId from Email Worker — verify user exists AND has pending MFA
-      const verified = await prisma.userPreference.findFirst({
-        where: {
-          userId: body.userId,
-          key: "garmin_mfa_status",
-          value: "required",
+    if (requestedUserId === null) {
+      return NextResponse.json(
+        {
+          error:
+            "Missing userId. Provide body.userId or set GARMIN_MFA_DEFAULT_USER_ID env var.",
         },
-        select: { userId: true },
-      });
-      if (!verified) {
-        return NextResponse.json(
-          { error: "Invalid userId or user is not waiting for MFA" },
-          { status: 403 }
-        );
-      }
-      targetUserId = verified.userId;
-    } else {
-      // Find user with garmin_mfa_status = "required" (waiting for MFA code)
-      const pendingUser = await prisma.userPreference.findFirst({
-        where: { key: "garmin_mfa_status", value: "required" },
-        select: { userId: true },
-        orderBy: { userId: "asc" },
-      });
-      if (pendingUser) targetUserId = pendingUser.userId;
+        { status: 400 }
+      );
     }
 
-    if (!targetUserId) {
-      return NextResponse.json({ error: "No user waiting for MFA" }, { status: 404 });
+    const verified = await prisma.userPreference.findFirst({
+      where: {
+        userId: requestedUserId,
+        key: "garmin_mfa_status",
+        value: "required",
+      },
+      select: { userId: true },
+    });
+    if (!verified) {
+      return NextResponse.json(
+        { error: "User is not waiting for MFA" },
+        { status: 403 }
+      );
     }
+    const targetUserId: number = verified.userId;
 
     // Store MFA code for the matched user — scheduler picks it up
     await prisma.userPreference.upsert({

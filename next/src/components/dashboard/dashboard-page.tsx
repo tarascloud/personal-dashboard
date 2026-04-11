@@ -14,6 +14,8 @@ import {
   TrendingUpIcon,
 } from "lucide-react";
 import { PeriodSelector, type PeriodPreset, getDateRange } from "@/components/ui/period-selector";
+import { Card, CardContent } from "@/components/ui/card";
+import { TrainingReadinessChart } from "./training-readiness-chart";
 import {
   getDashboardKPIs,
   getMonthlyTrends,
@@ -63,61 +65,7 @@ import {
   IncomeExpensesSkeleton,
 } from "./dashboard-skeletons";
 import { useDeferredDashboardData } from "./dashboard-context";
-
-/* ------------------------------------------------------------------ */
-/* Types                                                               */
-/* ------------------------------------------------------------------ */
-
-interface TradingPnL {
-  totalFiat: number;
-  totalPct: number;
-  currency: string;
-  openTrades: number;
-}
-
-interface DashboardPageProps {
-  initialKpis: DashboardKPIs;
-  initialPeriod: { from: string; to: string };
-  /* Secondary data — optional, streamed via Suspense */
-  initialTrends?: MonthlyTrend[];
-  initialActivity?: RecentActivityItem[];
-  initialCorrelations?: CorrelationPoint[];
-  initialDeepDive?: MonthlyDeepDive;
-  initialGarminHealth?: GarminHealthTrends;
-  initialMoodTimeline?: MoodTimelinePoint[];
-  initialHRVTrend?: HRVTrendPoint[];
-  initialExerciseList?: ExerciseOption[];
-  initialWeeklyMuscleVolume?: WeeklyMuscleVolumeRow[];
-  initialExtendedCorrelations?: ExtendedCorrelations;
-  tradingPnL?: TradingPnL | null;
-  activeTab?: "life" | "finance" | "training";
-  // passthrough for other props
-  [key: string]: unknown;
-}
-
-/* ------------------------------------------------------------------ */
-/* Helpers                                                             */
-/* ------------------------------------------------------------------ */
-
-const MONTH_LABELS = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-];
-
-function pctChange(
-  current: number | null | undefined,
-  previous: number | null | undefined,
-): { pct: number; direction: "up" | "down" | "flat" } | null {
-  if (current == null || previous == null || previous === 0) return null;
-  const pct = Math.round(((current - previous) / Math.abs(previous)) * 100);
-  if (pct === 0) return { pct: 0, direction: "flat" };
-  return { pct: Math.abs(pct), direction: pct > 0 ? "up" : "down" };
-}
-
-
-/* ------------------------------------------------------------------ */
-/* Component                                                           */
-/* ------------------------------------------------------------------ */
+import { MONTH_LABELS, pctChange, type TradingPnL, type DashboardPageProps } from "./dashboard-types";
 
 export function DashboardPage({
   initialKpis,
@@ -414,6 +362,7 @@ export function DashboardPage({
           max: t("max"),
           avg: t("avg"),
           fitnessAge: t("fitness_age"),
+          trainingReadiness: t("training_readiness"),
           weeklyAvg: t("weekly_avg"),
           bmi: t("bmi"),
           activeMin: t("active_min"),
@@ -507,6 +456,9 @@ export function DashboardPage({
       />
       )}
       </ErrorBoundary>
+
+      {/* Training Readiness from Garmin */}
+      {garminHealth && <TrainingReadinessChart garminHealth={garminHealth} tooltipStyle={tooltipStyle} />}
 
       {/* AI Insights for Gym & Exercises */}
       <InsightsPanel page="gym" />

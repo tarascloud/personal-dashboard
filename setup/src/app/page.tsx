@@ -53,6 +53,19 @@ interface Config {
   seedDemo: boolean;
 }
 
+
+function getSetupToken(): string | null {
+  if (typeof window === "undefined") return null;
+  let tok = window.localStorage.getItem("pd-setup-token");
+  if (!tok) {
+    tok = window.prompt(
+      "Enter SETUP_TOKEN (see container logs: `docker logs pd-setup` or SETUP_TOKEN env var):",
+    );
+    if (tok) window.localStorage.setItem("pd-setup-token", tok.trim());
+  }
+  return tok ? tok.trim() : null;
+}
+
 /* ------------------------------------------------------------------ */
 /*  Data                                                               */
 /* ------------------------------------------------------------------ */
@@ -301,11 +314,26 @@ export default function SetupWizard() {
     setDeploying(true);
     setDeployLog([]);
     try {
+      const token = getSetupToken();
+      if (!token) {
+        setDeployLog((prev) => [...prev, "ERROR: SETUP_TOKEN required"]);
+        setDeploying(false);
+        return;
+      }
       const res = await fetch("/api/deploy", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-setup-token": token,
+        },
         body: JSON.stringify(config),
       });
+      if (res.status === 401) {
+        window.localStorage.removeItem("pd-setup-token");
+        setDeployLog((prev) => [...prev, "ERROR: Invalid SETUP_TOKEN — reload page and try again"]);
+        setDeploying(false);
+        return;
+      }
       if (!res.body) throw new Error("No response body");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();

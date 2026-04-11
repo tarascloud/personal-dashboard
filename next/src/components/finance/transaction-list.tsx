@@ -7,9 +7,6 @@ import {
   PlusIcon,
   Trash2Icon,
   PencilIcon,
-  SearchIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
   ChevronDownIcon,
   DownloadIcon,
   WalletIcon,
@@ -17,25 +14,8 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Sheet,
   SheetContent,
@@ -50,6 +30,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { formatAmount } from "./finance-types";
 import type { Transaction, AccountData } from "./finance-types";
+import { TransactionInlineFilters } from "./transaction-inline-filters";
+import { TransactionPagination } from "./transaction-pagination";
 
 export interface TransactionListProps {
   transactions: Transaction[];
@@ -188,91 +170,20 @@ export function TransactionList({
       </CardHeader>
       {isOpen && (<>
       {/* ===== Filters ===== */}
-      <Card size="sm" className="mx-4 mb-3 border shadow-none">
-        <CardContent>
-          <div className="flex flex-wrap items-end gap-2">
-            {/* Type */}
-            <div className="grid gap-1">
-              <Label className="text-xs">{tc("type")}</Label>
-              <Select
-                value={filterType}
-                onValueChange={(v) => onFilterTypeChange(v as string)}
-              >
-                <SelectTrigger className="h-9 w-[110px]">
-                  <SelectValue placeholder={tc("all")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">{tc("all")}</SelectItem>
-                  <SelectItem value="INCOME">{t("income")}</SelectItem>
-                  <SelectItem value="EXPENSE">{t("expense")}</SelectItem>
-                  <SelectItem value="TRANSFER">{t("transfer")}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Account */}
-            <div className="grid gap-1">
-              <Label className="text-xs">{tc("account")}</Label>
-              <Select
-                value={filterAccount}
-                onValueChange={(v) => onFilterAccountChange(v as string)}
-              >
-                <SelectTrigger className="h-9 w-[130px]">
-                  <SelectValue placeholder={t("all_accounts")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">{t("all_accounts")}</SelectItem>
-                  {accounts.map((a) => (
-                    <SelectItem key={a.id} value={a.name}>
-                      {a.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Category */}
-            <div className="grid gap-1">
-              <Label className="text-xs">{t("category")}</Label>
-              <Select
-                value={filterCategory}
-                onValueChange={(v) => onFilterCategoryChange(v as string)}
-              >
-                <SelectTrigger className="h-9 w-[130px]">
-                  <SelectValue placeholder={tc("all")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">{tc("all")}</SelectItem>
-                  {periodCategories.map((c) => (
-                    <SelectItem key={c} value={c}>
-                      {c}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Search */}
-            <div className="grid gap-1">
-              <Label className="text-xs">{tc("search")}</Label>
-              <div className="relative">
-                <SearchIcon className="absolute left-2 top-1/2 size-3 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => onSearchQueryChange(e.target.value)}
-                  placeholder={tc("search")}
-                  className="h-9 w-full sm:w-[140px] pl-7 text-xs"
-                  onKeyDown={(e) => e.key === "Enter" && onApplyFilters()}
-                />
-              </div>
-            </div>
-
-            <Button size="sm" onClick={onApplyFilters} disabled={isPending}>
-              {tc("filter")}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <TransactionInlineFilters
+        filterType={filterType}
+        filterAccount={filterAccount}
+        filterCategory={filterCategory}
+        searchQuery={searchQuery}
+        periodCategories={periodCategories}
+        accounts={accounts}
+        isPending={isPending}
+        onFilterTypeChange={onFilterTypeChange}
+        onFilterAccountChange={onFilterAccountChange}
+        onFilterCategoryChange={onFilterCategoryChange}
+        onSearchQueryChange={onSearchQueryChange}
+        onApplyFilters={onApplyFilters}
+      />
 
       {/* ===== Transactions Table ===== */}
       <div data-testid="transaction-list" className="px-4">
@@ -538,31 +449,7 @@ export function TransactionList({
               </div>
 
               {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="mt-3 flex items-center justify-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon-sm"
-                    disabled={page === 0}
-                    onClick={() => onGoToPage(page - 1)}
-                  >
-                    <ChevronLeftIcon className="size-4" />
-                    <span className="sr-only">{tc("previous")}</span>
-                  </Button>
-                  <span className="text-xs text-muted-foreground">
-                    {tc("page_of", { page: page + 1, total: totalPages })}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="icon-sm"
-                    disabled={page >= totalPages - 1}
-                    onClick={() => onGoToPage(page + 1)}
-                  >
-                    <ChevronRightIcon className="size-4" />
-                    <span className="sr-only">{tc("next")}</span>
-                  </Button>
-                </div>
-              )}
+              <TransactionPagination page={page} totalPages={totalPages} onGoToPage={onGoToPage} />
             </>
           )}
         </CardContent>

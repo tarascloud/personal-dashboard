@@ -15,6 +15,7 @@ export interface GarminDayPoint {
   avgStress: number | null;
   maxStress: number | null;
   fitnessAge: number | null;
+  trainingReadiness: number | null;
   caloriesActive: number | null;
   caloriesResting: number | null;
 }
@@ -81,6 +82,7 @@ export async function getGarminHealthTrends(days: number = 30): Promise<GarminHe
             avgStress: true,
             maxStress: true,
             fitnessAge: true,
+            trainingReadinessScore: true,
             caloriesTotal: true,
             caloriesActive: true,
           },
@@ -154,6 +156,7 @@ export async function getGarminHealthTrends(days: number = 30): Promise<GarminHe
           avgStress: g.avgStress,
           maxStress: g.maxStress,
           fitnessAge: g.fitnessAge,
+          trainingReadiness: g.trainingReadinessScore,
           caloriesActive: g.caloriesActive,
           caloriesResting: g.caloriesTotal != null && g.caloriesActive != null ? g.caloriesTotal - g.caloriesActive : null,
         })),
