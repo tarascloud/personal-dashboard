@@ -15,44 +15,45 @@ datasource db {
 // =========================================================================
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  name         String?
-  role         String   @default("owner")
-  createdAt    DateTime? @default(now()) @map("created_at")
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  name      String?
+  role      String    @default("owner")
+  createdAt DateTime? @default(now()) @map("created_at")
 
-  passkeys      Passkey[]
-  preferences   UserPreference[]
-  auditLogs     AuditLog[]
-  chatHistory   ChatHistory[]
-  telegramLinks TelegramLink[]
-  aiInsights    AiInsight[]
-  embeddings    Embedding[]
+  passkeys         Passkey[]
+  preferences      UserPreference[]
+  auditLogs        AuditLog[]
+  chatHistory      ChatHistory[]
+  telegramLinks    TelegramLink[]
+  aiInsights       AiInsight[]
+  embeddings       Embedding[]
   garminHeartRates GarminHeartRate[]
+  screenTimes      ScreenTime[]
 
   @@map("users")
 }
 
 model GuestInvite {
-  email     String  @id
-  invitedBy String  @map("invited_by")
+  email     String    @id
+  invitedBy String    @map("invited_by")
   createdAt DateTime? @default(now()) @map("created_at")
 
   @@map("guest_invites")
 }
 
 model Passkey {
-  id              String   @id @default(cuid())
-  userId          Int      @map("user_id")
-  credentialId    String   @unique @map("credential_id")
-  publicKey       Bytes    @map("public_key")
-  counter         BigInt   @default(0)
-  deviceType      String?  @map("device_type")
-  backedUp        Boolean  @default(false) @map("backed_up")
-  transports      String?  // comma-separated: usb,ble,nfc,internal
-  friendlyName    String?  @map("friendly_name")
-  createdAt       DateTime @default(now()) @map("created_at")
-  lastUsedAt      DateTime? @map("last_used_at")
+  id           String    @id @default(cuid())
+  userId       Int       @map("user_id")
+  credentialId String    @unique @map("credential_id")
+  publicKey    Bytes     @map("public_key")
+  counter      BigInt    @default(0)
+  deviceType   String?   @map("device_type")
+  backedUp     Boolean   @default(false) @map("backed_up")
+  transports   String? // comma-separated: usb,ble,nfc,internal
+  friendlyName String?   @map("friendly_name")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  lastUsedAt   DateTime? @map("last_used_at")
 
   user User @relation(fields: [userId], references: [id])
 
@@ -72,10 +73,10 @@ model UserPreference {
 }
 
 model AuditLog {
-  id        Int     @id @default(autoincrement())
-  userEmail String  @map("user_email")
+  id        Int       @id @default(autoincrement())
+  userEmail String    @map("user_email")
   action    String
-  details   String? @default("")
+  details   String?   @default("")
   createdAt DateTime? @default(now()) @map("created_at")
 
   user User @relation(fields: [userEmail], references: [email])
@@ -105,8 +106,8 @@ model TelegramLink {
 }
 
 model TelegramConnectCode {
-  code      String  @id
-  userEmail String  @map("user_email")
+  code      String    @id
+  userEmail String    @map("user_email")
   createdAt DateTime? @default(now()) @map("created_at")
 
   @@map("telegram_connect_codes")
@@ -117,24 +118,24 @@ model TelegramConnectCode {
 // =========================================================================
 
 model Transaction {
-  id               Int      @id @default(autoincrement())
-  date             DateTime @db.Date
+  id               Int       @id @default(autoincrement())
+  date             DateTime  @db.Date
   year             Int?
   month            Int?
   type             String?
-  subType          String? @map("sub_type")
+  subType          String?   @map("sub_type")
   account          String?
   category         String?
-  amountOriginal   Float?  @map("amount_original")
-  currencyOriginal String? @map("currency_original")
-  amountEur        Float?  @map("amount_eur")
-  nbuRateEurUsed   Float?  @map("nbu_rate_eur_used")
+  amountOriginal   Float?    @map("amount_original")
+  currencyOriginal String?   @map("currency_original")
+  amountEur        Float?    @map("amount_eur")
+  nbuRateEurUsed   Float?    @map("nbu_rate_eur_used")
   description      String?
   owner            String?
-  externalId       String? @map("external_id")
-  source           String? @default("manual")
+  externalId       String?   @map("external_id")
+  source           String?   @default("manual")
   createdAt        DateTime? @default(now()) @map("created_at")
-  userId           Int     @map("user_id")
+  userId           Int       @map("user_id")
 
   @@index([date], map: "idx_transactions_date")
   @@index([type, date], map: "idx_transactions_type_date")
@@ -156,13 +157,13 @@ model NbuRate {
 }
 
 model CustomAccount {
-  id             Int    @id @default(autoincrement())
+  id             Int     @id @default(autoincrement())
   name           String
-  currency       String @default("EUR")
+  currency       String  @default("EUR")
   isActive       Boolean @default(true) @map("is_active")
-  sortOrder      Int    @default(0) @map("sort_order")
-  initialBalance Float  @default(0) @map("initial_balance")
-  userId         Int    @map("user_id")
+  sortOrder      Int     @default(0) @map("sort_order")
+  initialBalance Float   @default(0) @map("initial_balance")
+  userId         Int     @map("user_id")
 
   @@unique([userId, name])
   @@map("custom_accounts")
@@ -185,31 +186,31 @@ model CustomCategory {
 }
 
 model Budget {
-  id        Int     @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   category  String
-  amountEur Float   @map("amount_eur")
+  amountEur Float     @map("amount_eur")
   month     String?
-  active    Boolean? @default(true)
+  active    Boolean?  @default(true)
   createdAt DateTime? @default(now()) @map("created_at")
-  userId    Int     @map("user_id")
+  userId    Int       @map("user_id")
 
   @@unique([userId, category, month])
   @@map("budgets")
 }
 
 model BudgetConfig {
-  id         Int    @id @default(autoincrement())
-  userId     Int    @map("user_id")
-  limitType  String @default("fixed") @map("limit_type")
-  limitValue Float  @default(0) @map("limit_value")
+  id         Int       @id @default(autoincrement())
+  userId     Int       @map("user_id")
+  limitType  String    @default("fixed") @map("limit_type")
+  limitValue Float     @default(0) @map("limit_value")
   createdAt  DateTime? @default(now()) @map("created_at")
 
   @@map("budget_config")
 }
 
 model MandatoryCategory {
-  id        Int     @id @default(autoincrement())
-  userId    Int     @map("user_id")
+  id        Int       @id @default(autoincrement())
+  userId    Int       @map("user_id")
   category  String
   createdAt DateTime? @default(now()) @map("created_at")
 
@@ -218,29 +219,29 @@ model MandatoryCategory {
 }
 
 model RecurringTransaction {
-  id         Int     @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   name       String
-  amountEur  Float   @map("amount_eur")
+  amountEur  Float     @map("amount_eur")
   category   String
-  txType     String? @default("EXPENSE") @map("tx_type")
-  account    String? @default("Taras Mono")
-  dayOfMonth Int?    @default(1) @map("day_of_month")
-  active     Boolean? @default(true)
+  txType     String?   @default("EXPENSE") @map("tx_type")
+  account    String?   @default("Taras Mono")
+  dayOfMonth Int?      @default(1) @map("day_of_month")
+  active     Boolean?  @default(true)
   createdAt  DateTime? @default(now()) @map("created_at")
-  userId     Int     @map("user_id")
+  userId     Int       @map("user_id")
 
   @@map("recurring_transactions")
 }
 
 model SavingsGoal {
-  id         Int     @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   name       String
-  targetEur  Float   @map("target_eur")
-  currentEur Float?  @default(0) @map("current_eur")
+  targetEur  Float     @map("target_eur")
+  currentEur Float?    @default(0) @map("current_eur")
   deadline   String?
-  active     Boolean? @default(true)
+  active     Boolean?  @default(true)
   createdAt  DateTime? @default(now()) @map("created_at")
-  userId     Int     @map("user_id")
+  userId     Int       @map("user_id")
 
   @@map("savings_goals")
 }
@@ -249,14 +250,14 @@ model Subscription {
   id           Int       @id @default(autoincrement())
   userId       Int       @map("user_id")
   name         String
-  provider     String    // YouTube, Google, Microsoft, OpenAI, etc.
+  provider     String // YouTube, Google, Microsoft, OpenAI, etc.
   amount       Float
   currency     String    @default("EUR")
   billingCycle String    @default("monthly") @map("billing_cycle") // monthly, yearly, weekly
   nextBilling  DateTime? @map("next_billing") @db.Date
-  category     String?   // entertainment, productivity, ai, storage, etc.
+  category     String? // entertainment, productivity, ai, storage, etc.
   isActive     Boolean   @default(true) @map("is_active")
-  url          String?   // link to manage subscription
+  url          String? // link to manage subscription
   notes        String?
   createdAt    DateTime? @default(now()) @map("created_at")
   updatedAt    DateTime? @updatedAt @map("updated_at")
@@ -270,24 +271,24 @@ model Subscription {
 // =========================================================================
 
 model DailyLog {
-  id           Int      @id @default(autoincrement())
-  date         DateTime @db.Date
+  id           Int       @id @default(autoincrement())
+  date         DateTime  @db.Date
   level        Float?
-  moodDelta    Int?    @map("mood_delta")
-  sexCount     Int?    @map("sex_count")
-  sexNote      String? @map("sex_note")
-  bjCount      Int?    @map("bj_count")
-  bjNote       String? @map("bj_note")
-  kidsHours    Float?  @map("kids_hours")
-  kidsNote     String? @map("kids_note")
-  generalNote  String? @map("general_note")
-  energyLevel  Int?    @map("energy_level")
-  stressLevel  Int?    @map("stress_level")
-  focusQuality Int?    @map("focus_quality")
+  moodDelta    Int?      @map("mood_delta")
+  sexCount     Int?      @map("sex_count")
+  sexNote      String?   @map("sex_note")
+  bjCount      Int?      @map("bj_count")
+  bjNote       String?   @map("bj_note")
+  kidsHours    Float?    @map("kids_hours")
+  kidsNote     String?   @map("kids_note")
+  generalNote  String?   @map("general_note")
+  energyLevel  Int?      @map("energy_level")
+  stressLevel  Int?      @map("stress_level")
+  focusQuality Int?      @map("focus_quality")
   alcohol      Int?
   caffeine     Int?
   createdAt    DateTime? @default(now()) @map("created_at")
-  userId       Int     @map("user_id")
+  userId       Int       @map("user_id")
 
   @@unique([userId, date])
   @@index([date], map: "idx_daily_log_date")
@@ -300,20 +301,20 @@ model DailyLog {
 // =========================================================================
 
 model FoodLog {
-  id            Int      @id @default(autoincrement())
-  userId        Int      @map("user_id")
-  date          DateTime @db.Date
+  id            Int       @id @default(autoincrement())
+  userId        Int       @map("user_id")
+  date          DateTime  @db.Date
   time          String?
   description   String?
-  weightG       Float?  @map("weight_g")
+  weightG       Float?    @map("weight_g")
   calories      Float?
-  proteinG      Float?  @map("protein_g")
-  fatG          Float?  @map("fat_g")
-  carbsG        Float?  @map("carbs_g")
-  source        String? @default("text")
-  photoFileId   String? @map("photo_file_id")
-  aiRawResponse String? @map("ai_raw_response")
-  confirmed     Boolean? @default(true)
+  proteinG      Float?    @map("protein_g")
+  fatG          Float?    @map("fat_g")
+  carbsG        Float?    @map("carbs_g")
+  source        String?   @default("text")
+  photoFileId   String?   @map("photo_file_id")
+  aiRawResponse String?   @map("ai_raw_response")
+  confirmed     Boolean?  @default(true)
   createdAt     DateTime? @default(now()) @map("created_at")
 
   @@index([date], map: "idx_food_log_date")
@@ -326,14 +327,14 @@ model FoodLog {
 // =========================================================================
 
 model ShoppingItem {
-  id       Int     @id @default(autoincrement())
-  itemName String  @map("item_name")
-  quantity String? @default("1")
-  addedBy  String? @default("app") @map("added_by")
+  id       Int       @id @default(autoincrement())
+  itemName String    @map("item_name")
+  quantity String?   @default("1")
+  addedBy  String?   @default("app") @map("added_by")
   addedAt  DateTime? @default(now()) @map("added_at")
   boughtAt DateTime? @map("bought_at")
-  boughtBy String? @map("bought_by")
-  userId   Int     @map("user_id")
+  boughtBy String?   @map("bought_by")
+  userId   Int       @map("user_id")
 
   @@index([boughtAt], map: "idx_shopping_items_bought")
   @@map("shopping_items")
@@ -347,7 +348,7 @@ model BigPurchase {
   estimatedPrice   Float?    @map("estimated_price")
   currency         String    @default("EUR")
   url              String?
-  category         String?   // electronics, furniture, appliances, transport, etc.
+  category         String? // electronics, furniture, appliances, transport, etc.
   status           String    @default("investigating") // investigating, cooling_off, ready, purchased, cancelled
   investigateNotes String?   @map("investigate_notes") @db.Text
   coolingStartedAt DateTime? @map("cooling_started_at")
@@ -362,12 +363,12 @@ model BigPurchase {
 }
 
 model ShoppingHistory {
-  id         Int     @id @default(autoincrement())
-  itemName   String  @map("item_name")
-  quantity   String? @default("1")
+  id         Int      @id @default(autoincrement())
+  itemName   String   @map("item_name")
+  quantity   String?  @default("1")
   boughtDate DateTime @map("bought_date") @db.Date
-  boughtBy   String? @default("app") @map("bought_by")
-  userId     Int     @map("user_id")
+  boughtBy   String?  @default("app") @map("bought_by")
+  userId     Int      @map("user_id")
 
   @@index([userId], map: "idx_shopping_history_user")
   @@map("shopping_history")
@@ -378,34 +379,34 @@ model ShoppingHistory {
 // =========================================================================
 
 model GarminDaily {
-  date             DateTime @db.Date
-  steps            Int?
-  caloriesTotal    Int?    @map("calories_total")
-  caloriesActive   Int?    @map("calories_active")
-  distanceM        Float?  @map("distance_m")
-  floorsUp         Int?    @map("floors_up")
-  floorsDown       Int?    @map("floors_down")
-  intensityMinutes Int?    @map("intensity_minutes")
-  restingHr        Int?    @map("resting_hr")
-  avgHr            Int?    @map("avg_hr")
-  maxHr            Int?    @map("max_hr")
-  avgStress        Int?    @map("avg_stress")
-  maxStress        Int?    @map("max_stress")
-  bodyBatteryHigh  Int?    @map("body_battery_high")
-  bodyBatteryLow   Int?    @map("body_battery_low")
-  sleepSeconds     Int?    @map("sleep_seconds")
-  sleepScore       Int?    @map("sleep_score")
-  spo2Avg                Float?  @map("spo2_avg")
-  respirationAvg         Float?  @map("respiration_avg")
-  hrvWeeklyAvg           Int?    @map("hrv_weekly_avg")
-  hrvLastNight           Int?    @map("hrv_last_night")
-  hrvStatus              String? @map("hrv_status")
-  trainingReadinessScore Int?    @map("training_readiness_score")
-  trainingStatus         String? @map("training_status")
-  trainingLoad           Float?  @map("training_load")
-  fitnessAge             Int?    @map("fitness_age")
+  date                   DateTime  @db.Date
+  steps                  Int?
+  caloriesTotal          Int?      @map("calories_total")
+  caloriesActive         Int?      @map("calories_active")
+  distanceM              Float?    @map("distance_m")
+  floorsUp               Int?      @map("floors_up")
+  floorsDown             Int?      @map("floors_down")
+  intensityMinutes       Int?      @map("intensity_minutes")
+  restingHr              Int?      @map("resting_hr")
+  avgHr                  Int?      @map("avg_hr")
+  maxHr                  Int?      @map("max_hr")
+  avgStress              Int?      @map("avg_stress")
+  maxStress              Int?      @map("max_stress")
+  bodyBatteryHigh        Int?      @map("body_battery_high")
+  bodyBatteryLow         Int?      @map("body_battery_low")
+  sleepSeconds           Int?      @map("sleep_seconds")
+  sleepScore             Int?      @map("sleep_score")
+  spo2Avg                Float?    @map("spo2_avg")
+  respirationAvg         Float?    @map("respiration_avg")
+  hrvWeeklyAvg           Int?      @map("hrv_weekly_avg")
+  hrvLastNight           Int?      @map("hrv_last_night")
+  hrvStatus              String?   @map("hrv_status")
+  trainingReadinessScore Int?      @map("training_readiness_score")
+  trainingStatus         String?   @map("training_status")
+  trainingLoad           Float?    @map("training_load")
+  fitnessAge             Int?      @map("fitness_age")
   syncedAt               DateTime? @default(now()) @map("synced_at")
-  userId                 Int     @map("user_id")
+  userId                 Int       @map("user_id")
 
   @@id([userId, date])
   @@index([date], map: "idx_garmin_daily_date")
@@ -414,22 +415,22 @@ model GarminDaily {
 }
 
 model GarminActivity {
-  activityId              Int      @id @map("activity_id")
-  date                    DateTime @db.Date
-  activityType            String? @map("activity_type")
-  activityName            String? @map("activity_name")
-  durationSeconds         Float?  @map("duration_seconds")
-  distanceM               Float?  @map("distance_m")
+  activityId              Int       @id @map("activity_id")
+  date                    DateTime  @db.Date
+  activityType            String?   @map("activity_type")
+  activityName            String?   @map("activity_name")
+  durationSeconds         Float?    @map("duration_seconds")
+  distanceM               Float?    @map("distance_m")
   calories                Int?
-  avgHr                   Int?    @map("avg_hr")
-  maxHr                   Int?    @map("max_hr")
-  avgSpeed                Float?  @map("avg_speed")
-  elevationGain           Float?  @map("elevation_gain")
-  trainingEffectAerobic   Float?  @map("training_effect_aerobic")
-  trainingEffectAnaerobic Float?  @map("training_effect_anaerobic")
-  startTimeLocal          String? @map("start_time_local")
+  avgHr                   Int?      @map("avg_hr")
+  maxHr                   Int?      @map("max_hr")
+  avgSpeed                Float?    @map("avg_speed")
+  elevationGain           Float?    @map("elevation_gain")
+  trainingEffectAerobic   Float?    @map("training_effect_aerobic")
+  trainingEffectAnaerobic Float?    @map("training_effect_anaerobic")
+  startTimeLocal          String?   @map("start_time_local")
   syncedAt                DateTime? @default(now()) @map("synced_at")
-  userId                  Int     @map("user_id")
+  userId                  Int       @map("user_id")
 
   @@index([date], map: "idx_garmin_activities_date")
   @@index([userId, date], map: "idx_garmin_activities_user_date")
@@ -437,17 +438,17 @@ model GarminActivity {
 }
 
 model GarminSleep {
-  date            DateTime @db.Date
-  sleepStart      String? @map("sleep_start")
-  sleepEnd        String? @map("sleep_end")
-  durationSeconds Int?    @map("duration_seconds")
-  deepSeconds     Int?    @map("deep_seconds")
-  lightSeconds    Int?    @map("light_seconds")
-  remSeconds      Int?    @map("rem_seconds")
-  awakeSeconds    Int?    @map("awake_seconds")
-  sleepScore      Int?    @map("sleep_score")
+  date            DateTime  @db.Date
+  sleepStart      String?   @map("sleep_start")
+  sleepEnd        String?   @map("sleep_end")
+  durationSeconds Int?      @map("duration_seconds")
+  deepSeconds     Int?      @map("deep_seconds")
+  lightSeconds    Int?      @map("light_seconds")
+  remSeconds      Int?      @map("rem_seconds")
+  awakeSeconds    Int?      @map("awake_seconds")
+  sleepScore      Int?      @map("sleep_score")
   syncedAt        DateTime? @default(now()) @map("synced_at")
-  userId          Int     @map("user_id")
+  userId          Int       @map("user_id")
 
   @@id([userId, date])
   @@index([userId, date], map: "idx_garmin_sleep_user_date")
@@ -471,26 +472,26 @@ model GarminStaging {
   id        Int       @id @default(autoincrement())
   endpoint  String
   date      DateTime? @db.Date
-  rawJson   String  @map("raw_json")
+  rawJson   String    @map("raw_json")
   fetchedAt DateTime? @default(now()) @map("fetched_at")
-  userId    Int     @map("user_id")
+  userId    Int       @map("user_id")
 
   @@map("garmin_staging")
 }
 
 model GarminBodyComposition {
-  date           DateTime @db.Date
+  date           DateTime  @db.Date
   weight         Float?
   bmi            Float?
-  bodyFatPct     Float?  @map("body_fat_pct")
-  muscleMass     Float?  @map("muscle_mass")
-  boneMass       Float?  @map("bone_mass")
-  bodyWaterPct   Float?  @map("body_water_pct")
-  physiqueRating Int?    @map("physique_rating")
-  metabolicAge   Int?    @map("metabolic_age")
-  visceralFat    Int?    @map("visceral_fat")
+  bodyFatPct     Float?    @map("body_fat_pct")
+  muscleMass     Float?    @map("muscle_mass")
+  boneMass       Float?    @map("bone_mass")
+  bodyWaterPct   Float?    @map("body_water_pct")
+  physiqueRating Int?      @map("physique_rating")
+  metabolicAge   Int?      @map("metabolic_age")
+  visceralFat    Int?      @map("visceral_fat")
   syncedAt       DateTime? @default(now()) @map("synced_at")
-  userId         Int     @map("user_id")
+  userId         Int       @map("user_id")
 
   @@id([userId, date])
   @@index([userId, date], map: "idx_garmin_body_comp_user_date")
@@ -502,15 +503,15 @@ model GarminBodyComposition {
 // =========================================================================
 
 model WithingsMeasurement {
-  date        DateTime @db.Date
+  date        DateTime  @db.Date
   weight      Float?
-  fatRatio    Float?  @map("fat_ratio")
-  fatMass     Float?  @map("fat_mass")
-  fatFreeMass Float?  @map("fat_free_mass")
-  heartRate   Int?    @map("heart_rate")
+  fatRatio    Float?    @map("fat_ratio")
+  fatMass     Float?    @map("fat_mass")
+  fatFreeMass Float?    @map("fat_free_mass")
+  heartRate   Int?      @map("heart_rate")
   bmi         Float?
   syncedAt    DateTime? @default(now()) @map("synced_at")
-  userId      Int     @map("user_id")
+  userId      Int       @map("user_id")
 
   @@id([userId, date])
   @@index([date], map: "idx_withings_date")
@@ -518,17 +519,41 @@ model WithingsMeasurement {
 }
 
 // =========================================================================
+// Screen Time
+// =========================================================================
+
+model ScreenTime {
+  id            String   @id @default(cuid())
+  userId        Int      @map("user_id")
+  date          DateTime @db.Date
+  totalMinutes  Int      @map("total_minutes")
+  categories    Json? // {social, productivity, entertainment, reading, other} in minutes
+  topApps       Json?    @map("top_apps") // [{name, bundleId?, minutes, category?}]
+  pickups       Int?
+  notifications Int?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+  @@map("screen_time")
+}
+
+// =========================================================================
 // AI
 // =========================================================================
 
 model Embedding {
-  id          Int      @id @default(autoincrement())
-  userId      Int      @map("user_id")
-  sourceTable String   @map("source_table")
-  sourceId    Int      @map("source_id")
+  id          Int                        @id @default(autoincrement())
+  userId      Int                        @map("user_id")
+  sourceTable String                     @map("source_table")
+  sourceId    Int                        @map("source_id")
   text        String
   embedding   Unsupported("vector(384)")
-  createdAt   DateTime @default(now()) @map("created_at")
+  createdAt   DateTime                   @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id])
 
@@ -537,12 +562,12 @@ model Embedding {
 }
 
 model AiNote {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   section     String
   note        String
-  prompt      String? @default("")
+  prompt      String?  @default("")
   generatedAt DateTime @default(now()) @map("generated_at")
-  userId      Int     @map("user_id")
+  userId      Int      @map("user_id")
 
   @@unique([userId, section])
   @@map("ai_notes")
@@ -589,7 +614,7 @@ model InsightFeedback {
   page      String
   period    String
   variant   String   @default("default") // "default" | "custom" — which A/B variant was shown
-  reaction  String   // "like" | "dislike"
+  reaction  String // "like" | "dislike"
   comment   String?
   processed Boolean  @default(false)
   createdAt DateTime @default(now()) @map("created_at")
@@ -603,11 +628,11 @@ model InsightFeedback {
 }
 
 model ChatHistory {
-  id        Int     @id @default(autoincrement())
-  userId    Int     @map("user_id")
+  id        Int       @id @default(autoincrement())
+  userId    Int       @map("user_id")
   role      String
   content   String
-  userEmail String? @map("user_email")
+  userEmail String?   @map("user_email")
   createdAt DateTime? @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id])
@@ -621,20 +646,20 @@ model ChatHistory {
 // =========================================================================
 
 model GymExercise {
-  id               Int      @id @default(autoincrement())
-  userId           Int      @map("user_id")
+  id               Int       @id @default(autoincrement())
+  userId           Int       @map("user_id")
   name             String
-  muscleGroup      String?  @map("muscle_group")
-  secondaryMuscles String?  @map("secondary_muscles")
+  muscleGroup      String?   @map("muscle_group")
+  secondaryMuscles String?   @map("secondary_muscles")
   equipment        String?
-  exerciseType     String?  @map("exercise_type")
-  forceType        String?  @map("force_type")
-  level            String?  @default("intermediate")
+  exerciseType     String?   @map("exercise_type")
+  forceType        String?   @map("force_type")
+  level            String?   @default("intermediate")
   description      String?
-  isCustom         Boolean? @default(false) @map("is_custom")
-  recoveryHours    Int?     @default(72) @map("recovery_hours")
-  nameUa           String?  @map("name_ua")
-  isFavourite      Boolean? @default(false) @map("is_favourite")
+  isCustom         Boolean?  @default(false) @map("is_custom")
+  recoveryHours    Int?      @default(72) @map("recovery_hours")
+  nameUa           String?   @map("name_ua")
+  isFavourite      Boolean?  @default(false) @map("is_favourite")
   createdAt        DateTime? @default(now()) @map("created_at")
 
   workoutExercises GymWorkoutExercise[]
@@ -645,19 +670,19 @@ model GymExercise {
 }
 
 model GymWorkout {
-  id               Int      @id @default(autoincrement())
-  userId           Int      @map("user_id")
-  date             DateTime @db.Date
-  startTime        String? @map("start_time")
-  endTime          String? @map("end_time")
-  programType      String? @map("program_type")
-  workoutName      String? @map("workout_name")
+  id               Int       @id @default(autoincrement())
+  userId           Int       @map("user_id")
+  date             DateTime  @db.Date
+  startTime        String?   @map("start_time")
+  endTime          String?   @map("end_time")
+  programType      String?   @map("program_type")
+  workoutName      String?   @map("workout_name")
   notes            String?
-  durationMinutes  Int?    @map("duration_minutes")
-  garminActivityId Int?    @map("garmin_activity_id")
+  durationMinutes  Int?      @map("duration_minutes")
+  garminActivityId Int?      @map("garmin_activity_id")
   createdAt        DateTime? @default(now()) @map("created_at")
   calories         Int?
-  avgHr            Int?    @map("avg_hr")
+  avgHr            Int?      @map("avg_hr")
 
   exercises GymWorkoutExercise[]
 
@@ -704,12 +729,12 @@ model GymSet {
 }
 
 model GymProgram {
-  id          Int     @id @default(autoincrement())
-  userId      Int     @map("user_id")
+  id          Int       @id @default(autoincrement())
+  userId      Int       @map("user_id")
   name        String
   description String?
-  programType String? @map("program_type")
-  daysPerWeek Int?    @default(3) @map("days_per_week")
+  programType String?   @map("program_type")
+  daysPerWeek Int?      @default(3) @map("days_per_week")
   createdAt   DateTime? @default(now()) @map("created_at")
 
   days GymProgramDay[]
@@ -773,9 +798,9 @@ model SyncFailure {
 model TaxDeclaration {
   id            String    @id @default(cuid())
   userId        Int       @map("user_id")
-  country       String    // "UA" | "ES"
-  type          String    // "F0103309" | "MODELO_100" | "MODELO_720" etc.
-  period        String    // "2025-Q1", "2025-ANNUAL" etc.
+  country       String // "UA" | "ES"
+  type          String // "F0103309" | "MODELO_100" | "MODELO_720" etc.
+  period        String // "2025-Q1", "2025-ANNUAL" etc.
   year          Int
   quarter       Int?
   status        String    @default("draft") // draft | signed | submitted | accepted | rejected
@@ -796,9 +821,9 @@ model TaxDeclaration {
 }
 
 model TaxDeclarationItem {
-  id            String          @id @default(cuid())
-  declarationId String          @map("declaration_id")
-  declaration   TaxDeclaration  @relation(fields: [declarationId], references: [id], onDelete: Cascade)
+  id            String         @id @default(cuid())
+  declarationId String         @map("declaration_id")
+  declaration   TaxDeclaration @relation(fields: [declarationId], references: [id], onDelete: Cascade)
   key           String
   value         String
   label         String?
@@ -809,13 +834,13 @@ model TaxDeclarationItem {
 }
 
 model Receipt {
-  id            String          @id @default(cuid())
-  declarationId String          @unique @map("declaration_id")
-  declaration   TaxDeclaration  @relation(fields: [declarationId], references: [id], onDelete: Cascade)
-  receiptNumber String?         @map("receipt_number")
-  status        String          // accepted | rejected | pending
-  rawContent    String?         @map("raw_content") @db.Text
-  receivedAt    DateTime        @default(now()) @map("received_at")
+  id            String         @id @default(cuid())
+  declarationId String         @unique @map("declaration_id")
+  declaration   TaxDeclaration @relation(fields: [declarationId], references: [id], onDelete: Cascade)
+  receiptNumber String?        @map("receipt_number")
+  status        String // accepted | rejected | pending
+  rawContent    String?        @map("raw_content") @db.Text
+  receivedAt    DateTime       @default(now()) @map("received_at")
 
   @@map("tax_receipts")
 }
@@ -892,22 +917,22 @@ model TaxSimulation {
 }
 
 model BrokerPosition {
-  id            Int       @id @default(autoincrement())
-  userId        Int       @map("user_id")
-  broker        String    // IBKR, TRADING212, ETORRO
+  id            Int      @id @default(autoincrement())
+  userId        Int      @map("user_id")
+  broker        String // IBKR, TRADING212, ETORRO
   symbol        String
-  conid         String?   // IBKR contract ID
+  conid         String? // IBKR contract ID
   name          String?
-  quantity      Decimal   @db.Decimal(18, 8)
-  avgCost       Decimal   @map("avg_cost") @db.Decimal(18, 6)
-  marketPrice   Decimal   @map("market_price") @db.Decimal(18, 6)
-  marketValue   Decimal   @map("market_value") @db.Decimal(18, 2)
-  unrealizedPnl Decimal   @map("unrealized_pnl") @db.Decimal(18, 2)
-  realizedPnl   Decimal   @default(0) @map("realized_pnl") @db.Decimal(18, 2)
-  currency      String    @default("USD")
-  assetClass    String    @default("STK") @map("asset_class") // STK, ETF, OPT, FUT, CASH, BOND
-  lastSyncedAt  DateTime  @default(now()) @map("last_synced_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  quantity      Decimal  @db.Decimal(18, 8)
+  avgCost       Decimal  @map("avg_cost") @db.Decimal(18, 6)
+  marketPrice   Decimal  @map("market_price") @db.Decimal(18, 6)
+  marketValue   Decimal  @map("market_value") @db.Decimal(18, 2)
+  unrealizedPnl Decimal  @map("unrealized_pnl") @db.Decimal(18, 2)
+  realizedPnl   Decimal  @default(0) @map("realized_pnl") @db.Decimal(18, 2)
+  currency      String   @default("USD")
+  assetClass    String   @default("STK") @map("asset_class") // STK, ETF, OPT, FUT, CASH, BOND
+  lastSyncedAt  DateTime @default(now()) @map("last_synced_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
   @@unique([userId, broker, symbol])
   @@index([userId, broker])
@@ -917,7 +942,7 @@ model BrokerPosition {
 model BrokerAccountSummary {
   id                 Int      @id @default(autoincrement())
   userId             Int      @map("user_id")
-  broker             String   // IBKR, TRADING212, ETORRO
+  broker             String // IBKR, TRADING212, ETORRO
   accountId          String   @map("account_id")
   netLiquidation     Decimal  @map("net_liquidation") @db.Decimal(18, 2)
   totalCashValue     Decimal  @default(0) @map("total_cash_value") @db.Decimal(18, 2)
@@ -933,19 +958,19 @@ model BrokerAccountSummary {
 }
 
 model BrokerTransaction {
-  id          Int      @id @default(autoincrement())
-  userId      Int      @map("user_id")
-  broker      String   // IBKR, TRADING212, ETORRO
-  symbol      String
-  conid       String?
-  type        String   // BUY, SELL, DIVIDEND, INTEREST, FEE, WITHDRAWAL, DEPOSIT
-  quantity    Decimal  @default(0) @db.Decimal(18, 8)
-  price       Decimal  @default(0) @db.Decimal(18, 6)
-  amount      Decimal  @db.Decimal(18, 2)
-  commission  Decimal  @default(0) @db.Decimal(18, 4)
-  currency    String   @default("USD")
-  executedAt  DateTime @map("executed_at")
-  importedAt  DateTime @default(now()) @map("imported_at")
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  broker     String // IBKR, TRADING212, ETORRO
+  symbol     String
+  conid      String?
+  type       String // BUY, SELL, DIVIDEND, INTEREST, FEE, WITHDRAWAL, DEPOSIT
+  quantity   Decimal  @default(0) @db.Decimal(18, 8)
+  price      Decimal  @default(0) @db.Decimal(18, 6)
+  amount     Decimal  @db.Decimal(18, 2)
+  commission Decimal  @default(0) @db.Decimal(18, 4)
+  currency   String   @default("USD")
+  executedAt DateTime @map("executed_at")
+  importedAt DateTime @default(now()) @map("imported_at")
 
   @@unique([userId, broker, symbol, type, executedAt])
   @@index([userId, broker])
@@ -954,18 +979,18 @@ model BrokerTransaction {
 }
 
 model TradingStrategy {
-  id             Int       @id @default(autoincrement())
-  userId         Int       @map("user_id")
-  name           String
-  strategyFile   String    @map("strategy_file")
-  exchange       String    @default("kraken")
-  stakeCurrency  String    @default("USDT") @map("stake_currency")
-  stakeAmount    String    @default("unlimited") @map("stake_amount")
-  maxOpenTrades  Int       @default(5) @map("max_open_trades")
-  stoploss       Float     @default(-0.05)
-  dryRun         Boolean   @default(true) @map("dry_run")
-  isActive       Boolean   @default(false) @map("is_active")
-  createdAt      DateTime  @default(now()) @map("created_at")
+  id            Int      @id @default(autoincrement())
+  userId        Int      @map("user_id")
+  name          String
+  strategyFile  String   @map("strategy_file")
+  exchange      String   @default("kraken")
+  stakeCurrency String   @default("USDT") @map("stake_currency")
+  stakeAmount   String   @default("unlimited") @map("stake_amount")
+  maxOpenTrades Int      @default(5) @map("max_open_trades")
+  stoploss      Float    @default(-0.05)
+  dryRun        Boolean  @default(true) @map("dry_run")
+  isActive      Boolean  @default(false) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
 
   @@unique([userId, name])
   @@index([userId, isActive])
@@ -990,4 +1015,3 @@ model PortfolioSnapshot {
   @@index([userId, date])
   @@map("portfolio_snapshots")
 }
-

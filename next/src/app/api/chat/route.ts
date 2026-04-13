@@ -91,8 +91,8 @@ export async function POST(req: Request) {
       baseURL: process.env.OLLAMA_BASE_URL || "http://ollama:11434/v1",
       apiKey: "ollama",
     });
-    // Qwen2.5 14B — better reasoning than fine-tuned 8B, RAG-first approach
-    modelInstance = ollama("qwen2.5:14b-instruct-q4_K_M");
+    // Gemma 4 E4B — multilingual, better reasoning than Qwen2.5 14B
+    modelInstance = ollama("gemma4:e4b");
   } else if (modelName === "groq" && groqKeyValue) {
     const groq = createGroq({ apiKey: groqKeyValue });
     modelInstance = groq("llama-3.3-70b-versatile");

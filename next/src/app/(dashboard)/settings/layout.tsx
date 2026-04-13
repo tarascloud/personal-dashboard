@@ -80,6 +80,7 @@ const groups: Group[] = [
       { key: "integration_ai", href: "/settings/integrations/ai-providers" },
       { key: "integration_garmin", href: "/settings/integrations/garmin" },
       { key: "integration_withings", href: "/settings/integrations/withings" },
+      { key: "integration_screen_time", href: "/settings/integrations/screen-time" },
       { key: "integration_telegram", href: "/settings/integrations/telegram" },
     ],
   },

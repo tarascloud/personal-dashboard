@@ -11,6 +11,7 @@ import type {
   ExerciseOption,
   WeeklyMuscleVolumeRow,
   ExtendedCorrelations,
+  ScreenTimeData,
 } from "@/actions/dashboard";
 
 /* ------------------------------------------------------------------ */
@@ -34,6 +35,7 @@ export interface DeferredDashboardData {
   exerciseList?: ExerciseOption[];
   weeklyMuscleVolume?: WeeklyMuscleVolumeRow[];
   extendedCorrelations?: ExtendedCorrelations;
+  screenTime?: ScreenTimeData;
   tradingPnL?: TradingPnL | null;
 }
 

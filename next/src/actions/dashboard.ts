@@ -43,12 +43,17 @@ export {
   getMoodTimeline,
   getAllDailyLogs,
   getFullMoodTimeline,
+  getScreenTimeData,
   type GarminDayPoint,
   type GarminSleepPoint,
   type GarminWeightPoint,
   type GarminHealthTrends,
   type MoodTimelinePoint,
   type HRVTrendPoint,
+  type ScreenTimeData,
+  type ScreenTimeDayPoint,
+  type ScreenTimeCategoryBreakdown,
+  type ScreenTimeAppEntry,
 } from "./dashboard/health";
 
 export {

@@ -10,6 +10,7 @@ import {
   getExerciseList,
   getWeeklyMuscleVolume,
   getExtendedCorrelations,
+  getScreenTimeData,
   type MonthlyTrend,
   type CorrelationPoint,
   type MonthlyDeepDive as MonthlyDeepDiveType,
@@ -19,6 +20,7 @@ import {
   type ExerciseOption,
   type WeeklyMuscleVolumeRow,
   type ExtendedCorrelations,
+  type ScreenTimeData,
 } from "@/actions/dashboard";
 import { getTradingOverview } from "@/actions/trading";
 import { DashboardPage } from "@/components/dashboard/dashboard-page";
@@ -70,6 +72,7 @@ async function PrimaryDashboardContent({ tab }: { tab: "life" | "finance" | "tra
     getHRVTrend(daysFromStart),
     getLifestyleCorrelations(period),
     getExtendedCorrelations(period),
+    getScreenTimeData(7),
   ]);
   const financePromise = Promise.all([
     getMonthlyTrends(year),
@@ -116,9 +119,9 @@ async function PrimaryDashboardContent({ tab }: { tab: "life" | "finance" | "tra
 async function LifeDataResolver({
   dataPromise,
 }: {
-  dataPromise: Promise<[GarminHealthTrends, MoodTimelinePoint[], HRVTrendPoint[], CorrelationPoint[], ExtendedCorrelations]>;
+  dataPromise: Promise<[GarminHealthTrends, MoodTimelinePoint[], HRVTrendPoint[], CorrelationPoint[], ExtendedCorrelations, ScreenTimeData]>;
 }) {
-  const [garminHealth, moodTimeline, hrvTrend, correlations, extendedCorrelations] = await dataPromise;
+  const [garminHealth, moodTimeline, hrvTrend, correlations, extendedCorrelations, screenTime] = await dataPromise;
 
   return (
     <>
@@ -127,6 +130,7 @@ async function LifeDataResolver({
       <DashboardDataHydrator slot="hrvTrend" data={hrvTrend} />
       <DashboardDataHydrator slot="correlations" data={correlations} />
       <DashboardDataHydrator slot="extendedCorrelations" data={extendedCorrelations} />
+      <DashboardDataHydrator slot="screenTime" data={screenTime} />
     </>
   );
 }

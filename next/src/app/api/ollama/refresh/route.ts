@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 
 /**
  * Ollama model warmup endpoint.
- * Warms up the Qwen2.5 14B model to reduce first-request latency.
+ * Warms up the Gemma 4 E4B model to reduce first-request latency.
  * RAG context is injected per-request in the chat route (via chat-intent + rag-context).
  */
 export async function POST() {
@@ -16,12 +16,12 @@ export async function POST() {
   const ollamaHost = baseURL.replace(/\/v1$/, "");
 
   try {
-    // Warm up pd-assistant model (load into memory without generating)
+    // Warm up gemma4:e4b model (load into memory without generating)
     const res = await fetch(`${ollamaHost}/api/generate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "qwen2.5:14b-instruct-q4_K_M",
+        model: "gemma4:e4b",
         prompt: "",
         keep_alive: "10m",
       }),
@@ -34,7 +34,7 @@ export async function POST() {
     }
 
     await res.text();
-    return Response.json({ status: "ok", message: "qwen2.5:14b warmed up (RAG-first, no fine-tuning needed)" });
+    return Response.json({ status: "ok", message: "gemma4:e4b warmed up (RAG-first)" });
   } catch (e) {
     return Response.json(
       { error: e instanceof Error ? e.message : "Warmup failed" },

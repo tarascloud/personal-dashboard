@@ -244,6 +244,76 @@ export async function getAllDailyLogs() {
   return rows.map(r => ({ ...r, date: dateToString(r.date) }));
 }
 
+/* ------------------------------------------------------------------ */
+/* Screen Time                                                         */
+/* ------------------------------------------------------------------ */
+
+export interface ScreenTimeCategoryBreakdown {
+  name: string;
+  minutes: number;
+}
+
+export interface ScreenTimeAppEntry {
+  name: string;
+  minutes: number;
+  category?: string;
+}
+
+export interface ScreenTimeDayPoint {
+  date: string;
+  totalMinutes: number;
+  categories: ScreenTimeCategoryBreakdown[];
+  topApps: ScreenTimeAppEntry[];
+  pickups: number | null;
+  notifications: number | null;
+}
+
+export interface ScreenTimeData {
+  days: ScreenTimeDayPoint[];
+  avgDailyMinutes: number;
+  avgPickups: number;
+  avgNotifications: number;
+}
+
+export async function getScreenTimeData(days: number = 7): Promise<ScreenTimeData> {
+  const user = await requireUser();
+  const now = new Date();
+  const fromDate = new Date(now.getTime() - days * 86400000);
+
+  const rows = await prisma.screenTime.findMany({
+    where: {
+      userId: user.id,
+      date: { gte: fromDate },
+    },
+    orderBy: { date: "asc" },
+  });
+
+  const mapped: ScreenTimeDayPoint[] = rows.map((r) => {
+    const cats = (r.categories ?? {}) as Record<string, number>;
+    const apps = (r.topApps ?? []) as Array<{ name: string; minutes: number; category?: string }>;
+
+    return {
+      date: dateToString(r.date),
+      totalMinutes: r.totalMinutes,
+      categories: Object.entries(cats).map(([name, minutes]) => ({ name, minutes })),
+      topApps: apps.slice(0, 5),
+      pickups: r.pickups,
+      notifications: r.notifications,
+    };
+  });
+
+  const count = mapped.length || 1;
+  const avgDailyMinutes = Math.round(mapped.reduce((s, d) => s + d.totalMinutes, 0) / count);
+  const avgPickups = Math.round(
+    mapped.reduce((s, d) => s + (d.pickups ?? 0), 0) / count,
+  );
+  const avgNotifications = Math.round(
+    mapped.reduce((s, d) => s + (d.notifications ?? 0), 0) / count,
+  );
+
+  return { days: mapped, avgDailyMinutes, avgPickups, avgNotifications };
+}
+
 export async function getFullMoodTimeline(): Promise<MoodTimelinePoint[]> {
   const user = await requireUser();
   const logs = await prisma.dailyLog.findMany({

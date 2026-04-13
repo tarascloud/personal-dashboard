@@ -732,7 +732,18 @@
     "sleep_trend_7d": "Тренд 7 днів",
     "portfolio_history": "Історія портфеля",
     "total_nav": "Капітал",
-    "invested": "Інвестиції"
+    "invested": "Інвестиції",
+    "screen_time": "Екранний час",
+    "screen_time_daily_avg": "Середнє за день",
+    "screen_time_pickups": "Розблокування",
+    "screen_time_notifications": "Сповіщення",
+    "screen_time_minutes": "Хвилини",
+    "screen_time_hours": "Години",
+    "screen_time_top_apps": "Топ додатки",
+    "screen_time_categories": "Категорії",
+    "screen_time_no_data": "Даних Screen Time ще немає",
+    "screen_time_no_data_hint": "Налаштуйте iOS Shortcut для синхронізації Screen Time",
+    "screen_time_daily": "Щоденний підсумок (7 днів)"
   },
   "settings": {
     "title": "Налаштування",
@@ -978,6 +989,7 @@
     "integration_cobee": "🍝 Cobee (Pluxee)",
     "integration_garmin": "⌚ Garmin",
     "integration_withings": "⚖️ Withings",
+    "integration_screen_time": "📱 Screen Time",
     "integration_telegram": "🤖 Telegram",
     "group_finance_integrations": "💼 Фінансові інтеграції",
     "subcat_banks": "Банки",

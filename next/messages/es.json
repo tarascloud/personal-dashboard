@@ -727,7 +727,18 @@
     "sleep_trend_7d": "Tendencia 7 dias",
     "stress": "Estres",
     "mood_level": "Nivel",
-    "daily_records": "Registros de Calidad de Vida"
+    "daily_records": "Registros de Calidad de Vida",
+    "screen_time": "Tiempo de Pantalla",
+    "screen_time_daily_avg": "Promedio diario",
+    "screen_time_pickups": "Desbloqueos",
+    "screen_time_notifications": "Notificaciones",
+    "screen_time_minutes": "Minutos",
+    "screen_time_hours": "Horas",
+    "screen_time_top_apps": "Top Apps",
+    "screen_time_categories": "Categorias",
+    "screen_time_no_data": "Sin datos de Screen Time",
+    "screen_time_no_data_hint": "Configura el atajo de iOS para sincronizar Screen Time",
+    "screen_time_daily": "Total diario (7 dias)"
   },
   "settings": {
     "title": "Ajustes",
@@ -972,6 +983,7 @@
     "integration_cobee": "🍝 Cobee (Pluxee)",
     "integration_garmin": "⌚ Garmin",
     "integration_withings": "⚖️ Withings",
+    "integration_screen_time": "📱 Screen Time",
     "integration_telegram": "🤖 Telegram",
     "group_finance_integrations": "💼 Integraciones de Finanzas",
     "subcat_banks": "Bancos",

@@ -151,7 +151,7 @@ export default function AiProvidersPage() {
         <RadioGroup value={defaultModel} onValueChange={handleDefaultModelChange} className="space-y-2">
           <div className="flex items-center gap-2">
             <RadioGroupItem value="ollama" />
-            <Label className="cursor-pointer">Ollama Llama 3.1 (Local)</Label>
+            <Label className="cursor-pointer">Ollama Gemma 4 (Local)</Label>
             <Badge variant="secondary" className="text-[10px]">Free / Private</Badge>
           </div>
           <div className="flex items-center gap-2">

@@ -342,7 +342,7 @@ Return ONLY the JSON array, no other text.`;
     }
   }
 
-  // 3. Fall back to Ollama qwen2.5:14b
+  // 3. Fall back to Ollama gemma4:e4b
   if (!raw) {
     try {
       const baseURL = process.env.OLLAMA_BASE_URL || "http://ollama:11434/v1";
@@ -352,7 +352,7 @@ Return ONLY the JSON array, no other text.`;
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "qwen2.5:14b-instruct-q4_K_M",
+          model: "gemma4:e4b",
           stream: false,
           messages: [
             { role: "system", content: systemContent },
@@ -365,7 +365,7 @@ Return ONLY the JSON array, no other text.`;
       if (res.ok) {
         const data = await res.json();
         raw = data.message?.content || "[]";
-        modelUsed = "qwen2.5-14b";
+        modelUsed = "gemma4-e4b";
       }
     } catch (e) {
       console.error("[Insights] Ollama failed:", e instanceof Error ? e.message : e);

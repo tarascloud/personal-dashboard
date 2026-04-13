@@ -41,6 +41,7 @@ import {
   type ExerciseOption,
   type WeeklyMuscleVolumeRow,
   type ExtendedCorrelations,
+  type ScreenTimeData,
 } from "@/actions/dashboard";
 
 import { ErrorBoundary } from "@/components/shared/error-boundary";
@@ -56,6 +57,7 @@ import { PortfolioHistoryChart, type PortfolioHistoryPoint } from "./portfolio-h
 import { PortfolioSummaryCard } from "./portfolio-summary-card";
 import { DailyLogsCard } from "./daily-logs-card";
 import { ExpenseBreakdownCard } from "./expense-breakdown-card";
+import { ScreenTimeWidget } from "./screen-time-widget";
 import {
   KpiGridSkeleton,
   MoodTimelineSkeleton,
@@ -115,6 +117,7 @@ export function DashboardPage({
   const [exerciseProgress, setExerciseProgress] = useState<ExerciseProgressPoint[]>([]);
   const [weeklyMuscleVolume, setWeeklyMuscleVolume] = useState<WeeklyMuscleVolumeRow[]>(initialWeeklyMuscleVolume ?? []);
   const [extCorrelations, setExtCorrelations] = useState<ExtendedCorrelations | null>(initialExtendedCorrelations ?? null);
+  const [screenTime, setScreenTime] = useState<ScreenTimeData | undefined>(undefined);
   const [capitalEur, setCapitalEur] = useState<number | null>(null);
   const [portfolioHistory, setPortfolioHistory] = useState<PortfolioHistoryPoint[]>([]);
   const [mounted, setMounted] = useState(false);
@@ -140,6 +143,7 @@ export function DashboardPage({
     }
     if (deferred.weeklyMuscleVolume && weeklyMuscleVolume.length === 0) setWeeklyMuscleVolume(deferred.weeklyMuscleVolume);
     if (deferred.extendedCorrelations && !extCorrelations) setExtCorrelations(deferred.extendedCorrelations);
+    if (deferred.screenTime && !screenTime) setScreenTime(deferred.screenTime);
     if (deferred.tradingPnL !== undefined && tradingPnL === undefined) setTradingPnL(deferred.tradingPnL);
   }, [deferred, periodChanged]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -383,6 +387,27 @@ export function DashboardPage({
         }}
       />
       )}
+      </ErrorBoundary>
+
+      {/* Screen Time Widget */}
+      <ErrorBoundary moduleName="Screen Time">
+      <ScreenTimeWidget
+        data={screenTime}
+        tooltipStyle={tooltipStyle}
+        labels={{
+          screenTime: t("screen_time"),
+          dailyAvg: t("screen_time_daily_avg"),
+          pickups: t("screen_time_pickups"),
+          notifications: t("screen_time_notifications"),
+          minutes: t("screen_time_minutes"),
+          hours: t("screen_time_hours"),
+          topApps: t("screen_time_top_apps"),
+          categories: t("screen_time_categories"),
+          noData: t("screen_time_no_data"),
+          noDataHint: t("screen_time_no_data_hint"),
+          daily: t("screen_time_daily"),
+        }}
+      />
       </ErrorBoundary>
 
       </div>}

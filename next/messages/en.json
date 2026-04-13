@@ -732,7 +732,18 @@
     "daily_records": "Life Quality Records",
     "portfolio_history": "Portfolio History",
     "total_nav": "Capital",
-    "invested": "Investments"
+    "invested": "Investments",
+    "screen_time": "Screen Time",
+    "screen_time_daily_avg": "Daily Average",
+    "screen_time_pickups": "Pickups",
+    "screen_time_notifications": "Notifications",
+    "screen_time_minutes": "Minutes",
+    "screen_time_hours": "Hours",
+    "screen_time_top_apps": "Top Apps",
+    "screen_time_categories": "Categories",
+    "screen_time_no_data": "No Screen Time data yet",
+    "screen_time_no_data_hint": "Set up the iOS Shortcut to sync Screen Time",
+    "screen_time_daily": "Daily Total (7 days)"
   },
   "settings": {
     "title": "Settings",
@@ -977,6 +988,7 @@
     "integration_cobee": "🍝 Cobee (Pluxee)",
     "integration_garmin": "⌚ Garmin",
     "integration_withings": "⚖️ Withings",
+    "integration_screen_time": "📱 Screen Time",
     "integration_telegram": "🤖 Telegram",
     "group_finance_integrations": "💼 Finance Integrations",
     "subcat_banks": "Banks",

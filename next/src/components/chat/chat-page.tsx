@@ -171,7 +171,7 @@ export function ChatPage({ initialMessages }: { initialMessages: UIMessage[] }) 
             <SelectContent>
               <SelectItem value="gemini">Gemini 2.5 Flash</SelectItem>
               <SelectItem value="groq">Groq Llama 3.3</SelectItem>
-              <SelectItem value="ollama">Ollama Llama 3.1 (Local)</SelectItem>
+              <SelectItem value="ollama">Ollama Gemma 4 (Local)</SelectItem>
             </SelectContent>
           </Select>
           {hasMessages && (
