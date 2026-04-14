@@ -237,15 +237,15 @@ export default function ScreenTimeIntegrationPage() {
           </div>
         </Card>
 
-        {/* Step 2: iOS Shortcut */}
+        {/* Step 2: macOS sync script */}
         <Card className={`p-5 space-y-4 transition-all ${step === 2 ? "ring-2 ring-blue-500/30" : ""}`}>
           <div className="flex items-center gap-3">
             <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${step > 2 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : step === 2 ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" : "bg-muted text-muted-foreground"}`}>
               {step > 2 ? "✓" : "2"}
             </div>
             <div className="flex items-center gap-2">
-              <SmartphoneIcon className="h-4 w-4 text-muted-foreground" />
-              <h3 className="font-medium">Налаштувати iOS Shortcut</h3>
+              <MonitorSmartphoneIcon className="h-4 w-4 text-muted-foreground" />
+              <h3 className="font-medium">Налаштувати автосинк на Mac</h3>
             </div>
           </div>
 
@@ -286,56 +286,54 @@ export default function ScreenTimeIntegrationPage() {
 
             {showInstructions && (
               <div className="rounded-lg border bg-muted/30 p-4 space-y-4 text-sm">
+                <p className="text-muted-foreground">
+                  Скрипт автоматично читає macOS <code>knowledgeC.db</code> і надсилає дані на API.
+                  Якщо на Mac увімкнено <strong>Screen Time → Share across devices</strong>, збираються дані і з iPhone/iPad.
+                </p>
+
+                <div className="space-y-1 font-medium">Початкове налаштування:</div>
                 <ol className="list-decimal list-inside space-y-3">
                   <li>
-                    Відкрий <strong>Shortcuts</strong> (Команди) на iPhone
+                    Надай <strong>Full Disk Access</strong> для Terminal:
+                    <p className="text-muted-foreground ml-5 mt-1">
+                      System Settings → Privacy &amp; Security → Full Disk Access → додай Terminal.app
+                    </p>
                   </li>
                   <li>
-                    Створи нову команду з діями:
-                    <ul className="list-disc list-inside ml-5 mt-1.5 space-y-1 text-muted-foreground">
-                      <li><strong>Get Screen Time</strong> — отримати дані за сьогодні</li>
-                      <li><strong>Dictionary</strong> — сформувати JSON з даними</li>
-                      <li><strong>Get Contents of URL</strong> — POST на endpoint вище</li>
-                    </ul>
+                    Перезапусти Terminal (Cmd+Q → відкрий знову)
                   </li>
                   <li>
-                    У <strong>Headers</strong> додай:
-                    <code className="ml-1 rounded bg-muted px-1.5 py-0.5 text-xs">Authorization: Bearer &lt;token&gt;</code>
+                    Синхронізуй історію за весь доступний період (~21 день):
+                    <div className="rounded-md bg-background border p-2 mt-1.5 font-mono text-xs overflow-x-auto">
+                      <pre className="text-foreground/80">{`PD_SCREEN_TIME_TOKEN=<token> \\
+python3 pd-private/scripts/sync-screen-time.py --days 365`}</pre>
+                    </div>
                   </li>
                   <li>
-                    Створи <strong>Automation</strong> → щодня о 23:55 → запуск цієї команди
+                    Встанови автозапуск щодня о 23:55:
+                    <div className="rounded-md bg-background border p-2 mt-1.5 font-mono text-xs overflow-x-auto">
+                      <pre className="text-foreground/80">{`cp pd-private/scripts/cloud.taras.screen-time-sync.plist \\
+  ~/Library/LaunchAgents/
+launchctl load ~/Library/LaunchAgents/cloud.taras.screen-time-sync.plist`}</pre>
+                    </div>
                   </li>
                 </ol>
 
-                <div className="rounded-md bg-background border p-3 font-mono text-xs overflow-x-auto">
-                  <p className="text-muted-foreground mb-2 font-sans text-xs font-medium">
-                    Приклад JSON body:
-                  </p>
-                  <pre className="text-foreground/80">{`{
-  "date": "2026-04-13",
-  "totalMinutes": 187,
-  "categories": {
-    "social": 45,
-    "productivity": 62,
-    "entertainment": 38,
-    "reading": 22,
-    "other": 20
-  },
-  "topApps": [
-    {"name": "Telegram", "minutes": 35},
-    {"name": "Safari", "minutes": 28},
-    {"name": "Xcode", "minutes": 25},
-    {"name": "YouTube", "minutes": 22},
-    {"name": "Notes", "minutes": 18}
-  ],
-  "pickups": 47,
-  "notifications": 89
-}`}</pre>
+                <div className="rounded-md bg-background border p-3 mt-2">
+                  <p className="text-muted-foreground text-xs font-medium mb-1.5">Корисні команди:</p>
+                  <div className="font-mono text-xs space-y-1 text-foreground/80">
+                    <p># Ручний синк за вчора</p>
+                    <p>python3 sync-screen-time.py</p>
+                    <p># Синк за конкретну дату</p>
+                    <p>python3 sync-screen-time.py 2026-04-12</p>
+                    <p># Перевірити статус launchd</p>
+                    <p>launchctl list | grep screen-time</p>
+                  </div>
                 </div>
 
                 <p className="text-muted-foreground text-xs">
-                  <strong>Примітка:</strong> iOS Shortcuts має обмежений доступ до категорій Screen Time.
-                  Альтернативно можна використовувати macOS <code>knowledgeC.db</code> для автоматичного збору.
+                  <strong>Примітка:</strong> macOS зберігає дані Screen Time за останні ~21-30 днів.
+                  Скрипт автоматично пропускає дні без даних.
                 </p>
               </div>
             )}

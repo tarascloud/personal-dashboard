@@ -12,6 +12,7 @@ import {
   HeartPulseIcon,
   ScaleIcon,
   TrendingUpIcon,
+  SmartphoneIcon,
 } from "lucide-react";
 import { PeriodSelector, type PeriodPreset, getDateRange } from "@/components/ui/period-selector";
 import { Card, CardContent } from "@/components/ui/card";
@@ -42,6 +43,7 @@ import {
   type WeeklyMuscleVolumeRow,
   type ExtendedCorrelations,
   type ScreenTimeData,
+  getScreenTimeData,
 } from "@/actions/dashboard";
 
 import { ErrorBoundary } from "@/components/shared/error-boundary";
@@ -187,7 +189,7 @@ export function DashboardPage({
           const daysFromStart = Math.max(7, Math.ceil((Date.now() - new Date(range.from).getTime()) / 86400000));
           const weeks = Math.max(1, Math.ceil(daysFromStart / 7));
           const rangeYear = new Date(range.from).getFullYear();
-          const [newKpis, newTrends, newCorrelations, newDeepDive, newGarminHealth, newMoodTimeline, newHRVTrend, newWeeklyMuscle, newExtCorr] =
+          const [newKpis, newTrends, newCorrelations, newDeepDive, newGarminHealth, newMoodTimeline, newHRVTrend, newWeeklyMuscle, newExtCorr, newScreenTime] =
             await Promise.all([
               getDashboardKPIs({ ...range, preset }),
               getMonthlyTrends(rangeYear),
@@ -198,6 +200,7 @@ export function DashboardPage({
               getHRVTrend(daysFromStart),
               getWeeklyMuscleVolume(weeks),
               getExtendedCorrelations(range),
+              getScreenTimeData(daysFromStart),
             ]);
           setKpis(newKpis);
           setTrends(newTrends);
@@ -208,6 +211,7 @@ export function DashboardPage({
           setHRVTrend(newHRVTrend);
           setWeeklyMuscleVolume(newWeeklyMuscle);
           setExtCorrelations(newExtCorr);
+          setScreenTime(newScreenTime);
         } catch (e) {
           console.error("[Dashboard] Period change error:", e);
         }
@@ -259,6 +263,7 @@ export function DashboardPage({
     { title: t("resting_hr"), value: kpis.health.avgRestingHr > 0 ? `${kpis.health.avgRestingHr} bpm` : "\u2014", icon: <HeartPulseIcon className="h-4 w-4" />, change: pctChange(kpis.health.avgRestingHr, prev?.avgRestingHr), improvementDirection: "down" },
     { title: t("sex_bj"), value: `${kpis.lifestyle.totalSex + kpis.lifestyle.totalBj}`, subtitle: `${kpis.lifestyle.totalSex}s / ${kpis.lifestyle.totalBj}b`, icon: <HeartPulseIcon className="h-4 w-4" />, change: pctChange(kpis.lifestyle.totalSex + kpis.lifestyle.totalBj, (prev?.totalSex ?? 0) + (prev?.totalBj ?? 0)), improvementDirection: "up" },
     { title: t("body_battery"), value: kpis.health.avgBodyBattery ? `${kpis.health.avgBodyBattery}%` : "\u2014", icon: <ZapIcon className="h-4 w-4" />, change: pctChange(kpis.health.avgBodyBattery, prev?.avgBodyBattery), improvementDirection: "up" },
+    ...(screenTime && screenTime.avgDailyMinutes > 0 ? [{ title: t("screen_time"), value: `${Math.floor(screenTime.avgDailyMinutes / 60)}h ${screenTime.avgDailyMinutes % 60}m`, icon: <SmartphoneIcon className="h-4 w-4" />, improvementDirection: "down" as const }] : []),
   ];
 
   const financeCards: KpiCardProps[] = [
@@ -337,6 +342,25 @@ export function DashboardPage({
       />
       </ErrorBoundary>
 
+      {/* Screen Time Widget */}
+      <ErrorBoundary moduleName="Screen Time">
+      <ScreenTimeWidget
+        data={screenTime}
+        tooltipStyle={tooltipStyle}
+        labels={{
+          screenTime: t("screen_time"),
+          dailyAvg: t("screen_time_daily_avg"),
+          notifications: t("screen_time_notifications"),
+          minutes: t("screen_time_minutes"),
+          hours: t("screen_time_hours"),
+          topApps: t("screen_time_top_apps"),
+          noData: t("screen_time_no_data"),
+          noDataHint: t("screen_time_no_data_hint"),
+          daily: t("screen_time_daily"),
+        }}
+      />
+      </ErrorBoundary>
+
       {/* Garmin Health Charts (body battery, sleep, steps, HRV, weight) */}
       <ErrorBoundary moduleName="Garmin Health">
       {isPending || !garminHealth ? <GarminHealthSkeleton /> : (
@@ -387,27 +411,6 @@ export function DashboardPage({
         }}
       />
       )}
-      </ErrorBoundary>
-
-      {/* Screen Time Widget */}
-      <ErrorBoundary moduleName="Screen Time">
-      <ScreenTimeWidget
-        data={screenTime}
-        tooltipStyle={tooltipStyle}
-        labels={{
-          screenTime: t("screen_time"),
-          dailyAvg: t("screen_time_daily_avg"),
-          pickups: t("screen_time_pickups"),
-          notifications: t("screen_time_notifications"),
-          minutes: t("screen_time_minutes"),
-          hours: t("screen_time_hours"),
-          topApps: t("screen_time_top_apps"),
-          categories: t("screen_time_categories"),
-          noData: t("screen_time_no_data"),
-          noDataHint: t("screen_time_no_data_hint"),
-          daily: t("screen_time_daily"),
-        }}
-      />
       </ErrorBoundary>
 
       </div>}

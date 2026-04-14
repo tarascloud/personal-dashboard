@@ -5,6 +5,7 @@ import crypto from "node:crypto";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { getSecretValue } from "@/actions/settings";
 
 // ---------------------------------------------------------------------------
 // Zod schemas
@@ -58,36 +59,30 @@ async function resolveUserId(
     if (user) return user.id;
   }
 
-  // 2. Try Bearer token
+  // 2. Try Bearer token (token stored encrypted in secrets table per user)
   const authHeader = request.headers.get("authorization");
   if (authHeader?.startsWith("Bearer ")) {
     const token = authHeader.slice(7);
-    const expected = process.env.SCREEN_TIME_API_TOKEN;
 
-    if (!expected) {
-      console.error(
-        "[api/health/screen-time] SCREEN_TIME_API_TOKEN not configured",
-      );
-      return NextResponse.json(
-        { error: "Server misconfiguration" },
-        { status: 500 },
-      );
-    }
+    // Find all users who have a screen_time_api_token
+    const secrets = await prisma.secret.findMany({
+      where: { key: "screen_time_api_token" },
+      select: { userId: true },
+    });
 
-    // timing-safe comparison (per security rules)
-    const tokenBuf = Buffer.from(token, "utf-8");
-    const expectedBuf = Buffer.from(expected, "utf-8");
+    for (const secret of secrets) {
+      const decrypted = await getSecretValue(secret.userId, "screen_time_api_token");
+      if (!decrypted) continue;
 
-    if (
-      tokenBuf.length === expectedBuf.length &&
-      crypto.timingSafeEqual(tokenBuf, expectedBuf)
-    ) {
-      // Bearer token maps to the first owner user
-      const owner = await prisma.user.findFirst({
-        where: { role: "owner" },
-        select: { id: true },
-      });
-      if (owner) return owner.id;
+      const expectedBuf = Buffer.from(decrypted, "utf-8");
+      const tokenBuf = Buffer.from(token, "utf-8");
+
+      if (
+        tokenBuf.length === expectedBuf.length &&
+        crypto.timingSafeEqual(tokenBuf, expectedBuf)
+      ) {
+        return secret.userId;
+      }
     }
   }
 

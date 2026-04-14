@@ -72,7 +72,7 @@ async function PrimaryDashboardContent({ tab }: { tab: "life" | "finance" | "tra
     getHRVTrend(daysFromStart),
     getLifestyleCorrelations(period),
     getExtendedCorrelations(period),
-    getScreenTimeData(7),
+    getScreenTimeData(daysFromStart),
   ]);
   const financePromise = Promise.all([
     getMonthlyTrends(year),

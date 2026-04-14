@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/shared/empty-state";
 import type { ScreenTimeData } from "@/actions/dashboard";
 import { ScreenTimeDailyChart } from "./screen-time-daily-chart";
-import { ScreenTimeCategories } from "./screen-time-categories";
 import { ScreenTimeApps } from "./screen-time-apps";
 
 /* ------------------------------------------------------------------ */
@@ -18,12 +17,10 @@ export interface ScreenTimeWidgetProps {
   labels: {
     screenTime: string;
     dailyAvg: string;
-    pickups: string;
     notifications: string;
     minutes: string;
     hours: string;
     topApps: string;
-    categories: string;
     noData: string;
     noDataHint: string;
     daily: string;
@@ -67,9 +64,18 @@ export function ScreenTimeWidget({ data, tooltipStyle, labels }: ScreenTimeWidge
     );
   }
 
-  // Aggregate latest day's categories for PieChart
-  const latestDay = data.days[data.days.length - 1];
-  const allApps = latestDay?.topApps ?? [];
+  // Aggregate top apps across all days in the period
+  const appTotals = new Map<string, number>();
+  for (const day of data.days) {
+    for (const app of day.topApps ?? []) {
+      appTotals.set(app.name, (appTotals.get(app.name) ?? 0) + app.minutes);
+    }
+  }
+  const totalMinutesAll = data.days.reduce((s, d) => s + d.totalMinutes, 0);
+  const allApps = [...appTotals.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([name, minutes]) => ({ name, minutes }));
 
   return (
     <Card className="mt-6">
@@ -80,53 +86,36 @@ export function ScreenTimeWidget({ data, tooltipStyle, labels }: ScreenTimeWidge
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* KPI row */}
-        <div className="grid grid-cols-3 gap-3">
-          <KpiMini
-            label={labels.dailyAvg}
-            value={formatDuration(data.avgDailyMinutes)}
-          />
-          <KpiMini
-            label={labels.pickups}
-            value={String(data.avgPickups)}
-          />
-          <KpiMini
-            label={labels.notifications}
-            value={String(data.avgNotifications)}
+        {/* Daily bar chart — full width */}
+        <div>
+          <p className="mb-2 text-xs font-medium text-muted-foreground">{labels.daily}</p>
+          <ScreenTimeDailyChart
+            days={data.days}
+            tooltipStyle={tooltipStyle}
+            minutesLabel={labels.minutes}
+            hoursLabel={labels.hours}
           />
         </div>
 
-        {/* Charts row */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {/* Daily bar chart */}
-          <div>
-            <p className="mb-2 text-xs font-medium text-muted-foreground">{labels.daily}</p>
-            <ScreenTimeDailyChart
-              days={data.days}
-              tooltipStyle={tooltipStyle}
-              minutesLabel={labels.minutes}
-              hoursLabel={labels.hours}
+        {/* Top apps + KPIs side by side */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto]">
+          {allApps.length > 0 && (
+            <div>
+              <p className="mb-2 text-xs font-medium text-muted-foreground">{labels.topApps}</p>
+              <ScreenTimeApps apps={allApps} totalMinutes={totalMinutesAll || 1} />
+            </div>
+          )}
+          <div className="flex flex-col gap-2 md:min-w-[120px]">
+            <KpiMini
+              label={labels.dailyAvg}
+              value={formatDuration(data.avgDailyMinutes)}
             />
-          </div>
-
-          {/* Category donut */}
-          <div>
-            <p className="mb-2 text-xs font-medium text-muted-foreground">{labels.categories}</p>
-            <ScreenTimeCategories
-              categories={latestDay?.categories ?? []}
-              tooltipStyle={tooltipStyle}
-              minutesLabel={labels.minutes}
+            <KpiMini
+              label={labels.notifications}
+              value={String(data.avgNotifications)}
             />
           </div>
         </div>
-
-        {/* Top apps */}
-        {allApps.length > 0 && (
-          <div>
-            <p className="mb-2 text-xs font-medium text-muted-foreground">{labels.topApps}</p>
-            <ScreenTimeApps apps={allApps} totalMinutes={latestDay?.totalMinutes ?? 1} />
-          </div>
-        )}
       </CardContent>
     </Card>
   );
