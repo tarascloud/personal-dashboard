@@ -34,7 +34,12 @@ export async function exportTransactionsCsv(filters: {
   if (filters.account) where.account = filters.account;
   if (filters.category) where.category = filters.category;
   if (filters.search) {
-    where.description = { contains: filters.search, mode: "insensitive" };
+    if (filters.search.includes("|")) {
+      const terms = filters.search.split("|").map((s) => s.trim()).filter(Boolean);
+      where.OR = terms.map((term) => ({ description: { contains: term, mode: "insensitive" as const } }));
+    } else {
+      where.description = { contains: filters.search, mode: "insensitive" };
+    }
   }
 
   const transactions = await prisma.transaction.findMany({

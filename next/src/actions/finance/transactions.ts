@@ -62,7 +62,16 @@ export async function getTransactions(filters: {
     where.AND = [...((where.AND as Record<string, unknown>[]) ?? []), catCondition];
   }
   if (filters.search) {
-    where.description = { contains: filters.search, mode: "insensitive" };
+    if (filters.search.includes("|")) {
+      // Support OR search: "claude|Claude|AI" matches any
+      const terms = filters.search.split("|").map((s) => s.trim()).filter(Boolean);
+      const searchCondition = {
+        OR: terms.map((term) => ({ description: { contains: term, mode: "insensitive" as const } })),
+      };
+      where.AND = [...((where.AND as Record<string, unknown>[]) ?? []), searchCondition];
+    } else {
+      where.description = { contains: filters.search, mode: "insensitive" };
+    }
   }
 
   const [transactions, count] = await Promise.all([

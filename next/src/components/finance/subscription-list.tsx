@@ -211,15 +211,17 @@ export function SubscriptionList({
 
                 {/* Icon actions */}
                 <div className="flex items-center gap-0.5">
-                  {sub.spending && (
-                    <Link
-                      href={`/finance/transactions?category=${encodeURIComponent("Підписки")}&search=${encodeURIComponent(sub.name)}`}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-                      title={t("transactions_count", { count: sub.spending.transactionCount })}
-                    >
-                      <ReceiptIcon className="h-3.5 w-3.5" />
-                    </Link>
-                  )}
+                  <Link
+                    href={`/finance/transactions?search=${encodeURIComponent(
+                      sub.spending?.matchedDescriptions?.length
+                        ? sub.spending.matchedDescriptions.join("|")
+                        : sub.name
+                    )}`}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                    title={sub.spending ? t("transactions_count", { count: sub.spending.transactionCount }) : "Transactions"}
+                  >
+                    <ReceiptIcon className="h-3.5 w-3.5" />
+                  </Link>
                   {sub.url && (
                     <a
                       href={sub.url}

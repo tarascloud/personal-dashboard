@@ -143,6 +143,7 @@ export type SubscriptionSpending = {
   transactionCount: number;
   firstDate: string;
   lastDate: string;
+  matchedDescriptions: string[];
 };
 
 export type SubscriptionAnalytics = {
@@ -217,6 +218,7 @@ export async function getSubscriptionAnalytics(): Promise<SubscriptionAnalytics>
       const lastDate = new Date(Math.max(...dates.map((d) => d.getTime())));
       const monthsSpan = Math.max(1, (lastDate.getTime() - firstDate.getTime()) / (30 * 86400000));
 
+      const uniqueDescs = [...new Set(matched.map((tx) => tx.description))];
       spendingMap.set(sub.name, {
         name: sub.name,
         totalSpent: Math.round(total * 100) / 100,
@@ -225,6 +227,7 @@ export async function getSubscriptionAnalytics(): Promise<SubscriptionAnalytics>
         transactionCount: matched.length,
         firstDate: firstDate.toISOString().slice(0, 10),
         lastDate: lastDate.toISOString().slice(0, 10),
+        matchedDescriptions: uniqueDescs,
       });
     }
   }

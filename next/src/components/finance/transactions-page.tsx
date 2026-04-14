@@ -98,7 +98,7 @@ export function TransactionsPage({
 
   // Load with URL params on mount
   useEffect(() => {
-    if (paramAccount || paramCategory) {
+    if (paramAccount || paramCategory || paramSearch) {
       fetchData(0);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

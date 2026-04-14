@@ -1504,6 +1504,28 @@ def job_daily_demo_data():
         logger.error("daily_demo_data failed: %s", e, exc_info=True)
 
 
+def job_detect_subscriptions():
+    """Auto-detect subscriptions from recurring transactions."""
+    logger.info("Running: detect_subscriptions")
+    try:
+        from src.sync.detect_subscriptions import detect_subscriptions
+
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT id FROM users WHERE role = 'owner' LIMIT 1")
+                row = cur.fetchone()
+                if not row:
+                    logger.warning("detect_subscriptions: no owner user found")
+                    return
+                user_id = row[0]
+
+            result = detect_subscriptions(conn, user_id)
+            logger.info("detect_subscriptions: created=%d, updated=%d, skipped=%d",
+                        result["created"], result["updated"], result["skipped"])
+    except Exception as e:
+        logger.error("detect_subscriptions failed: %s", e, exc_info=True)
+
+
 def job_prod_to_dev_sync():
     """Sync user data from prod PostgreSQL to dev PostgreSQL."""
     logger.info("Running: prod_to_dev_sync")
@@ -1538,6 +1560,7 @@ def main():
     scheduler.add_job(job_pg_backup,      CronTrigger(hour=3, minute=0),           id="pg_backup")
     scheduler.add_job(job_refresh_views,  CronTrigger(minute="*/30"),              id="refresh_views")
     scheduler.add_job(job_daily_demo_data, CronTrigger(hour=2, minute=0),          id="daily_demo_data")
+    scheduler.add_job(job_detect_subscriptions, CronTrigger(hour=12, minute=0),  id="detect_subscriptions")
     scheduler.add_job(job_prod_to_dev_sync, IntervalTrigger(hours=2),             id="prod_to_dev_sync")
 
     # AI reports & snapshots
