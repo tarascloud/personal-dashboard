@@ -328,6 +328,7 @@ def job_sync_garmin():
     try:
         from src.sync.garmin_sync import authenticate_garmin, GarminMFARequired, sync_garmin_data
         from src.database import set_current_user, get_conn as app_get_conn
+        from src.encryption import decrypt_value
         from pathlib import Path
 
         garth_base = Path(os.environ.get("GARTH_SESSION_DIR", "/data/garth_sessions"))
@@ -344,7 +345,9 @@ def job_sync_garmin():
                 """)
                 users = cur.fetchall()
 
-        for user_id, user_email, garmin_email, garmin_password in users:
+        for user_id, user_email, raw_garmin_email, raw_garmin_password in users:
+            garmin_email = decrypt_value(raw_garmin_email)
+            garmin_password = decrypt_value(raw_garmin_password)
             # Check 429 backoff — skip if within backoff window
             last_429 = _garmin_429_backoff.get(user_id, 0)
             if last_429 and (_time.time() - last_429) < _GARMIN_BACKOFF_SECONDS:
@@ -489,8 +492,10 @@ def job_sync_withings():
                 """)
                 users = cur.fetchall()
 
-        for user_id, user_email, tokens_json in users:
+        for user_id, user_email, raw_tokens_json in users:
             try:
+                from src.encryption import decrypt_value
+                tokens_json = decrypt_value(raw_tokens_json)
                 tokens = json.loads(tokens_json)
                 access_token = tokens["access_token"]
                 client_id = tokens.get("client_id")
@@ -529,6 +534,7 @@ def job_sync_monobank():
         import json as _json
         from src.monobank import sync_monobank
         from src.db import set_current_user
+        from src.encryption import decrypt_value
 
         with get_conn() as conn:
             with conn.cursor() as cur:
@@ -548,11 +554,14 @@ def job_sync_monobank():
                 """)
                 users = cur.fetchall()
 
-        for user_id, user_email, token, mappings_json, old_acc_id, old_acc_name, auto_sync in users:
+        for user_id, user_email, raw_token, mappings_json, old_acc_id, old_acc_name, auto_sync in users:
             set_current_user(user_email)
             # Skip users with manual sync mode
             if auto_sync == "manual":
                 continue
+
+            # Decrypt token (handles both encrypted and plaintext)
+            token = decrypt_value(raw_token)
 
             # Parse account mappings (new multi-account format)
             account_list = []
@@ -606,6 +615,7 @@ def job_sync_bunq():
         import json as _json
         from src.bunq_integration import sync_bunq
         from src.db import set_current_user
+        from src.encryption import decrypt_value
 
         with get_conn() as conn:
             with conn.cursor() as cur:
@@ -623,7 +633,7 @@ def job_sync_bunq():
                 """)
                 users = cur.fetchall()
 
-        for user_id, user_email, api_key, mappings_json, user_suffix, auto_sync in users:
+        for user_id, user_email, raw_api_key, mappings_json, user_suffix, auto_sync in users:
             set_current_user(user_email)
             if auto_sync == "manual":
                 continue
@@ -632,6 +642,9 @@ def job_sync_bunq():
             if _bunq_auth_failed.get(user_id):
                 logger.debug("bunq user %s: skipping due to previous auth failure", user_id)
                 continue
+
+            # Decrypt API key (handles both encrypted and plaintext)
+            api_key = decrypt_value(raw_api_key)
 
             try:
                 account_list = _json.loads(mappings_json)
