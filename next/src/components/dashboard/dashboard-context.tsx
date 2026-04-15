@@ -12,6 +12,7 @@ import type {
   WeeklyMuscleVolumeRow,
   ExtendedCorrelations,
   ScreenTimeData,
+  KidsTimeData,
 } from "@/actions/dashboard";
 
 /* ------------------------------------------------------------------ */
@@ -36,6 +37,7 @@ export interface DeferredDashboardData {
   weeklyMuscleVolume?: WeeklyMuscleVolumeRow[];
   extendedCorrelations?: ExtendedCorrelations;
   screenTime?: ScreenTimeData;
+  kidsTime?: KidsTimeData;
   tradingPnL?: TradingPnL | null;
 }
 

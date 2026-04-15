@@ -738,7 +738,13 @@
     "screen_time_categories": "Categorias",
     "screen_time_no_data": "Sin datos de Screen Time",
     "screen_time_no_data_hint": "Configura la sincronización en Settings → Integrations → Screen Time",
-    "screen_time_daily": "Total diario"
+    "screen_time_daily": "Total diario",
+    "kids_time_daily_avg": "Promedio diario",
+    "kids_time_total_days": "Días registrados",
+    "kids_time_minutes": "Minutos",
+    "kids_time_no_data": "Sin datos de tiempo con hijos",
+    "kids_time_no_data_hint": "Registra tiempo con hijos en Mi día",
+    "kids_time_target": "Objetivo 3h"
   },
   "settings": {
     "title": "Ajustes",

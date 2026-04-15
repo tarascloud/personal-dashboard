@@ -44,6 +44,7 @@ export {
   getAllDailyLogs,
   getFullMoodTimeline,
   getScreenTimeData,
+  getKidsTimeData,
   invalidateGarminCache,
   type GarminDayPoint,
   type GarminSleepPoint,
@@ -55,6 +56,8 @@ export {
   type ScreenTimeDayPoint,
   type ScreenTimeCategoryBreakdown,
   type ScreenTimeAppEntry,
+  type KidsTimeData,
+  type KidsTimeDayPoint,
 } from "./health";
 
 export {

@@ -31,7 +31,7 @@ export interface ScreenTimeWidgetProps {
 /* Helpers                                                             */
 /* ------------------------------------------------------------------ */
 
-function formatDuration(totalMinutes: number): string {
+export function formatDuration(totalMinutes: number): string {
   const h = Math.floor(totalMinutes / 60);
   const m = totalMinutes % 60;
   if (h === 0) return `${m}m`;
@@ -125,7 +125,7 @@ export function ScreenTimeWidget({ data, tooltipStyle, labels }: ScreenTimeWidge
 /* KPI mini card                                                       */
 /* ------------------------------------------------------------------ */
 
-function KpiMini({ label, value }: { label: string; value: string }) {
+export function KpiMini({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg bg-muted/50 px-3 py-2 text-center">
       <p className="text-lg font-semibold">{value}</p>

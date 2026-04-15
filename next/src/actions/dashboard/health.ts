@@ -314,6 +314,47 @@ export async function getScreenTimeData(days: number = 7): Promise<ScreenTimeDat
   return { days: mapped, avgDailyMinutes, avgPickups, avgNotifications };
 }
 
+/* ------------------------------------------------------------------ */
+/* Kids Time                                                           */
+/* ------------------------------------------------------------------ */
+
+export interface KidsTimeDayPoint {
+  date: string;
+  minutes: number;
+}
+
+export interface KidsTimeData {
+  days: KidsTimeDayPoint[];
+  avgDailyMinutes: number;
+  totalDays: number;
+}
+
+export async function getKidsTimeData(days: number = 30): Promise<KidsTimeData> {
+  const user = await requireUser();
+  const now = new Date();
+  const fromDate = new Date(now.getTime() - days * 86400000);
+
+  const rows = await prisma.dailyLog.findMany({
+    where: {
+      userId: user.id,
+      date: { gte: fromDate },
+      kidsHours: { not: null },
+    },
+    orderBy: { date: "asc" },
+    select: { date: true, kidsHours: true },
+  });
+
+  const mapped: KidsTimeDayPoint[] = rows.map((r) => ({
+    date: dateToString(r.date),
+    minutes: Math.round((r.kidsHours ?? 0) * 60),
+  }));
+
+  const count = mapped.length || 1;
+  const avgDailyMinutes = Math.round(mapped.reduce((s, d) => s + d.minutes, 0) / count);
+
+  return { days: mapped, avgDailyMinutes, totalDays: mapped.length };
+}
+
 export async function getFullMoodTimeline(): Promise<MoodTimelinePoint[]> {
   const user = await requireUser();
   const logs = await prisma.dailyLog.findMany({

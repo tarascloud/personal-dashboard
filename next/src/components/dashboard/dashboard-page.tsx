@@ -43,7 +43,9 @@ import {
   type WeeklyMuscleVolumeRow,
   type ExtendedCorrelations,
   type ScreenTimeData,
+  type KidsTimeData,
   getScreenTimeData,
+  getKidsTimeData,
 } from "@/actions/dashboard";
 
 import { ErrorBoundary } from "@/components/shared/error-boundary";
@@ -60,6 +62,7 @@ import { PortfolioSummaryCard } from "./portfolio-summary-card";
 import { DailyLogsCard } from "./daily-logs-card";
 import { ExpenseBreakdownCard } from "./expense-breakdown-card";
 import { ScreenTimeWidget } from "./screen-time-widget";
+import { KidsTimeWidget } from "./kids-time-widget";
 import {
   KpiGridSkeleton,
   MoodTimelineSkeleton,
@@ -120,6 +123,7 @@ export function DashboardPage({
   const [weeklyMuscleVolume, setWeeklyMuscleVolume] = useState<WeeklyMuscleVolumeRow[]>(initialWeeklyMuscleVolume ?? []);
   const [extCorrelations, setExtCorrelations] = useState<ExtendedCorrelations | null>(initialExtendedCorrelations ?? null);
   const [screenTime, setScreenTime] = useState<ScreenTimeData | undefined>(undefined);
+  const [kidsTime, setKidsTime] = useState<KidsTimeData | undefined>(undefined);
   const [capitalEur, setCapitalEur] = useState<number | null>(null);
   const [portfolioHistory, setPortfolioHistory] = useState<PortfolioHistoryPoint[]>([]);
   const [mounted, setMounted] = useState(false);
@@ -146,6 +150,7 @@ export function DashboardPage({
     if (deferred.weeklyMuscleVolume && weeklyMuscleVolume.length === 0) setWeeklyMuscleVolume(deferred.weeklyMuscleVolume);
     if (deferred.extendedCorrelations && !extCorrelations) setExtCorrelations(deferred.extendedCorrelations);
     if (deferred.screenTime && !screenTime) setScreenTime(deferred.screenTime);
+    if (deferred.kidsTime && !kidsTime) setKidsTime(deferred.kidsTime);
     if (deferred.tradingPnL !== undefined && tradingPnL === undefined) setTradingPnL(deferred.tradingPnL);
   }, [deferred, periodChanged]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -189,7 +194,7 @@ export function DashboardPage({
           const daysFromStart = Math.max(7, Math.ceil((Date.now() - new Date(range.from).getTime()) / 86400000));
           const weeks = Math.max(1, Math.ceil(daysFromStart / 7));
           const rangeYear = new Date(range.from).getFullYear();
-          const [newKpis, newTrends, newCorrelations, newDeepDive, newGarminHealth, newMoodTimeline, newHRVTrend, newWeeklyMuscle, newExtCorr, newScreenTime] =
+          const [newKpis, newTrends, newCorrelations, newDeepDive, newGarminHealth, newMoodTimeline, newHRVTrend, newWeeklyMuscle, newExtCorr, newScreenTime, newKidsTime] =
             await Promise.all([
               getDashboardKPIs({ ...range, preset }),
               getMonthlyTrends(rangeYear),
@@ -201,6 +206,7 @@ export function DashboardPage({
               getWeeklyMuscleVolume(weeks),
               getExtendedCorrelations(range),
               getScreenTimeData(daysFromStart),
+              getKidsTimeData(daysFromStart),
             ]);
           setKpis(newKpis);
           setTrends(newTrends);
@@ -212,6 +218,7 @@ export function DashboardPage({
           setWeeklyMuscleVolume(newWeeklyMuscle);
           setExtCorrelations(newExtCorr);
           setScreenTime(newScreenTime);
+          setKidsTime(newKidsTime);
         } catch (e) {
           console.error("[Dashboard] Period change error:", e);
         }
@@ -357,6 +364,23 @@ export function DashboardPage({
           noData: t("screen_time_no_data"),
           noDataHint: t("screen_time_no_data_hint"),
           daily: t("screen_time_daily"),
+        }}
+      />
+      </ErrorBoundary>
+
+      {/* Kids Time Widget */}
+      <ErrorBoundary moduleName="Kids Time">
+      <KidsTimeWidget
+        data={kidsTime}
+        tooltipStyle={tooltipStyle}
+        labels={{
+          title: t("kids_time"),
+          dailyAvg: t("kids_time_daily_avg"),
+          totalDays: t("kids_time_total_days"),
+          noData: t("kids_time_no_data"),
+          noDataHint: t("kids_time_no_data_hint"),
+          minutes: t("kids_time_minutes"),
+          target: t("kids_time_target"),
         }}
       />
       </ErrorBoundary>
