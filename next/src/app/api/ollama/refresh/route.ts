@@ -15,13 +15,14 @@ export async function POST() {
   const baseURL = process.env.OLLAMA_BASE_URL || "http://ollama:11434/v1";
   const ollamaHost = baseURL.replace(/\/v1$/, "");
 
+  const ollamaModel = process.env.OLLAMA_MODEL || "gemma4:e4b";
+
   try {
-    // Warm up qwen2.5:14b-instruct-q4_K_M model (load into memory without generating)
     const res = await fetch(`${ollamaHost}/api/generate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "qwen2.5:14b-instruct-q4_K_M",
+        model: ollamaModel,
         prompt: "",
         keep_alive: "10m",
       }),
@@ -34,7 +35,7 @@ export async function POST() {
     }
 
     await res.text();
-    return Response.json({ status: "ok", message: "qwen2.5:14b-instruct-q4_K_M warmed up (RAG-first)" });
+    return Response.json({ status: "ok", message: `${ollamaModel} warmed up` });
   } catch (e) {
     return Response.json(
       { error: e instanceof Error ? e.message : "Warmup failed" },

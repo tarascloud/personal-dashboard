@@ -342,18 +342,20 @@ Return ONLY the JSON array, no other text.`;
     }
   }
 
-  // 3. Fall back to Ollama qwen2.5 (gemma4:e4b has empty response bug on Ollama 0.20.5)
+  // 3. Fall back to Ollama gemma4
   if (!raw) {
     try {
       const baseURL = process.env.OLLAMA_BASE_URL || "http://ollama:11434/v1";
       const ollamaHost = baseURL.replace(/\/v1$/, "");
+      const ollamaModel = process.env.OLLAMA_MODEL || "gemma4:e4b";
 
       const res = await fetch(`${ollamaHost}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "qwen2.5:14b-instruct-q4_K_M",
+          model: ollamaModel,
           stream: false,
+          options: { num_ctx: 8192 },
           messages: [
             { role: "system", content: systemContent },
             { role: "user", content: userContent },
@@ -365,7 +367,7 @@ Return ONLY the JSON array, no other text.`;
       if (res.ok) {
         const data = await res.json();
         raw = data.message?.content || "[]";
-        modelUsed = "qwen2.5-14b";
+        modelUsed = ollamaModel;
       }
     } catch (e) {
       console.error("[Insights] Ollama failed:", e instanceof Error ? e.message : e);
