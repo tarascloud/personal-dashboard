@@ -183,6 +183,30 @@
   --skeleton-shine: #f1f5f9;
   --scrollbar-track: #f8fafc;
   --scrollbar-thumb: #cbd5e1;
+
+  /* Landing page tokens */
+  --landing-bg: #26282b;
+  --landing-bg-alt: #222426;
+  --landing-surface: #2b2d30;
+  --landing-surface-hover: #2f3134;
+  --landing-text: rgba(255, 255, 255, 0.85);
+  --landing-text-muted: rgba(255, 255, 255, 0.55);
+  --landing-text-dimmed: rgba(255, 255, 255, 0.35);
+  --landing-text-subtle: rgba(255, 255, 255, 0.4);
+  --landing-text-mid: rgba(255, 255, 255, 0.5);
+  --landing-text-soft: rgba(255, 255, 255, 0.7);
+  --landing-text-faint: rgba(255, 255, 255, 0.2);
+  --landing-text-faint-hover: rgba(255, 255, 255, 0.35);
+  --landing-accent: #ffc700;
+  --landing-accent-bright: #ffd600;
+  --landing-accent-deep: #ffab00;
+  --landing-accent-dark: #1a1a1a;
+  --landing-border: rgba(255, 168, 0, 0.15);
+  --landing-border-hover: rgba(255, 168, 0, 0.3);
+  --landing-glow: rgba(255, 199, 0, 0.25);
+  --landing-glow-strong: rgba(255, 199, 0, 0.3);
+  --landing-orb-primary: rgba(255, 199, 0, 0.08);
+  --landing-orb-secondary: rgba(255, 214, 0, 0.05);
 }
 
 /* ── Dark theme ── */
@@ -219,7 +243,7 @@
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: rgba(255, 255, 255, 0.04);
   --sidebar-accent-foreground: #f1f5f9;
-  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-border: rgba(255, 255, 255, 0.08);
   --sidebar-ring: #3b82f6;
 
   /* Dashboard semantic tokens (dark) */

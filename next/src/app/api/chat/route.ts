@@ -91,8 +91,8 @@ export async function POST(req: Request) {
       baseURL: process.env.OLLAMA_BASE_URL || "http://ollama:11434/v1",
       apiKey: "ollama",
     });
-    // Gemma 4 E4B — multilingual, better reasoning than Qwen2.5 14B
-    modelInstance = ollama("gemma4:e4b");
+    // qwen2.5 14B — gemma4:e4b has empty response bug on Ollama 0.20.5 with context
+    modelInstance = ollama("qwen2.5:14b-instruct-q4_K_M");
   } else if (modelName === "groq" && groqKeyValue) {
     const groq = createGroq({ apiKey: groqKeyValue });
     modelInstance = groq("llama-3.3-70b-versatile");

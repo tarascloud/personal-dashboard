@@ -98,7 +98,7 @@ export async function enterDemoMode() {
     maxAge: DEMO_TTL_SECONDS,
   });
 
-  redirect("/finance");
+  redirect("/dashboard");
 }
 
 export async function exitDemoMode() {
