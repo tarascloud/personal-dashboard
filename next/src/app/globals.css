@@ -202,7 +202,7 @@
   --accent: rgba(255, 255, 255, 0.04);
   --accent-foreground: #f1f5f9;
   --destructive: #f87171;
-  --border: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.09);
   --input: rgba(255, 255, 255, 0.08);
   --ring: #3b82f6;
 
@@ -544,7 +544,7 @@
   --secondary: rgba(255, 214, 0, 0.08);
   --secondary-foreground: rgba(255, 255, 255, 0.85);
   --muted: rgba(255, 255, 255, 0.06);
-  --muted-foreground: rgba(255, 255, 255, 0.5);
+  --muted-foreground: rgba(255, 255, 255, 0.6);
   --accent: rgba(255, 168, 0, 0.12);
   --accent-foreground: #ffd600;
   --destructive: #f87171;

@@ -47,6 +47,13 @@ export default async function DashboardLayout({
     <SessionProvider session={session}>
       <EnabledModulesProvider>
         <div className="flex flex-col min-h-screen bg-background">
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-3 focus:bg-primary focus:text-primary-foreground focus:rounded-md"
+          >
+            Skip to content
+          </a>
+
           {/* Top bar: title + toggles */}
           <header className="sticky top-0 z-40 bg-card/95 backdrop-blur-md border-b border-border">
             <div className="flex items-center justify-between px-3 py-2">
@@ -75,7 +82,7 @@ export default async function DashboardLayout({
           {isDemo && <DemoBanner />}
 
           <KeyboardShortcutsProvider>
-            <main className="flex-1 px-3 py-3 md:p-6 animate-page-in pb-20 sm:pb-0">
+            <main id="main-content" className="flex-1 px-3 py-3 md:p-6 animate-page-in pb-20 sm:pb-0">
               <ErrorBoundary module="Page">
                 {children}
               </ErrorBoundary>
