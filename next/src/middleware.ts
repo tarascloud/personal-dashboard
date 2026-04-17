@@ -60,7 +60,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Public routes (no auth required)
-  const publicPaths = ["/login", "/about", "/api/auth", "/api/health", "/api/sync/withings", "/api/sync/monobank/webhook", "/api/garmin-mfa"];
+  const publicPaths = ["/login", "/about", "/api/auth", "/api/health", "/api/sync/withings", "/api/sync/monobank/webhook", "/api/garmin-mfa", "/sitemap.xml", "/robots.txt"];
 
   // Landing page is public (authenticated users get redirected in page.tsx)
   if (pathname === "/") return NextResponse.next();
