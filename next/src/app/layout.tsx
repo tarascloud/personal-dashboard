@@ -138,7 +138,7 @@ export default async function RootLayout({
         <SerwistProvider swUrl="/serwist/sw.js">
           <ThemeProvider
             attribute="class"
-            defaultTheme="dark"
+            defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >

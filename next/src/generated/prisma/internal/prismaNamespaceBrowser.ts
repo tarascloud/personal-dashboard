@@ -82,7 +82,6 @@ export const ModelName = {
   GarminStaging: 'GarminStaging',
   GarminBodyComposition: 'GarminBodyComposition',
   WithingsMeasurement: 'WithingsMeasurement',
-  ScreenTime: 'ScreenTime',
   Embedding: 'Embedding',
   AiNote: 'AiNote',
   AiContextSnapshot: 'AiContextSnapshot',
@@ -579,22 +578,6 @@ export const WithingsMeasurementScalarFieldEnum = {
 export type WithingsMeasurementScalarFieldEnum = (typeof WithingsMeasurementScalarFieldEnum)[keyof typeof WithingsMeasurementScalarFieldEnum]
 
 
-export const ScreenTimeScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  date: 'date',
-  totalMinutes: 'totalMinutes',
-  categories: 'categories',
-  topApps: 'topApps',
-  pickups: 'pickups',
-  notifications: 'notifications',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ScreenTimeScalarFieldEnum = (typeof ScreenTimeScalarFieldEnum)[keyof typeof ScreenTimeScalarFieldEnum]
-
-
 export const EmbeddingScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -667,7 +650,6 @@ export type InsightFeedbackScalarFieldEnum = (typeof InsightFeedbackScalarFieldE
 
 export const ChatHistoryScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
   role: 'role',
   content: 'content',
   userEmail: 'userEmail',
@@ -1010,14 +992,6 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-export const NullableJsonNullValueInput = {
-  DbNull: DbNull,
-  JsonNull: JsonNull
-} as const
-
-export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
-
-
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -1032,13 +1006,4 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
-
-
-export const JsonNullValueFilter = {
-  DbNull: DbNull,
-  JsonNull: JsonNull,
-  AnyNull: AnyNull
-} as const
-
-export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

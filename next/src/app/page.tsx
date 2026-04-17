@@ -12,7 +12,7 @@ export default async function RootPage() {
   const session = await auth();
 
   if (session?.user?.email) {
-    redirect("/finance");
+    redirect("/dashboard");
   }
 
   const freeSpots = await getFreeSpotsRemaining();
