@@ -14,4 +14,9 @@ COPY . .
 
 RUN python -m compileall -q src/ deploy/ 2>/dev/null || true
 
+RUN useradd --system --uid 1001 --no-create-home scheduler && \
+    chown -R scheduler:scheduler /app
+
+USER scheduler
+
 CMD ["python", "deploy/scheduler.py"]
