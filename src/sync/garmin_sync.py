@@ -535,8 +535,11 @@ def upsert_daily(conn, d_str: str, stats: dict, hrv: dict | None,
     if fitness_age and isinstance(fitness_age, dict):
         fit_age = _val(fitness_age.get("fitnessAge")) or _val(fitness_age.get("chronologicalAge"))
 
+    user_id = 1  # single-user system
+
     params = (
         d_str,
+        user_id,
         _val(stats.get("totalSteps")),
         _val(stats.get("totalKilocalories")),
         _val(stats.get("activeKilocalories")),
@@ -574,7 +577,7 @@ def upsert_daily(conn, d_str: str, stats: dict, hrv: dict | None,
 
     _exec(conn, """
         INSERT INTO garmin_daily
-        (date, steps, calories_total, calories_active, distance_m,
+        (date, user_id, steps, calories_total, calories_active, distance_m,
          floors_up, floors_down, intensity_minutes,
          resting_hr, avg_hr, max_hr,
          avg_stress, max_stress,
@@ -587,41 +590,41 @@ def upsert_daily(conn, d_str: str, stats: dict, hrv: dict | None,
          body_battery_charged, body_battery_drained,
          steps_goal, moderate_intensity_minutes, vigorous_intensity_minutes,
          lowest_spo2)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-        ON CONFLICT(date) DO UPDATE SET
-            steps=COALESCE(excluded.steps, steps),
-            calories_total=COALESCE(excluded.calories_total, calories_total),
-            calories_active=COALESCE(excluded.calories_active, calories_active),
-            distance_m=COALESCE(excluded.distance_m, distance_m),
-            floors_up=COALESCE(excluded.floors_up, floors_up),
-            floors_down=COALESCE(excluded.floors_down, floors_down),
-            intensity_minutes=COALESCE(excluded.intensity_minutes, intensity_minutes),
-            resting_hr=COALESCE(excluded.resting_hr, resting_hr),
-            avg_hr=COALESCE(excluded.avg_hr, avg_hr),
-            max_hr=COALESCE(excluded.max_hr, max_hr),
-            avg_stress=COALESCE(excluded.avg_stress, avg_stress),
-            max_stress=COALESCE(excluded.max_stress, max_stress),
-            body_battery_high=COALESCE(excluded.body_battery_high, body_battery_high),
-            body_battery_low=COALESCE(excluded.body_battery_low, body_battery_low),
-            sleep_seconds=COALESCE(excluded.sleep_seconds, sleep_seconds),
-            sleep_score=COALESCE(excluded.sleep_score, sleep_score),
-            spo2_avg=COALESCE(excluded.spo2_avg, spo2_avg),
-            respiration_avg=COALESCE(excluded.respiration_avg, respiration_avg),
-            hrv_weekly_avg=COALESCE(excluded.hrv_weekly_avg, hrv_weekly_avg),
-            hrv_last_night=COALESCE(excluded.hrv_last_night, hrv_last_night),
-            hrv_status=COALESCE(excluded.hrv_status, hrv_status),
-            training_readiness_score=COALESCE(excluded.training_readiness_score, training_readiness_score),
-            training_status=COALESCE(excluded.training_status, training_status),
-            training_load=COALESCE(excluded.training_load, training_load),
-            vo2max_running=COALESCE(excluded.vo2max_running, vo2max_running),
-            vo2max_cycling=COALESCE(excluded.vo2max_cycling, vo2max_cycling),
-            fitness_age=COALESCE(excluded.fitness_age, fitness_age),
-            body_battery_charged=COALESCE(excluded.body_battery_charged, body_battery_charged),
-            body_battery_drained=COALESCE(excluded.body_battery_drained, body_battery_drained),
-            steps_goal=COALESCE(excluded.steps_goal, steps_goal),
-            moderate_intensity_minutes=COALESCE(excluded.moderate_intensity_minutes, moderate_intensity_minutes),
-            vigorous_intensity_minutes=COALESCE(excluded.vigorous_intensity_minutes, vigorous_intensity_minutes),
-            lowest_spo2=COALESCE(excluded.lowest_spo2, lowest_spo2),
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        ON CONFLICT(user_id, date) DO UPDATE SET
+            steps=COALESCE(excluded.steps, garmin_daily.steps),
+            calories_total=COALESCE(excluded.calories_total, garmin_daily.calories_total),
+            calories_active=COALESCE(excluded.calories_active, garmin_daily.calories_active),
+            distance_m=COALESCE(excluded.distance_m, garmin_daily.distance_m),
+            floors_up=COALESCE(excluded.floors_up, garmin_daily.floors_up),
+            floors_down=COALESCE(excluded.floors_down, garmin_daily.floors_down),
+            intensity_minutes=COALESCE(excluded.intensity_minutes, garmin_daily.intensity_minutes),
+            resting_hr=COALESCE(excluded.resting_hr, garmin_daily.resting_hr),
+            avg_hr=COALESCE(excluded.avg_hr, garmin_daily.avg_hr),
+            max_hr=COALESCE(excluded.max_hr, garmin_daily.max_hr),
+            avg_stress=COALESCE(excluded.avg_stress, garmin_daily.avg_stress),
+            max_stress=COALESCE(excluded.max_stress, garmin_daily.max_stress),
+            body_battery_high=COALESCE(excluded.body_battery_high, garmin_daily.body_battery_high),
+            body_battery_low=COALESCE(excluded.body_battery_low, garmin_daily.body_battery_low),
+            sleep_seconds=COALESCE(excluded.sleep_seconds, garmin_daily.sleep_seconds),
+            sleep_score=COALESCE(excluded.sleep_score, garmin_daily.sleep_score),
+            spo2_avg=COALESCE(excluded.spo2_avg, garmin_daily.spo2_avg),
+            respiration_avg=COALESCE(excluded.respiration_avg, garmin_daily.respiration_avg),
+            hrv_weekly_avg=COALESCE(excluded.hrv_weekly_avg, garmin_daily.hrv_weekly_avg),
+            hrv_last_night=COALESCE(excluded.hrv_last_night, garmin_daily.hrv_last_night),
+            hrv_status=COALESCE(excluded.hrv_status, garmin_daily.hrv_status),
+            training_readiness_score=COALESCE(excluded.training_readiness_score, garmin_daily.training_readiness_score),
+            training_status=COALESCE(excluded.training_status, garmin_daily.training_status),
+            training_load=COALESCE(excluded.training_load, garmin_daily.training_load),
+            vo2max_running=COALESCE(excluded.vo2max_running, garmin_daily.vo2max_running),
+            vo2max_cycling=COALESCE(excluded.vo2max_cycling, garmin_daily.vo2max_cycling),
+            fitness_age=COALESCE(excluded.fitness_age, garmin_daily.fitness_age),
+            body_battery_charged=COALESCE(excluded.body_battery_charged, garmin_daily.body_battery_charged),
+            body_battery_drained=COALESCE(excluded.body_battery_drained, garmin_daily.body_battery_drained),
+            steps_goal=COALESCE(excluded.steps_goal, garmin_daily.steps_goal),
+            moderate_intensity_minutes=COALESCE(excluded.moderate_intensity_minutes, garmin_daily.moderate_intensity_minutes),
+            vigorous_intensity_minutes=COALESCE(excluded.vigorous_intensity_minutes, garmin_daily.vigorous_intensity_minutes),
+            lowest_spo2=COALESCE(excluded.lowest_spo2, garmin_daily.lowest_spo2),
             synced_at=CURRENT_TIMESTAMP
     """, params)
 
@@ -648,8 +651,11 @@ def upsert_sleep(conn, d_str: str, sleep_data: dict):
     scores = dto.get("sleepScores")
     score = scores.get("overall") if isinstance(scores, dict) else None
 
+    user_id = 1  # single-user system
+
     params = (
         d_str,
+        user_id,
         _val(dto.get("sleepStartTimestampLocal")),
         _val(dto.get("sleepEndTimestampLocal")),
         _val(dto.get("sleepTimeSeconds")),
@@ -670,28 +676,28 @@ def upsert_sleep(conn, d_str: str, sleep_data: dict):
 
     _exec(conn, """
         INSERT INTO garmin_sleep
-        (date, sleep_start, sleep_end, duration_seconds,
+        (date, user_id, sleep_start, sleep_end, duration_seconds,
          deep_seconds, light_seconds, rem_seconds, awake_seconds, sleep_score,
          avg_respiration, avg_spo2, lowest_spo2,
          avg_hr, lowest_hr, highest_hr, hrv_sleep, body_battery_change)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-        ON CONFLICT(date) DO UPDATE SET
-            sleep_start=COALESCE(excluded.sleep_start, sleep_start),
-            sleep_end=COALESCE(excluded.sleep_end, sleep_end),
-            duration_seconds=COALESCE(excluded.duration_seconds, duration_seconds),
-            deep_seconds=COALESCE(excluded.deep_seconds, deep_seconds),
-            light_seconds=COALESCE(excluded.light_seconds, light_seconds),
-            rem_seconds=COALESCE(excluded.rem_seconds, rem_seconds),
-            awake_seconds=COALESCE(excluded.awake_seconds, awake_seconds),
-            sleep_score=COALESCE(excluded.sleep_score, sleep_score),
-            avg_respiration=COALESCE(excluded.avg_respiration, avg_respiration),
-            avg_spo2=COALESCE(excluded.avg_spo2, avg_spo2),
-            lowest_spo2=COALESCE(excluded.lowest_spo2, lowest_spo2),
-            avg_hr=COALESCE(excluded.avg_hr, avg_hr),
-            lowest_hr=COALESCE(excluded.lowest_hr, lowest_hr),
-            highest_hr=COALESCE(excluded.highest_hr, highest_hr),
-            hrv_sleep=COALESCE(excluded.hrv_sleep, hrv_sleep),
-            body_battery_change=COALESCE(excluded.body_battery_change, body_battery_change),
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        ON CONFLICT(user_id, date) DO UPDATE SET
+            sleep_start=COALESCE(excluded.sleep_start, garmin_sleep.sleep_start),
+            sleep_end=COALESCE(excluded.sleep_end, garmin_sleep.sleep_end),
+            duration_seconds=COALESCE(excluded.duration_seconds, garmin_sleep.duration_seconds),
+            deep_seconds=COALESCE(excluded.deep_seconds, garmin_sleep.deep_seconds),
+            light_seconds=COALESCE(excluded.light_seconds, garmin_sleep.light_seconds),
+            rem_seconds=COALESCE(excluded.rem_seconds, garmin_sleep.rem_seconds),
+            awake_seconds=COALESCE(excluded.awake_seconds, garmin_sleep.awake_seconds),
+            sleep_score=COALESCE(excluded.sleep_score, garmin_sleep.sleep_score),
+            avg_respiration=COALESCE(excluded.avg_respiration, garmin_sleep.avg_respiration),
+            avg_spo2=COALESCE(excluded.avg_spo2, garmin_sleep.avg_spo2),
+            lowest_spo2=COALESCE(excluded.lowest_spo2, garmin_sleep.lowest_spo2),
+            avg_hr=COALESCE(excluded.avg_hr, garmin_sleep.avg_hr),
+            lowest_hr=COALESCE(excluded.lowest_hr, garmin_sleep.lowest_hr),
+            highest_hr=COALESCE(excluded.highest_hr, garmin_sleep.highest_hr),
+            hrv_sleep=COALESCE(excluded.hrv_sleep, garmin_sleep.hrv_sleep),
+            body_battery_change=COALESCE(excluded.body_battery_change, garmin_sleep.body_battery_change),
             synced_at=CURRENT_TIMESTAMP
     """, params)
 
@@ -778,8 +784,11 @@ def upsert_body_comp(conn, d_str: str, data: dict):
     if weight and weight > 1000:
         weight = weight / 1000.0
 
+    user_id = 1  # single-user system
+
     params = (
         d_str,
+        user_id,
         weight,
         _val(data.get("bmi")),
         _val(data.get("bodyFatPercentage")) or _val(data.get("bodyFat")),
@@ -793,19 +802,19 @@ def upsert_body_comp(conn, d_str: str, data: dict):
 
     _exec(conn, """
         INSERT INTO garmin_body_composition
-        (date, weight, bmi, body_fat_pct, muscle_mass, bone_mass,
+        (date, user_id, weight, bmi, body_fat_pct, muscle_mass, bone_mass,
          body_water_pct, physique_rating, metabolic_age, visceral_fat)
-        VALUES (?,?,?,?,?,?,?,?,?,?)
-        ON CONFLICT(date) DO UPDATE SET
-            weight=COALESCE(excluded.weight, weight),
-            bmi=COALESCE(excluded.bmi, bmi),
-            body_fat_pct=COALESCE(excluded.body_fat_pct, body_fat_pct),
-            muscle_mass=COALESCE(excluded.muscle_mass, muscle_mass),
-            bone_mass=COALESCE(excluded.bone_mass, bone_mass),
-            body_water_pct=COALESCE(excluded.body_water_pct, body_water_pct),
-            physique_rating=COALESCE(excluded.physique_rating, physique_rating),
-            metabolic_age=COALESCE(excluded.metabolic_age, metabolic_age),
-            visceral_fat=COALESCE(excluded.visceral_fat, visceral_fat),
+        VALUES (?,?,?,?,?,?,?,?,?,?,?)
+        ON CONFLICT(user_id, date) DO UPDATE SET
+            weight=COALESCE(excluded.weight, garmin_body_composition.weight),
+            bmi=COALESCE(excluded.bmi, garmin_body_composition.bmi),
+            body_fat_pct=COALESCE(excluded.body_fat_pct, garmin_body_composition.body_fat_pct),
+            muscle_mass=COALESCE(excluded.muscle_mass, garmin_body_composition.muscle_mass),
+            bone_mass=COALESCE(excluded.bone_mass, garmin_body_composition.bone_mass),
+            body_water_pct=COALESCE(excluded.body_water_pct, garmin_body_composition.body_water_pct),
+            physique_rating=COALESCE(excluded.physique_rating, garmin_body_composition.physique_rating),
+            metabolic_age=COALESCE(excluded.metabolic_age, garmin_body_composition.metabolic_age),
+            visceral_fat=COALESCE(excluded.visceral_fat, garmin_body_composition.visceral_fat),
             synced_at=CURRENT_TIMESTAMP
     """, params)
 

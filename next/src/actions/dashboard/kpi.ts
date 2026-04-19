@@ -68,6 +68,7 @@ async function fetchKpiPeriodData(
     incomeAgg,
     expenseAgg,
     garminAgg,
+    sleepAgg,
     latestWeight,
     gymAgg,
     gymMinutesAgg,
@@ -85,7 +86,11 @@ async function fetchKpiPeriodData(
     }),
     prisma.garminDaily.aggregate({
       where: { userId, date: { gte: toDateOnly(from), lte: toDateOnly(to) } },
-      _avg: { steps: true, sleepScore: true, restingHr: true, bodyBatteryHigh: true },
+      _avg: { steps: true, restingHr: true, bodyBatteryHigh: true },
+    }),
+    prisma.garminSleep.aggregate({
+      where: { userId, date: { gte: toDateOnly(from), lte: toDateOnly(to) } },
+      _avg: { sleepScore: true },
     }),
     prisma.withingsMeasurement.findFirst({
       where: { userId, date: { gte: toDateOnly(from), lte: toDateOnly(to) }, weight: { not: null } },
@@ -125,7 +130,7 @@ async function fetchKpiPeriodData(
     expenses: Math.round(expenses * 100) / 100,
     savingsRate: Math.round(savingsRate),
     avgSteps: Math.round(garminAgg._avg.steps ?? 0),
-    avgSleepScore: Math.round(garminAgg._avg.sleepScore ?? 0),
+    avgSleepScore: Math.round(sleepAgg._avg.sleepScore ?? 0),
     avgRestingHr: Math.round(garminAgg._avg.restingHr ?? 0),
     avgBodyBattery: Math.round(garminAgg._avg.bodyBatteryHigh ?? 0),
     latestWeight: latestWeight?.weight ?? null,
