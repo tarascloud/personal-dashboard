@@ -711,6 +711,7 @@
     "wake_time": "Час пробудження",
     "avg_weekly_sleep": "Сер. сон",
     "avg_sleep_need": "Сер. потреба сну",
+    "calories": "Калорії",
     "active_calories": "Активні калорії",
     "resting_calories": "Калорії спокою",
     "connect_garmin_hint": "Підключіть Garmin для відображення даних здоров'я",

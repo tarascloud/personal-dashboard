@@ -1,6 +1,9 @@
 "use client";
 
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { installRechartsWarningSuppressor } from "@/lib/suppress-recharts-warnings";
+
+installRechartsWarningSuppressor();
 
 export function ThemeProvider({
   children,

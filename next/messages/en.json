@@ -707,6 +707,7 @@
     "wake_time": "Wake Time",
     "avg_weekly_sleep": "Avg Sleep",
     "avg_sleep_need": "Avg Sleep Need",
+    "calories": "Calories",
     "active_calories": "Active Calories",
     "resting_calories": "Resting Calories",
     "connect_garmin_hint": "Connect Garmin to see health data",

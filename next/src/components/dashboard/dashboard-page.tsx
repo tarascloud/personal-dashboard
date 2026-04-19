@@ -263,7 +263,7 @@ export function DashboardPage({
   const prev = kpis.previousPeriod;
 
   const lifeCards: KpiCardProps[] = [
-    { title: t("mood"), value: kpis.lifestyle.avgMood !== null ? `${kpis.lifestyle.avgMood}` : "\u2014", icon: <SmileIcon className="h-4 w-4" />, change: pctChange(kpis.lifestyle.avgMood, prev?.avgMood), improvementDirection: "up" },
+    { title: t("mood"), value: kpis.lifestyle.avgMood !== null ? `${kpis.lifestyle.avgMood}` : "\u2014", icon: <SmileIcon className="h-4 w-4" />, change: pctChange(kpis.lifestyle.avgMood, prev?.avgMood), improvementDirection: "up", distribution: kpis.lifestyle.moodDistribution },
     { title: t("sleep_quality"), value: `${kpis.health.avgSleepScore}`, icon: <ZapIcon className="h-4 w-4" />, change: pctChange(kpis.health.avgSleepScore, prev?.avgSleepScore), improvementDirection: "up" },
     { title: t("steps"), value: `${kpis.health.avgSteps.toLocaleString("en")}`, icon: <ActivityIcon className="h-4 w-4" />, change: pctChange(kpis.health.avgSteps, prev?.avgSteps), improvementDirection: "up" },
     { title: t("weight"), value: kpis.health.latestWeight !== null ? `${kpis.health.latestWeight.toFixed(1)} kg` : "\u2014", icon: <ScaleIcon className="h-4 w-4" />, change: pctChange(kpis.health.latestWeight, prev?.latestWeight), improvementDirection: "down" },

@@ -705,6 +705,7 @@
     "wake_time": "Hora de Despertar",
     "avg_weekly_sleep": "Sueno Promedio",
     "avg_sleep_need": "Necesidad Promedio",
+    "calories": "Calorias",
     "active_calories": "Calorias Activas",
     "resting_calories": "Calorias en Reposo",
     "connect_garmin_hint": "Conecta Garmin para ver datos de salud",

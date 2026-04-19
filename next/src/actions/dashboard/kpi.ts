@@ -52,6 +52,11 @@ export interface DashboardKPIs {
     avgCaffeine: number | null;
     totalSex: number;
     totalBj: number;
+    moodDistribution: {
+      negativePct: number;
+      neutralPct: number;
+      positivePct: number;
+    } | null;
   };
   food: {
     avgDailyCalories: number;
@@ -164,17 +169,40 @@ export async function getDashboardKPIs(period: {
       ]);
 
       // Also fetch full lifestyle aggregates for current period
-      const dailyLogAgg = await prisma.dailyLog.aggregate({
-        where: { userId: user.id, date: { gte: toDateOnly(from), lte: toDateOnly(to) } },
-        _avg: {
-          level: true,
-          energyLevel: true,
-          stressLevel: true,
-          focusQuality: true,
-          alcohol: true,
-          caffeine: true,
-        },
-      });
+      const [dailyLogAgg, moodDistRaw] = await Promise.all([
+        prisma.dailyLog.aggregate({
+          where: { userId: user.id, date: { gte: toDateOnly(from), lte: toDateOnly(to) } },
+          _avg: {
+            level: true,
+            energyLevel: true,
+            stressLevel: true,
+            focusQuality: true,
+            alcohol: true,
+            caffeine: true,
+          },
+        }),
+        prisma.$queryRaw<[{ negative: bigint; neutral: bigint; positive: bigint; total: bigint }]>`
+          SELECT
+            COUNT(*) FILTER (WHERE level >= -5 AND level <= -2) AS negative,
+            COUNT(*) FILTER (WHERE level > -2 AND level <= 2) AS neutral,
+            COUNT(*) FILTER (WHERE level > 2 AND level <= 5) AS positive,
+            COUNT(*) FILTER (WHERE level IS NOT NULL) AS total
+          FROM daily_log
+          WHERE user_id = ${user.id}
+            AND date >= ${from}::date
+            AND date <= ${to}::date
+        `,
+      ]);
+
+      const moodRow = moodDistRaw[0];
+      const moodTotal = Number(moodRow?.total ?? 0);
+      const moodDistribution = moodTotal > 0
+        ? {
+            negativePct: Math.round((Number(moodRow.negative) / moodTotal) * 1000) / 10,
+            neutralPct: Math.round((Number(moodRow.neutral) / moodTotal) * 1000) / 10,
+            positivePct: Math.round((Number(moodRow.positive) / moodTotal) * 1000) / 10,
+          }
+        : null;
 
       return {
         finance: {
@@ -214,6 +242,7 @@ export async function getDashboardKPIs(period: {
             : null,
           totalSex: current.totalSex,
           totalBj: current.totalBj,
+          moodDistribution,
         },
         food: {
           avgDailyCalories: current.avgDailyCalories,

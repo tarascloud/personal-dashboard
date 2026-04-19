@@ -24,6 +24,11 @@ export interface KpiCardProps {
   icon: React.ReactNode;
   change?: ChangeInfo | null;
   improvementDirection?: "up" | "down" | "neutral";
+  distribution?: {
+    negativePct: number;
+    neutralPct: number;
+    positivePct: number;
+  } | null;
 }
 
 export interface KpiGridProps {
@@ -91,6 +96,7 @@ function KpiCard({
   icon,
   change,
   improvementDirection = "up",
+  distribution,
   index = 0,
 }: KpiCardProps & { index?: number }) {
   const t = useTranslations("dashboard");
@@ -106,6 +112,22 @@ function KpiCard({
         <p className="text-lg sm:text-2xl font-bold tracking-tight truncate">{value}</p>
         {subtitle && (
           <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
+        )}
+        {distribution && (
+          <div
+            className="mt-1 flex items-center gap-2 text-xs font-medium tabular-nums"
+            data-testid="kpi-mood-distribution"
+          >
+            <span style={{ color: "var(--chart-mood-negative)" }} title="-5 … -2">
+              {distribution.negativePct}%
+            </span>
+            <span style={{ color: "var(--chart-mood-neutral)" }} title="-2.1 … +2">
+              {distribution.neutralPct}%
+            </span>
+            <span style={{ color: "var(--chart-mood-positive)" }} title="+2.1 … +5">
+              {distribution.positivePct}%
+            </span>
+          </div>
         )}
         {change !== undefined && (
           <div className="mt-1">

@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,13 @@ const FEATURES: { icon: LucideIcon; nameKey: string; descKey: string }[] = [
 export function LoginForm({ githubEnabled }: { githubEnabled: boolean }) {
   const t = useTranslations("login");
   const ts = useTranslations("settings");
+
+  // In-app browser detection
+  const [isInApp, setIsInApp] = useState(false);
+  useEffect(() => {
+    const ua = navigator.userAgent || "";
+    setIsInApp(/FBAN|FBAV|Instagram|Telegram|TelegramBot|Twitter|Line\/|Snapchat|WhatsApp|Viber|Pinterest|LinkedIn/i.test(ua));
+  }, []);
 
   // Passkey state
   const [passkeyLoading, setPasskeyLoading] = useState(false);
@@ -79,6 +86,26 @@ export function LoginForm({ githubEnabled }: { githubEnabled: boolean }) {
       {/* Auth buttons */}
       <Card className="w-full max-w-sm mb-8">
         <CardContent className="space-y-4 pt-6">
+          {/* In-app browser warning */}
+          {isInApp && (
+            <div className="p-3 border border-amber-500/30 bg-amber-500/10 rounded-md text-sm space-y-2">
+              <p className="font-medium">Google sign-in is not supported in this browser.</p>
+              <p className="text-muted-foreground text-xs">Please open this page in Safari or Chrome.</p>
+              <div className="flex gap-2">
+                <a
+                  href={`https://www.google.com/url?q=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs underline"
+                >
+                  Open in Browser
+                </a>
+                <button onClick={() => navigator.clipboard?.writeText(window.location.href)} className="text-xs underline text-muted-foreground">
+                  Copy link
+                </button>
+              </div>
+            </div>
+          )}
           {/* Google Sign In */}
           <Button
             className="w-full"
