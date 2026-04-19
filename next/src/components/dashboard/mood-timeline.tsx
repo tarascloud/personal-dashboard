@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { MaximizeIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -74,6 +75,20 @@ function toChartData(points: MoodTimelinePoint[]): ChartPoint[] {
   }));
 }
 
+function computeMoodDistribution(points: MoodTimelinePoint[]) {
+  const withLevel = points.filter((p) => p.level != null) as Array<{ level: number }>;
+  const total = withLevel.length;
+  if (total === 0) return null;
+  const neg = withLevel.filter((p) => p.level >= -5 && p.level <= -2).length;
+  const pos = withLevel.filter((p) => p.level > 2 && p.level <= 5).length;
+  const neu = total - neg - pos;
+  return {
+    negativePct: Math.round((neg / total) * 1000) / 10,
+    neutralPct: Math.round((neu / total) * 1000) / 10,
+    positivePct: Math.round((pos / total) * 1000) / 10,
+  };
+}
+
 function buildGradientStops(data: { mood: number | null }[], cc: ChartColors = CHART_COLORS) {
   const validPoints = data.map((d, i) => ({ i, mood: d.mood })).filter(p => p.mood != null);
   if (validPoints.length < 2) return null;
@@ -102,6 +117,7 @@ export function MoodTimeline({
   onFullChartOpenChange,
 }: MoodTimelineProps) {
   const { colors: CC } = useChartColors();
+  const distribution = useMemo(() => computeMoodDistribution(moodTimeline), [moodTimeline]);
 
   if (moodTimeline.length === 0) {
     return (
@@ -193,8 +209,26 @@ export function MoodTimeline({
 
   return (
     <Card>
-      <CardHeader className="flex-row items-center justify-between">
-        <CardTitle className="text-base">{titleLabel}</CardTitle>
+      <CardHeader className="flex-row items-center justify-between gap-2">
+        <div className="flex items-center gap-3 min-w-0">
+          <CardTitle className="text-base">{titleLabel}</CardTitle>
+          {distribution && (
+            <div
+              className="flex items-center gap-2 text-xs font-medium tabular-nums"
+              data-testid="mood-timeline-distribution"
+            >
+              <span style={{ color: "var(--chart-mood-negative)" }} title="-5 … -2">
+                {distribution.negativePct}%
+              </span>
+              <span style={{ color: "var(--chart-mood-neutral)" }} title="-2.1 … +2">
+                {distribution.neutralPct}%
+              </span>
+              <span style={{ color: "var(--chart-mood-positive)" }} title="+2.1 … +5">
+                {distribution.positivePct}%
+              </span>
+            </div>
+          )}
+        </div>
         <Button
           variant="ghost"
           size="sm"
