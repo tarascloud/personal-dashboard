@@ -8,7 +8,9 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { PieChartIcon } from "lucide-react";
 import type { ScreenTimeCategoryBreakdown } from "@/actions/dashboard";
+import { EmptyState } from "@/components/shared/empty-state";
 
 /* ------------------------------------------------------------------ */
 /* Color palette for categories (up to 6)                              */
@@ -44,8 +46,8 @@ export function ScreenTimeCategories({
 }: ScreenTimeCategoriesProps) {
   if (categories.length === 0) {
     return (
-      <div className="flex h-[180px] items-center justify-center text-xs text-muted-foreground">
-        No category data
+      <div className="flex h-[180px] items-center justify-center">
+        <EmptyState title="No category data" icon={PieChartIcon} compact />
       </div>
     );
   }

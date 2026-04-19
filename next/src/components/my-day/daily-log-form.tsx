@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { SaveIcon } from "lucide-react";
+import { SaveIcon, FrownIcon, MehIcon, MinusCircleIcon, SmileIcon, LaughIcon, FlameIcon, HeartIcon, WineIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -96,11 +96,11 @@ export function DailyLogForm({
               </span>
             </div>
             <div className="flex justify-between text-xs text-muted-foreground mb-1">
-              <span>{"\u{1F624}"} -10</span>
-              <span>{"\u{1F614}"} -5</span>
-              <span>{"\u{1F610}"} 0</span>
-              <span>{"\u{1F642}"} +5</span>
-              <span>{"\u{1F604}"} +10</span>
+              <span className="inline-flex items-center gap-0.5"><FrownIcon className="size-3" /> -10</span>
+              <span className="inline-flex items-center gap-0.5"><MehIcon className="size-3" /> -5</span>
+              <span className="inline-flex items-center gap-0.5"><MinusCircleIcon className="size-3" /> 0</span>
+              <span className="inline-flex items-center gap-0.5"><SmileIcon className="size-3" /> +5</span>
+              <span className="inline-flex items-center gap-0.5"><LaughIcon className="size-3" /> +10</span>
             </div>
             <div className="relative">
               <div className="absolute inset-0 h-2 top-[9px] rounded-full" style={{
@@ -180,7 +180,7 @@ export function DailyLogForm({
           {/* Counters: Sex, BJ, Alcohol, Caffeine — compact number inputs */}
           <div className="grid grid-cols-4 gap-3">
             <div className="space-y-1">
-              <Label className="text-xs">{"\u{1F525}"} {t("sex")}</Label>
+              <Label className="text-xs"><FlameIcon className="inline size-3 mr-0.5" /> {t("sex")}</Label>
               <Input
                 type="number"
                 min={0}
@@ -191,7 +191,7 @@ export function DailyLogForm({
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs">{"\u{1F48B}"} BJ</Label>
+              <Label className="text-xs"><HeartIcon className="inline size-3 mr-0.5" /> BJ</Label>
               <Input
                 type="number"
                 min={0}
@@ -202,7 +202,7 @@ export function DailyLogForm({
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs">{"\u{1F377}"}</Label>
+              <Label className="text-xs"><WineIcon className="inline size-3 mr-0.5" /></Label>
               <Input
                 type="number"
                 min={0}

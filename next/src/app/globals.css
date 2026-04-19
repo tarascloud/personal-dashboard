@@ -176,7 +176,7 @@
   --card-bg-start: #ffffff;
   --card-bg-end: #f8fafc;
   --card-hover-border: #cbd5e1;
-  --card-hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --card-hover-shadow: 0 8px 24px rgba(37, 99, 235, 0.06), 0 2px 8px rgba(15, 23, 42, 0.04);
   --input-bg: #f8fafc;
   --hover-overlay: rgba(0, 0, 0, 0.03);
   --skeleton-base: #e2e8f0;
@@ -318,7 +318,7 @@
   --card-bg-start: rgba(255, 255, 255, 0.05);
   --card-bg-end: rgba(255, 255, 255, 0.02);
   --card-hover-border: rgba(255, 255, 255, 0.12);
-  --card-hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --card-hover-shadow: 0 8px 24px rgba(59, 130, 246, 0.08), 0 2px 8px rgba(0, 0, 0, 0.25);
   --input-bg: rgba(0, 0, 0, 0.3);
   --hover-overlay: rgba(255, 255, 255, 0.03);
   --skeleton-base: #1e293b;
@@ -433,7 +433,7 @@
   --card-bg-start: #ffffff;
   --card-bg-end: #fdfcfa;
   --card-hover-border: #d4cfc7;
-  --card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.06);
+  --card-hover-shadow: 0 4px 12px rgba(109, 90, 240, 0.06), 0 12px 32px rgba(0, 0, 0, 0.04);
   --input-bg: #faf9f7;
   --hover-overlay: rgba(0, 0, 0, 0.02);
   --skeleton-base: #e8e4de;
@@ -546,7 +546,7 @@
   --card-bg-start: rgba(255, 255, 255, 0.04);
   --card-bg-end: rgba(255, 255, 255, 0.02);
   --card-hover-border: rgba(255, 255, 255, 0.14);
-  --card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 12px 32px rgba(0, 0, 0, 0.3);
+  --card-hover-shadow: 0 4px 12px rgba(109, 90, 240, 0.1), 0 12px 32px rgba(0, 0, 0, 0.2);
   --input-bg: rgba(0, 0, 0, 0.3);
   --hover-overlay: rgba(255, 255, 255, 0.03);
   --skeleton-base: #242322;
@@ -662,7 +662,7 @@
   --card-bg-start: rgba(255, 255, 255, 0.04);
   --card-bg-end: rgba(255, 255, 255, 0.02);
   --card-hover-border: rgba(255, 168, 0, 0.25);
-  --card-hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --card-hover-shadow: 0 8px 24px rgba(255, 168, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.3);
   --input-bg: rgba(0, 0, 0, 0.3);
   --hover-overlay: rgba(255, 214, 0, 0.03);
   --skeleton-base: #2b2d30;
@@ -801,6 +801,9 @@
   html {
     @apply scroll-smooth font-sans;
   }
+  h1, h2, h3 {
+    letter-spacing: -0.025em;
+  }
 
   /* Scrollbar */
   ::-webkit-scrollbar {
@@ -887,6 +890,26 @@
   }
 }
 
+/* ── Skeleton shimmer ── */
+
+@keyframes skeletonShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    100deg,
+    var(--skeleton-base) 0%,
+    var(--skeleton-base) 35%,
+    var(--skeleton-shine) 50%,
+    var(--skeleton-base) 65%,
+    var(--skeleton-base) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.8s ease-in-out infinite;
+}
+
 /* ── UX-8.5 Page transition animation ── */
 
 @keyframes fadeIn {
@@ -913,8 +936,8 @@
 
 .metric-card {
   background: linear-gradient(to bottom right, var(--card-bg-start), var(--card-bg-end));
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  animation: fadeInUp 0.4s ease both;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
   position: relative;
   overflow: hidden;
 }
@@ -935,19 +958,38 @@
   border-color: var(--card-hover-border);
 }
 
+.metric-card:active {
+  transform: scale(0.98);
+  transition-duration: 0.1s;
+}
+
 .metric-card:hover::after {
   opacity: 1;
 }
 
+/* ── TC-PD-12 Card hover transition ── */
+
+.card-hover-fx {
+  transition: box-shadow 0.2s ease, outline-color 0.2s ease;
+}
+
+.card-hover-fx:hover {
+  box-shadow: var(--card-hover-shadow);
+}
+
 /* Staggered animation delay utility classes */
-.stagger-1 { animation-delay: 0.04s; }
-.stagger-2 { animation-delay: 0.08s; }
-.stagger-3 { animation-delay: 0.12s; }
-.stagger-4 { animation-delay: 0.16s; }
-.stagger-5 { animation-delay: 0.2s; }
-.stagger-6 { animation-delay: 0.24s; }
-.stagger-7 { animation-delay: 0.28s; }
-.stagger-8 { animation-delay: 0.32s; }
+.stagger-1  { animation-delay: 0.04s; }
+.stagger-2  { animation-delay: 0.08s; }
+.stagger-3  { animation-delay: 0.12s; }
+.stagger-4  { animation-delay: 0.16s; }
+.stagger-5  { animation-delay: 0.20s; }
+.stagger-6  { animation-delay: 0.24s; }
+.stagger-7  { animation-delay: 0.28s; }
+.stagger-8  { animation-delay: 0.32s; }
+.stagger-9  { animation-delay: 0.36s; }
+.stagger-10 { animation-delay: 0.40s; }
+.stagger-11 { animation-delay: 0.44s; }
+.stagger-12 { animation-delay: 0.48s; }
 
 /* ── D5.2 Focus ring ── */
 

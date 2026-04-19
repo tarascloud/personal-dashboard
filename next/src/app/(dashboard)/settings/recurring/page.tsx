@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2 } from "lucide-react";
+import { Trash2, ArrowDownLeftIcon, ArrowUpRightIcon } from "lucide-react";
 
 type RecurringTx = {
   id: number;
@@ -219,7 +219,7 @@ export default function RecurringPage() {
                     {item.txType === "INCOME" ? "+" : "-"}{item.amountEur.toFixed(2)} EUR
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {item.txType === "INCOME" ? "📥" : "📤"}
+                    {item.txType === "INCOME" ? <ArrowDownLeftIcon className="size-3.5 text-income" /> : <ArrowUpRightIcon className="size-3.5 text-expense" />}
                   </span>
                   <Button
                     variant="ghost"

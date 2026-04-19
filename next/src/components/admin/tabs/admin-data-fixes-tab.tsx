@@ -74,7 +74,7 @@ export function AdminDataFixesTab({ isPending, onFixCurrencyConversion }: Props)
 
             {data.integrations.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium mb-2">🔗 Integration Settings</h3>
+                <h3 className="text-sm font-medium mb-2">Integration Settings</h3>
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="border-b"><th className="text-left p-1.5 font-medium">Integration</th><th className="text-left p-1.5 font-medium">Keys</th><th className="text-right p-1.5 font-medium">Users</th></tr>
@@ -98,7 +98,7 @@ export function AdminDataFixesTab({ isPending, onFixCurrencyConversion }: Props)
               const userEntries = Object.entries(data.perUser).sort((a, b) => b[1].total - a[1].total);
               return (
                 <div>
-                  <h3 className="text-sm font-medium mb-2">👤 Per User</h3>
+                  <h3 className="text-sm font-medium mb-2">Per User</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs">
                       <thead>

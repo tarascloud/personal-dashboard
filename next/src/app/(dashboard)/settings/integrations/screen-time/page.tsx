@@ -131,8 +131,8 @@ export default function ScreenTimeIntegrationPage() {
 
       {/* Hero header */}
       <div className="flex items-start gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-white text-2xl shadow-md">
-          📱
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-md">
+          <SmartphoneIcon className="size-6" />
         </div>
         <div>
           <h2 className="text-lg font-semibold">Apple Screen Time</h2>
@@ -184,7 +184,7 @@ export default function ScreenTimeIntegrationPage() {
         <Card className={`p-5 space-y-4 transition-all ${step === 1 ? "ring-2 ring-blue-500/30" : ""}`}>
           <div className="flex items-center gap-3">
             <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${step > 1 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"}`}>
-              {step > 1 ? "✓" : "1"}
+              {step > 1 ? <CheckCircleIcon className="size-3.5" /> : "1"}
             </div>
             <div className="flex items-center gap-2">
               <KeyIcon className="h-4 w-4 text-muted-foreground" />
@@ -231,7 +231,7 @@ export default function ScreenTimeIntegrationPage() {
                 onClick={handleSave}
                 disabled={isDemo || isPending || !apiToken.trim()}
               >
-                {saved ? "Збережено ✓" : "Зберегти"}
+                {saved ? <><CheckCircleIcon className="size-3.5 mr-1" />Збережено</> : "Зберегти"}
               </Button>
             </div>
           </div>
@@ -241,7 +241,7 @@ export default function ScreenTimeIntegrationPage() {
         <Card className={`p-5 space-y-4 transition-all ${step === 2 ? "ring-2 ring-blue-500/30" : ""}`}>
           <div className="flex items-center gap-3">
             <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${step > 2 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : step === 2 ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" : "bg-muted text-muted-foreground"}`}>
-              {step > 2 ? "✓" : "2"}
+              {step > 2 ? <CheckCircleIcon className="size-3.5" /> : "2"}
             </div>
             <div className="flex items-center gap-2">
               <MonitorSmartphoneIcon className="h-4 w-4 text-muted-foreground" />
@@ -344,7 +344,7 @@ launchctl load ~/Library/LaunchAgents/cloud.taras.screen-time-sync.plist`}</pre>
         <Card className={`p-5 transition-all ${step === 3 ? "ring-2 ring-green-500/30" : ""}`}>
           <div className="flex items-center gap-3">
             <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${step === 3 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-muted text-muted-foreground"}`}>
-              {step === 3 ? "✓" : "3"}
+              {step === 3 ? <CheckCircleIcon className="size-3.5" /> : "3"}
             </div>
             <div className="flex items-center gap-2">
               <LinkIcon className="h-4 w-4 text-muted-foreground" />

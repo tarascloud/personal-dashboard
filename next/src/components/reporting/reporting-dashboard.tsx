@@ -76,7 +76,7 @@ function CountrySection({
       >
         <CardTitle className="text-base flex items-center gap-2">
           {open ? <ChevronDownIcon className="size-4" /> : <ChevronRightIcon className="size-4" />}
-          {flag} {country}
+          <span className="inline-flex items-center justify-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{flag}</span> {country}
           <Badge variant="secondary" className="ml-auto text-xs">
             {declarations.length} {t("declarations")} · {totalIncome.toLocaleString("en")} {currencySymbol}
           </Badge>
@@ -181,7 +181,7 @@ export function ReportingDashboard({ overview }: ReportingDashboardProps) {
       {/* UA Section */}
       <CountrySection
         country={t("ukraine_fop")}
-        flag="🇺🇦"
+        flag="UA"
         declarations={uaDeclarations}
         deadlines={uaDeadlines}
         totalIncome={overview.totalIncomeUA}
@@ -193,7 +193,7 @@ export function ReportingDashboard({ overview }: ReportingDashboardProps) {
       {/* ES Section */}
       <CountrySection
         country={t("spain_irpf")}
-        flag="🇪🇸"
+        flag="ES"
         declarations={esDeclarations}
         deadlines={esDeadlines}
         totalIncome={overview.totalIncomeES}

@@ -7,19 +7,20 @@ import { InsightsPanel } from "@/components/insights/insights-panel";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ChevronDownIcon, ChevronRightIcon, AlertCircleIcon, RefreshCwIcon, BarChart3Icon, ListIcon, PieChartIcon, FileTextIcon } from "lucide-react";
+import { ChevronDownIcon, ChevronRightIcon, AlertCircleIcon, RefreshCwIcon, BarChart3Icon, ListIcon, PieChartIcon, FileTextIcon, LandmarkIcon, CandlestickChartIcon, TrendingUpIcon } from "lucide-react";
 import { toast } from "sonner";
 import { syncIbkrToDb, getIbkrAllocation, getIbkrPerformance, syncIbkrTradesToDb } from "@/actions/brokers-ibkr";
 import { syncTrading212Portfolio } from "@/actions/brokers-trading212";
 import { syncEtorroPortfolio } from "@/actions/brokers-etorro";
 import { getInvestmentsSummary, getBrokerTransactions } from "@/actions/brokers-common";
+import { EmptyState } from "@/components/shared/empty-state";
 
-type BrokerDef = { id: string; name: string; icon: string; href: string; desc: string; brokerKey: string };
+type BrokerDef = { id: string; name: string; icon: React.ComponentType<{ className?: string }>; href: string; desc: string; brokerKey: string };
 
 const BROKERS: BrokerDef[] = [
-  { id: "ibkr", name: "Interactive Brokers", icon: "\u{1F3E6}", href: "/settings/integrations/ibkr", desc: "Stocks, ETFs, options, futures, forex", brokerKey: "IBKR" },
-  { id: "etoro", name: "eTorro", icon: "\u{1F4CA}", href: "/settings/integrations/etoro", desc: "Social trading, crypto, stocks, ETFs", brokerKey: "ETORRO" },
-  { id: "trading212", name: "Trading 212", icon: "\u{1F4C8}", href: "/settings/integrations/trading212", desc: "Stocks, ETFs (Invest/ISA accounts)", brokerKey: "TRADING212" },
+  { id: "ibkr", name: "Interactive Brokers", icon: LandmarkIcon, href: "/settings/integrations/ibkr", desc: "Stocks, ETFs, options, futures, forex", brokerKey: "IBKR" },
+  { id: "etoro", name: "eTorro", icon: CandlestickChartIcon, href: "/settings/integrations/etoro", desc: "Social trading, crypto, stocks, ETFs", brokerKey: "ETORRO" },
+  { id: "trading212", name: "Trading 212", icon: TrendingUpIcon, href: "/settings/integrations/trading212", desc: "Stocks, ETFs (Invest/ISA accounts)", brokerKey: "TRADING212" },
 ];
 
 type Position = {
@@ -80,7 +81,7 @@ function AllocationChart({ data, title }: { data: Record<string, number>; title:
 
 function PerformanceChart({ data }: { data: PerformanceData }) {
   const nav = data.nav;
-  if (!nav?.data?.length || !nav?.dates?.length) return <p className="text-xs text-muted-foreground">No performance data</p>;
+  if (!nav?.data?.length || !nav?.dates?.length) return <EmptyState title="No performance data" icon={BarChart3Icon} compact />;
 
   const values = nav.data;
   const min = Math.min(...values);
@@ -115,7 +116,7 @@ function PerformanceChart({ data }: { data: PerformanceData }) {
 }
 
 function TransactionsTable({ transactions }: { transactions: BrokerTx[] }) {
-  if (transactions.length === 0) return <p className="text-xs text-muted-foreground py-2">No transactions yet. Sync trades or import via Flex.</p>;
+  if (transactions.length === 0) return <EmptyState title="No transactions yet" description="Sync trades or import via Flex." icon={ListIcon} compact />;
 
   return (
     <Table>
@@ -215,7 +216,7 @@ function BrokerSection({ broker, connected, positions, summary, t, onSync }: {
       <CardHeader className="cursor-pointer select-none py-3" onClick={() => setOpen(!open)}>
         <CardTitle className="text-base flex items-center gap-2">
           {open ? <ChevronDownIcon className="size-4" /> : <ChevronRightIcon className="size-4" />}
-          {broker.icon} {broker.name}
+          <broker.icon className="size-4" /> {broker.name}
           {summary && (
             <span className="text-sm font-normal text-muted-foreground ml-2">
               EUR {(summary.navEur || summary.nav).toLocaleString("en", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -465,7 +466,7 @@ export function InvestmentsPage({ initialData }: InvestmentsPageProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">{"\u{1F4CA}"} {t("title")}</h2>
+      <h2 className="text-xl font-bold flex items-center gap-2"><BarChart3Icon className="size-5" /> {t("title")}</h2>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

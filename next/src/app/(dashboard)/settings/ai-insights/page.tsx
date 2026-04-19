@@ -17,6 +17,7 @@ import {
   DumbbellIcon,
   ShoppingCartIcon,
   ThumbsUpIcon,
+  ThumbsDownIcon,
   RotateCcwIcon,
   HistoryIcon,
   FlaskConicalIcon,
@@ -226,8 +227,8 @@ export default function AiInsightsSettingsPage() {
               <thead>
                 <tr className="text-muted-foreground text-left">
                   <th className="pb-2 font-medium">{t("ai_insights_page")}</th>
-                  <th className="pb-2 font-medium text-center">👍</th>
-                  <th className="pb-2 font-medium text-center">👎</th>
+                  <th className="pb-2 font-medium text-center"><ThumbsUpIcon className="size-3.5 inline" /></th>
+                  <th className="pb-2 font-medium text-center"><ThumbsDownIcon className="size-3.5 inline" /></th>
                   <th className="pb-2 font-medium text-right">{t("ai_insights_last_feedback")}</th>
                 </tr>
               </thead>

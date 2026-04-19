@@ -6,6 +6,7 @@ import { getSecret, setSecret } from "@/actions/settings";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AlertTriangleIcon } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useDemoMode } from "@/hooks/use-demo-mode";
@@ -54,7 +55,7 @@ export default function BinancePage() {
           <p>2. Complete identity verification</p>
           <p>3. Create API key (Security → API)</p>
           <p>4. Permissions: <strong>Read Info + Spot Trading</strong></p>
-          <p className="text-xs text-amber-600 dark:text-amber-400">⚠️ Never enable withdrawal permission</p>
+          <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1"><AlertTriangleIcon className="size-3.5 shrink-0" /> Never enable withdrawal permission</p>
         </div>
       </Card>
     </div>

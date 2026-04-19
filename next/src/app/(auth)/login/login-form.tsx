@@ -10,14 +10,15 @@ import { enterDemoMode } from "@/actions/demo";
 import { getPasskeyAuthenticationOptions, verifyPasskeyAuthentication } from "@/actions/passkey";
 import { startAuthentication } from "@simplewebauthn/browser";
 import { LanguageToggle } from "@/components/shared/language-toggle";
+import { WalletIcon, CalendarDaysIcon, DumbbellIcon, UtensilsIcon, LayoutDashboardIcon, BotIcon, type LucideIcon } from "lucide-react";
 
-const FEATURES = [
-  { icon: "\u{1F4B0}", nameKey: "mod_finance", descKey: "tooltip_finance" },
-  { icon: "\u{1F4C5}", nameKey: "mod_my_day", descKey: "tooltip_my_day" },
-  { icon: "\u{1F3CB}\u{FE0F}", nameKey: "mod_gym", descKey: "tooltip_gym" },
-  { icon: "\u{1F37D}\u{FE0F}", nameKey: "mod_food", descKey: "tooltip_food" },
-  { icon: "\u{1F4CA}", nameKey: "mod_dashboard", descKey: "tooltip_dashboard" },
-  { icon: "\u{1F916}", nameKey: "mod_ai", descKey: "tooltip_ai_chat" },
+const FEATURES: { icon: LucideIcon; nameKey: string; descKey: string }[] = [
+  { icon: WalletIcon, nameKey: "mod_finance", descKey: "tooltip_finance" },
+  { icon: CalendarDaysIcon, nameKey: "mod_my_day", descKey: "tooltip_my_day" },
+  { icon: DumbbellIcon, nameKey: "mod_gym", descKey: "tooltip_gym" },
+  { icon: UtensilsIcon, nameKey: "mod_food", descKey: "tooltip_food" },
+  { icon: LayoutDashboardIcon, nameKey: "mod_dashboard", descKey: "tooltip_dashboard" },
+  { icon: BotIcon, nameKey: "mod_ai", descKey: "tooltip_ai_chat" },
 ];
 
 export function LoginForm({ githubEnabled }: { githubEnabled: boolean }) {
@@ -58,7 +59,7 @@ export function LoginForm({ githubEnabled }: { githubEnabled: boolean }) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-8 relative">
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-8 relative">
       {/* Header with logo + language selector */}
       <div className="flex flex-col items-center text-center mb-6">
         <img
@@ -155,7 +156,7 @@ export function LoginForm({ githubEnabled }: { githubEnabled: boolean }) {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {FEATURES.map((f) => (
             <Card key={f.nameKey} className="p-4 text-center">
-              <div className="text-3xl mb-2">{f.icon}</div>
+              <div className="flex justify-center mb-2"><f.icon className="size-7 text-primary" /></div>
               <div className="text-sm font-semibold mb-1">{t(f.nameKey).split(" \u2014 ")[0]}</div>
               <div className="text-xs text-muted-foreground">{ts(f.descKey)}</div>
             </Card>

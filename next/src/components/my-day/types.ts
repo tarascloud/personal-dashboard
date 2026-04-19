@@ -68,13 +68,15 @@ export function formatDate(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
-export function getMoodEmoji(level: number): { emoji: string; color: string; label: string } {
-  if (level < -3) return { emoji: "\u{1F631}", color: "#dc2626", label: "Terrible" };
-  if (level < -2) return { emoji: "\u{1F624}", color: "#ef4444", label: "Very bad" };
-  if (level < -1) return { emoji: "\u{1F614}", color: "#f97316", label: "Bad" };
-  if (level < 2)  return { emoji: "\u{1F610}", color: "#94a3b8", label: "Normal" };
-  if (level < 3)  return { emoji: "\u{1F642}", color: "#22c55e", label: "Good" };
-  return { emoji: "\u{1F604}", color: "#a855f7", label: "Wonderful" };
+export type MoodIcon = "frown" | "meh" | "annoyed" | "minus" | "smile" | "laugh";
+
+export function getMoodEmoji(level: number): { emoji: string; icon: MoodIcon; color: string; label: string } {
+  if (level < -3) return { emoji: "", icon: "frown", color: "#dc2626", label: "Terrible" };
+  if (level < -2) return { emoji: "", icon: "annoyed", color: "#ef4444", label: "Very bad" };
+  if (level < -1) return { emoji: "", icon: "meh", color: "#f97316", label: "Bad" };
+  if (level < 2)  return { emoji: "", icon: "minus", color: "#94a3b8", label: "Normal" };
+  if (level < 3)  return { emoji: "", icon: "smile", color: "#22c55e", label: "Good" };
+  return { emoji: "", icon: "laugh", color: "#a855f7", label: "Wonderful" };
 }
 
 export function formatSleepDuration(seconds: number): string {

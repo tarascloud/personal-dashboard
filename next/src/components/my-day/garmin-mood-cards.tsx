@@ -3,14 +3,24 @@
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
-import { GarminData, GarminSleepData, getColorForValue, formatSleepDuration } from "./types";
+import { BatteryFullIcon, DumbbellIcon, HeartPulseIcon, MoonStarIcon, HeartIcon, FrownIcon, MehIcon, AnnoyedIcon, MinusCircleIcon, SmileIcon, LaughIcon } from "lucide-react";
+import { GarminData, GarminSleepData, getColorForValue, formatSleepDuration, type MoodIcon } from "./types";
+
+const MOOD_ICONS: Record<MoodIcon, React.ComponentType<{ className?: string }>> = {
+  frown: FrownIcon,
+  annoyed: AnnoyedIcon,
+  meh: MehIcon,
+  minus: MinusCircleIcon,
+  smile: SmileIcon,
+  laugh: LaughIcon,
+};
 
 interface GarminMoodCardsProps {
   garmin: GarminData;
   garminSleep: GarminSleepData;
   newLevel: number;
   prevLevel: number;
-  moodInfo: { emoji: string; color: string; label: string };
+  moodInfo: { emoji: string; icon: MoodIcon; color: string; label: string };
 }
 
 export function GarminMoodCards({
@@ -40,7 +50,7 @@ export function GarminMoodCards({
           <Card size="sm">
             <CardHeader className="pb-1">
               <CardTitle className="text-xs text-muted-foreground">
-                {moodInfo.emoji} {t("mood")}
+                {(() => { const MIcon = MOOD_ICONS[moodInfo.icon]; return <MIcon className="inline size-3.5 mr-0.5" />; })()} {t("mood")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -56,7 +66,7 @@ export function GarminMoodCards({
             <Card size="sm">
               <CardHeader className="pb-1">
                 <CardTitle className="text-xs text-muted-foreground">
-                  {"\u{1F50B}"} Body Battery
+                  <BatteryFullIcon className="inline size-3.5 mr-0.5" /> Body Battery
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -70,7 +80,7 @@ export function GarminMoodCards({
             <Card size="sm">
               <CardHeader className="pb-1">
                 <CardTitle className="text-xs text-muted-foreground">
-                  {"\u{1F3CB}"} Training Readiness
+                  <DumbbellIcon className="inline size-3.5 mr-0.5" /> Training Readiness
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -85,7 +95,7 @@ export function GarminMoodCards({
             <Card size="sm">
               <CardHeader className="pb-1">
                 <CardTitle className="text-xs text-muted-foreground">
-                  {"\u{1F49A}"} HRV
+                  <HeartPulseIcon className="inline size-3.5 mr-0.5" /> HRV
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -98,7 +108,7 @@ export function GarminMoodCards({
           <Card size="sm">
             <CardHeader className="pb-1">
               <CardTitle className="text-xs text-muted-foreground">
-                {"\u{1F634}"} {t("sleep_quality")}
+                <MoonStarIcon className="inline size-3.5 mr-0.5" /> {t("sleep_quality")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -122,7 +132,7 @@ export function GarminMoodCards({
             <Card size="sm">
               <CardHeader className="pb-1">
                 <CardTitle className="text-xs text-muted-foreground">
-                  {"\u2764\uFE0F"} Resting HR
+                  <HeartIcon className="inline size-3.5 mr-0.5" /> Resting HR
                 </CardTitle>
               </CardHeader>
               <CardContent>

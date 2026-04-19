@@ -14,7 +14,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { PencilIcon, CheckIcon, XIcon, TrashIcon, PlusIcon } from "lucide-react";
+import { PencilIcon, CheckIcon, XIcon, TrashIcon, PlusIcon, CalendarIcon } from "lucide-react";
 import {
   Accordion,
   AccordionItem,
@@ -376,7 +376,7 @@ export default function GymExercisesPage() {
                 <div className="flex gap-1">
                   {(["count", "name", "lastUsed"] as const).map(s => (
                     <Button key={s} variant={sortBy === s ? "default" : "outline"} size="sm" className="h-7 text-xs" onClick={() => setSortBy(s)}>
-                      {s === "count" ? "×" : s === "name" ? "A-Z" : "📅"}
+                      {s === "count" ? "x" : s === "name" ? "A-Z" : <CalendarIcon className="size-3.5" />}
                     </Button>
                   ))}
                 </div>

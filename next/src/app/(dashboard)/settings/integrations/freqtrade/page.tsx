@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { CheckCircleIcon, AlertCircleIcon } from "lucide-react";
+import { CheckCircleIcon, AlertCircleIcon, AlertTriangleIcon, FlaskConicalIcon, BanknoteIcon } from "lucide-react";
 import { useDemoMode } from "@/hooks/use-demo-mode";
 
 const EXCHANGES = [
@@ -102,7 +102,7 @@ export default function FreqtradeIntegrationPage() {
   return (
     <div className="space-y-4">
       {isDemo && <p className="text-xs text-muted-foreground">Read-only in demo mode</p>}
-      <h2 className="text-lg font-semibold">📈 Freqtrade Trading Bot</h2>
+      <h2 className="text-lg font-semibold">Freqtrade Trading Bot</h2>
 
       <Card className="p-4 space-y-4">
         <div className="flex items-center gap-2">
@@ -191,7 +191,7 @@ export default function FreqtradeIntegrationPage() {
           </p>
 
           <div className="flex items-center justify-between">
-            <Label className="text-sm">{dryRun ? "🧪 Dry Run (paper trading)" : "💰 Live Trading (real money)"}</Label>
+            <Label className="text-sm flex items-center gap-1.5">{dryRun ? <><FlaskConicalIcon className="size-3.5" /> Dry Run (paper trading)</> : <><BanknoteIcon className="size-3.5" /> Live Trading (real money)</>}</Label>
             <Switch checked={!dryRun} onCheckedChange={(v) => setDryRun(!v)} />
           </div>
 
@@ -212,7 +212,7 @@ export default function FreqtradeIntegrationPage() {
             }}
             disabled={isDemo || isPending}
           >
-            {dryRun ? "Apply Config (dry run)" : "⚠️ Apply Config (LIVE)"}
+            {dryRun ? "Apply Config (dry run)" : <><AlertTriangleIcon className="size-3.5 mr-1" /> Apply Config (LIVE)</>}
           </Button>
 
           {applyResult && (

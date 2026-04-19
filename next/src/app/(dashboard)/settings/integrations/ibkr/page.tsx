@@ -65,7 +65,7 @@ export default function IBKRPage() {
   return (
     <div className="space-y-4">
       {isDemo && <p className="text-xs text-muted-foreground">Read-only in demo mode</p>}
-      <h2 className="text-lg font-semibold">🏦 Interactive Brokers</h2>
+      <h2 className="text-lg font-semibold">Interactive Brokers</h2>
       <Card className="p-4 space-y-4">
         <div className="flex items-center gap-2">
           <span className="font-medium">Status:</span>

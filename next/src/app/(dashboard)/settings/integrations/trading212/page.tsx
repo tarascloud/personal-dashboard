@@ -43,7 +43,7 @@ export default function Trading212Page() {
   return (
     <div className="space-y-4">
       {isDemo && <p className="text-xs text-muted-foreground">Read-only in demo mode</p>}
-      <h2 className="text-lg font-semibold">🏦 Trading 212</h2>
+      <h2 className="text-lg font-semibold">Trading 212</h2>
       <Card className="p-4 space-y-4">
         <Badge variant={configured ? "default" : "secondary"}>{configured ? "Connected" : "Not configured"}</Badge>
         <div className="space-y-1">

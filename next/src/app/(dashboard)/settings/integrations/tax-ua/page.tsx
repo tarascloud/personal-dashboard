@@ -7,6 +7,7 @@ import { getSecret, setSecret, getUserPreference, setUserPreference } from "@/ac
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { CheckCircleIcon, XCircleIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -93,7 +94,7 @@ export default function TaxUAIntegrationPage() {
   return (
     <div className="space-y-4">
       {isDemo && <p className="text-xs text-muted-foreground">Read-only in demo mode</p>}
-      <h2 className="text-lg font-semibold">🇺🇦 Податки Україна (ФОП)</h2>
+      <h2 className="text-lg font-semibold"><span className="inline-flex items-center justify-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground mr-1.5">UA</span>Податки Україна (ФОП)</h2>
 
       <Card className="p-4 space-y-4">
         <div className="flex items-center gap-2">
@@ -188,13 +189,13 @@ export default function TaxUAIntegrationPage() {
           <div className={`text-sm p-3 rounded-md ${kepInfo.valid ? "bg-green-500/10 border border-green-500/30" : "bg-red-500/10 border border-red-500/30"}`}>
             {kepInfo.valid ? (
               <div className="space-y-1">
-                <p className="font-medium text-green-700 dark:text-green-400">✅ КЕП валідний</p>
+                <p className="font-medium text-green-700 dark:text-green-400 flex items-center gap-1.5"><CheckCircleIcon className="size-4" /> КЕП валідний</p>
                 {kepInfo.owner && <p>{ts("tax_ua_kep_owner")}: {kepInfo.owner}</p>}
                 {kepInfo.issuer && <p>{ts("tax_ua_kep_issuer")}: {kepInfo.issuer}</p>}
                 {kepInfo.validTo && <p>{ts("tax_ua_kep_valid_to")}: {new Date(kepInfo.validTo).toLocaleDateString()}</p>}
               </div>
             ) : (
-              <p className="text-red-700 dark:text-red-400">❌ {kepInfo.error}</p>
+              <p className="text-red-700 dark:text-red-400 flex items-center gap-1.5"><XCircleIcon className="size-4" /> {kepInfo.error}</p>
             )}
           </div>
         )}

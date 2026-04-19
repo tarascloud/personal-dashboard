@@ -36,7 +36,7 @@ export function LanguageToggle() {
             aria-checked={isActive}
             onClick={() => setLocale(loc)}
             className={`
-              px-2 py-0.5 text-xs font-medium rounded-sm transition-colors cursor-pointer
+              min-h-[36px] px-2 py-0.5 text-xs font-medium rounded-sm transition-colors cursor-pointer
               ${
                 isActive
                   ? "bg-primary text-primary-foreground shadow-sm"

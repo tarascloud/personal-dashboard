@@ -10,8 +10,9 @@ COPY package.json package-lock.json ./
 # @simplewebauthn/browser v13+.  Track: https://github.com/nextauthjs/next-auth/issues
 RUN npm install --legacy-peer-deps
 COPY . .
-ARG DATABASE_URL
+ARG DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 ARG NEXT_PUBLIC_GITHUB_AUTH_ENABLED
+# Use dummy URL for prisma generate (only needs schema, not real DB)
 ENV DATABASE_URL=${DATABASE_URL}
 ENV NEXT_PUBLIC_GITHUB_AUTH_ENABLED=${NEXT_PUBLIC_GITHUB_AUTH_ENABLED}
 RUN npx prisma generate

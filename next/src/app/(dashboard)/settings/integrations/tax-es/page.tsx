@@ -7,6 +7,7 @@ import { getSecret, setSecret, getUserPreference, setUserPreference } from "@/ac
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { LockIcon, UnlockIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -91,7 +92,7 @@ export default function TaxESIntegrationPage() {
 
         <div className="flex items-center justify-between">
           <Label htmlFor="tax-es-readonly" className="cursor-pointer">
-            {readOnly ? "🔒 Read-only (submission disabled)" : "🔓 Full access (submission enabled)"}
+            <span className="inline-flex items-center gap-1.5">{readOnly ? <><LockIcon className="size-3.5" /> Read-only (submission disabled)</> : <><UnlockIcon className="size-3.5" /> Full access (submission enabled)</>}</span>
           </Label>
           <Switch
             id="tax-es-readonly"

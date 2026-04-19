@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { cookies } from "next/headers";
@@ -125,6 +126,14 @@ export default async function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="mobile-web-app-capable" content="yes" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        {/* Google Analytics — loaded via next/script to avoid unsafe-inline in CSP */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-P8B1BXG40X"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-P8B1BXG40X');`}
+        </Script>
       </head>
       <body
         className={`${inter.variable} ${inter.className} antialiased`}
@@ -138,7 +147,7 @@ export default async function RootLayout({
         <SerwistProvider swUrl="/serwist/sw.js">
           <ThemeProvider
             attribute="class"
-            defaultTheme="dark"
+            defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >

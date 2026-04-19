@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, PersonStandingIcon, BikeIcon, WavesIcon, StretchHorizontalIcon, DumbbellIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -146,15 +146,15 @@ export function WorkoutCalendar({
             >
               <span>{day}</span>
               {(hasWorkout || hasGarminActivity) && (() => {
-                const typeIcon = (dayData!.programType ?? dayData!.workoutName ?? "").toLowerCase();
-                const icon = typeIcon.includes("cardio") || typeIcon.includes("run") ? "\u{1F3C3}"
-                  : typeIcon.includes("cycl") || typeIcon.includes("bike") || typeIcon.includes("вело") || typeIcon.includes("gravel") ? "\u{1F6B4}"
-                  : typeIcon.includes("swim") ? "\u{1F3CA}"
-                  : typeIcon.includes("yoga") || typeIcon.includes("stretch") ? "\u{1F9D8}"
-                  : "\u{1F3CB}\uFE0F";
+                const typeStr = (dayData!.programType ?? dayData!.workoutName ?? "").toLowerCase();
+                const IconComp = typeStr.includes("cardio") || typeStr.includes("run") ? PersonStandingIcon
+                  : typeStr.includes("cycl") || typeStr.includes("bike") || typeStr.includes("вело") || typeStr.includes("gravel") ? BikeIcon
+                  : typeStr.includes("swim") ? WavesIcon
+                  : typeStr.includes("yoga") || typeStr.includes("stretch") ? StretchHorizontalIcon
+                  : DumbbellIcon;
                 return (
                   <>
-                    <span className="text-[10px]">{icon}</span>
+                    <IconComp className="size-2.5" />
                     <span className="text-[10px] leading-tight">
                       {dayData!.durationMinutes ? `${dayData!.durationMinutes}'` : ""}
                     </span>

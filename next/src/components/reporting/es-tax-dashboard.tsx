@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   UploadIcon, TrashIcon, CheckCircleIcon, XCircleIcon,
-  FileTextIcon, FileSpreadsheetIcon,
+  FileTextIcon, FileSpreadsheetIcon, AlertTriangleIcon,
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -185,7 +185,7 @@ export function EsTaxDashboard({ overview: initialOverview, onRefresh }: EsTaxDa
         <Card className={`border ${verification.grossMatch && verification.retencionesMatch && verification.ssMatch ? "border-green-500/30" : "border-amber-500/30"}`}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
-              {verification.grossMatch && verification.retencionesMatch && verification.ssMatch ? "✅" : "⚠️"} {t("es_verification_title")}
+              {verification.grossMatch && verification.retencionesMatch && verification.ssMatch ? <CheckCircleIcon className="size-4 text-green-500" /> : <AlertTriangleIcon className="size-4 text-amber-500" />} {t("es_verification_title")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -194,19 +194,19 @@ export function EsTaxDashboard({ overview: initialOverview, onRefresh }: EsTaxDa
                 <p className="text-muted-foreground">Bruto</p>
                 <p>Nóminas: {verification.nominaGross.toFixed(2)} EUR</p>
                 <p>Cert: {verification.certGross.toFixed(2)} EUR</p>
-                <p className="font-medium">{verification.grossMatch ? "✅ Match" : `❌ Різниця: ${(verification.nominaGross - verification.certGross).toFixed(2)} EUR`}</p>
+                <p className="font-medium flex items-center gap-1">{verification.grossMatch ? <><CheckCircleIcon className="size-3 text-green-500" /> Match</> : <><XCircleIcon className="size-3 text-red-500" /> Diff: {(verification.nominaGross - verification.certGross).toFixed(2)} EUR</>}</p>
               </div>
               <div className={`p-2 rounded ${verification.retencionesMatch ? "bg-green-500/10" : "bg-red-500/10"}`}>
                 <p className="text-muted-foreground">Retenciones (IRPF)</p>
                 <p>Nóminas: {verification.nominaRetenciones.toFixed(2)} EUR</p>
                 <p>Cert: {verification.certRetenciones.toFixed(2)} EUR</p>
-                <p className="font-medium">{verification.retencionesMatch ? "✅ Match" : `❌ Різниця: ${(verification.nominaRetenciones - verification.certRetenciones).toFixed(2)} EUR`}</p>
+                <p className="font-medium flex items-center gap-1">{verification.retencionesMatch ? <><CheckCircleIcon className="size-3 text-green-500" /> Match</> : <><XCircleIcon className="size-3 text-red-500" /> Diff: {(verification.nominaRetenciones - verification.certRetenciones).toFixed(2)} EUR</>}</p>
               </div>
               <div className={`p-2 rounded ${verification.ssMatch ? "bg-green-500/10" : "bg-red-500/10"}`}>
                 <p className="text-muted-foreground">Seguridad Social</p>
                 <p>Nóminas: {verification.nominaSS.toFixed(2)} EUR</p>
                 <p>Cert: {verification.certSS.toFixed(2)} EUR</p>
-                <p className="font-medium">{verification.ssMatch ? "✅ Match" : `❌ Різниця: ${(verification.nominaSS - verification.certSS).toFixed(2)} EUR`}</p>
+                <p className="font-medium flex items-center gap-1">{verification.ssMatch ? <><CheckCircleIcon className="size-3 text-green-500" /> Match</> : <><XCircleIcon className="size-3 text-red-500" /> Diff: {(verification.nominaSS - verification.certSS).toFixed(2)} EUR</>}</p>
               </div>
             </div>
             {certificado && (

@@ -45,7 +45,7 @@ export function EsTaxSection({ initialData }: EsTaxSectionProps) {
       >
         <CardTitle className="text-base flex items-center gap-2">
           {open ? <ChevronDownIcon className="size-4" /> : <ChevronRightIcon className="size-4" />}
-          🇪🇸 Іспанія — IRPF {year}
+          <span className="inline-flex items-center justify-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">ES</span> Іспанія — IRPF {year}
           <div className="ml-auto flex items-center gap-1" onClick={e => e.stopPropagation()}>
             {[currentYear - 2, currentYear - 1, currentYear].map(y => (
               <Button
