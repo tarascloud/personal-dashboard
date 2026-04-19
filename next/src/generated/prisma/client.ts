@@ -197,11 +197,6 @@ export type GarminBodyComposition = Prisma.GarminBodyCompositionModel
  */
 export type WithingsMeasurement = Prisma.WithingsMeasurementModel
 /**
- * Model ScreenTime
- * 
- */
-export type ScreenTime = Prisma.ScreenTimeModel
-/**
  * Model Embedding
  * 
  */
