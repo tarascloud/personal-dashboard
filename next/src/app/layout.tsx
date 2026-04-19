@@ -46,14 +46,7 @@ export const metadata: Metadata = {
     description:
       "Open-source, self-hosted dashboard for finance, health, gym, investments, trading, and tax reporting. Your life, your data, your server.",
     siteName: "Personal Dashboard",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Personal Dashboard — Privacy-First Life Management",
-      },
-    ],
+    // opengraph-image.tsx auto-generates OG image via Next.js App Router convention
     locale: "en_US",
   },
   twitter: {
@@ -61,7 +54,7 @@ export const metadata: Metadata = {
     title: "Personal Dashboard — Privacy-First Life Management",
     description:
       "Open-source, self-hosted dashboard for finance, health, gym, investments, trading, and tax reporting.",
-    images: ["/og-image.png"],
+    // opengraph-image.tsx auto-generates OG image via Next.js App Router convention
   },
   manifest: "/manifest.webmanifest",
   icons: {

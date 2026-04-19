@@ -8,11 +8,11 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   ResponsiveContainer,
   Legend,
 } from "recharts";
 import { useChartColors } from "@/hooks/use-chart-colors";
+import { ChartTooltip } from "@/components/charts/chart-tooltip";
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
@@ -98,8 +98,7 @@ export function IncomeExpensesChart({
               <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
               <XAxis dataKey="name" className="text-xs" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
               <YAxis className="text-xs" />
-              <Tooltip
-                contentStyle={tooltipStyle}
+              <ChartTooltip
                 formatter={(value, name) => {
                   const label = name === "income" ? incomeLabel
                     : name === "expenses" ? expensesLabel

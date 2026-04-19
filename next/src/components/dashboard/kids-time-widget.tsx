@@ -5,7 +5,6 @@ import {
   Bar,
   XAxis,
   YAxis,
-  Tooltip,
   ResponsiveContainer,
   CartesianGrid,
   ReferenceLine,
@@ -14,6 +13,7 @@ import { BabyIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { useChartColors } from "@/hooks/use-chart-colors";
+import { ChartTooltip } from "@/components/charts/chart-tooltip";
 import type { KidsTimeData } from "@/actions/dashboard";
 import { formatDuration, KpiMini } from "./screen-time-widget";
 
@@ -79,8 +79,7 @@ export function KidsTimeWidget({ data, tooltipStyle, labels }: KidsTimeWidgetPro
               tick={{ fontSize: 11 }}
               tickFormatter={(v: number) => `${Math.round(v / 60)}h`}
             />
-            <Tooltip
-              contentStyle={tooltipStyle}
+            <ChartTooltip
               formatter={(value) => {
                 const v = Number(value ?? 0);
                 return [formatDuration(v), labels.minutes];

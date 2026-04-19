@@ -190,10 +190,16 @@ export function DashboardPage({
       startTransition(async () => {
         try {
           const range = { from: dateRange.dateFrom, to: dateRange.dateTo };
-          // Calculate days from today back to range start (not just range width)
-          const daysFromStart = Math.max(7, Math.ceil((Date.now() - new Date(range.from).getTime()) / 86400000));
+          // Calculate days from today back to range start (not just range width).
+          // Empty range (preset "all") → fall back to 365d window.
+          const rangeStart = range.from ? new Date(range.from).getTime() : NaN;
+          const daysFromStart = Number.isFinite(rangeStart)
+            ? Math.max(7, Math.ceil((Date.now() - rangeStart) / 86400000))
+            : 365;
           const weeks = Math.max(1, Math.ceil(daysFromStart / 7));
-          const rangeYear = new Date(range.from).getFullYear();
+          const rangeYear = range.from
+            ? new Date(range.from).getFullYear()
+            : new Date().getFullYear();
           const [newKpis, newTrends, newCorrelations, newDeepDive, newGarminHealth, newMoodTimeline, newHRVTrend, newWeeklyMuscle, newExtCorr, newScreenTime, newKidsTime] =
             await Promise.all([
               getDashboardKPIs({ ...range, preset }),

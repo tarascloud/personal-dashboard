@@ -5,6 +5,8 @@ import { useTheme } from "next-themes";
 import {
   getChartColors,
   getTooltipStyle,
+  getTooltipItemStyle,
+  getTooltipLabelStyle,
   getMuscleGroupColors,
   CHART_COLORS,
   type ChartColors,
@@ -17,6 +19,8 @@ import {
 export function useChartColors(): {
   colors: ChartColors;
   tooltipStyle: React.CSSProperties;
+  tooltipItemStyle: React.CSSProperties;
+  tooltipLabelStyle: React.CSSProperties;
   muscleGroupColors: Record<string, string>;
 } {
   const { resolvedTheme } = useTheme();
@@ -26,8 +30,10 @@ export function useChartColors(): {
     // getChartColors() reads from the DOM, which already reflects the new theme.
     const colors = typeof document !== "undefined" ? getChartColors() : CHART_COLORS;
     const tooltipStyle = getTooltipStyle();
+    const tooltipItemStyle = getTooltipItemStyle();
+    const tooltipLabelStyle = getTooltipLabelStyle();
     const muscleGroupColors = getMuscleGroupColors(colors);
-    return { colors, tooltipStyle, muscleGroupColors };
+    return { colors, tooltipStyle, tooltipItemStyle, tooltipLabelStyle, muscleGroupColors };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolvedTheme]);
 }

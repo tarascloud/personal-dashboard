@@ -15,7 +15,6 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   ResponsiveContainer,
   Legend,
   ComposedChart,
@@ -24,6 +23,7 @@ import {
 } from "recharts";
 import type { MoodTimelinePoint } from "@/actions/dashboard";
 import { CHART_COLORS, type ChartColors } from "@/lib/chart-theme";
+import { ChartTooltip } from "@/components/charts/chart-tooltip";
 import { useChartColors } from "@/hooks/use-chart-colors";
 import { EmptyState } from "@/components/shared/empty-state";
 import { SmileIcon } from "lucide-react";
@@ -157,7 +157,7 @@ export function MoodTimeline({
             <ReferenceLine yAxisId="mood" y={0} stroke={CC.moodReference} strokeWidth={1.5} />
             <ReferenceLine yAxisId="mood" y={-2} stroke={CC.moodWarning} strokeDasharray="4 4" strokeOpacity={0.4} />
             <ReferenceLine yAxisId="mood" y={-4} stroke={CC.moodNegative} strokeDasharray="4 4" strokeOpacity={0.4} />
-            <Tooltip contentStyle={tooltipStyle} />
+            <ChartTooltip />
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             <Legend
               wrapperStyle={{ fontSize: 11 }}

@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/dashboard/", "/finance/", "/gym/", "/trading/", "/settings/"],
+        disallow: ["/api/", "/dashboard/", "/finance/", "/gym/", "/trading/", "/settings/", "/login"],
       },
     ],
     sitemap: "https://pd.taras.cloud/sitemap.xml",

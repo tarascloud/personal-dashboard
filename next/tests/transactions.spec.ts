@@ -59,7 +59,10 @@ test.describe("Transactions", () => {
       await applyBtn.click();
 
       // Wait for results to update
-      await page.waitForTimeout(1000);
+      await page.waitForResponse(
+        (resp) => resp.url().includes("/api/transactions") && resp.status() === 200,
+        { timeout: 10000 },
+      );
       await expectNoErrorBoundary(page);
     }
   });
@@ -79,7 +82,10 @@ test.describe("Transactions", () => {
     await applyBtn.click();
 
     // Wait for results and verify no error
-    await page.waitForTimeout(1000);
+    await page.waitForResponse(
+      (resp) => resp.url().includes("/api/transactions") && resp.status() === 200,
+      { timeout: 10000 },
+    );
     await expectNoErrorBoundary(page);
   });
 
@@ -96,7 +102,10 @@ test.describe("Transactions", () => {
     await searchInput.press("Enter");
 
     // Wait for results to update
-    await page.waitForTimeout(1000);
+    await page.waitForResponse(
+      (resp) => resp.url().includes("/api/transactions") && resp.status() === 200,
+      { timeout: 10000 },
+    );
     await expectNoErrorBoundary(page);
   });
 
@@ -116,7 +125,10 @@ test.describe("Transactions", () => {
     const applyBtn = filterCard.locator("button").filter({ hasText: /apply|Застосувати/i });
     await applyBtn.click();
 
-    await page.waitForTimeout(1000);
+    await page.waitForResponse(
+      (resp) => resp.url().includes("/api/transactions") && resp.status() === 200,
+      { timeout: 10000 },
+    );
     await expectNoErrorBoundary(page);
   });
 

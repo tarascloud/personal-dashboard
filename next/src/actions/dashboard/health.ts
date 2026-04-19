@@ -277,8 +277,9 @@ export interface ScreenTimeData {
 
 export async function getScreenTimeData(days: number = 7): Promise<ScreenTimeData> {
   const user = await requireUser();
+  const safeDays = Number.isFinite(days) && days > 0 ? days : 7;
   const now = new Date();
-  const fromDate = new Date(now.getTime() - days * 86400000);
+  const fromDate = new Date(now.getTime() - safeDays * 86400000);
 
   const rows = await prisma.screenTime.findMany({
     where: {
@@ -331,8 +332,9 @@ export interface KidsTimeData {
 
 export async function getKidsTimeData(days: number = 30): Promise<KidsTimeData> {
   const user = await requireUser();
+  const safeDays = Number.isFinite(days) && days > 0 ? days : 30;
   const now = new Date();
-  const fromDate = new Date(now.getTime() - days * 86400000);
+  const fromDate = new Date(now.getTime() - safeDays * 86400000);
 
   const rows = await prisma.dailyLog.findMany({
     where: {

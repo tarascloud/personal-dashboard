@@ -4,13 +4,13 @@ import {
   PieChart,
   Pie,
   Cell,
-  Tooltip,
   ResponsiveContainer,
   Legend,
 } from "recharts";
 import { PieChartIcon } from "lucide-react";
 import type { ScreenTimeCategoryBreakdown } from "@/actions/dashboard";
 import { EmptyState } from "@/components/shared/empty-state";
+import { ChartTooltip } from "@/components/charts/chart-tooltip";
 
 /* ------------------------------------------------------------------ */
 /* Color palette for categories (up to 6)                              */
@@ -74,8 +74,7 @@ export function ScreenTimeCategories({
             <Cell key={i} fill={CATEGORY_COLORS[i % CATEGORY_COLORS.length]} />
           ))}
         </Pie>
-        <Tooltip
-          contentStyle={tooltipStyle}
+        <ChartTooltip
           formatter={(value) => {
             const v = Number(value ?? 0);
             return [`${Math.floor(v / 60)}h ${v % 60}m`, minutesLabel];

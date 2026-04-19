@@ -5,11 +5,11 @@ import {
   Bar,
   XAxis,
   YAxis,
-  Tooltip,
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
 import { useChartColors } from "@/hooks/use-chart-colors";
+import { ChartTooltip } from "@/components/charts/chart-tooltip";
 import type { ScreenTimeDayPoint } from "@/actions/dashboard";
 
 interface ScreenTimeDailyChartProps {
@@ -42,8 +42,7 @@ export function ScreenTimeDailyChart({
           tick={{ fontSize: 11 }}
           tickFormatter={(v: number) => `${Math.round(v / 60)}h`}
         />
-        <Tooltip
-          contentStyle={tooltipStyle}
+        <ChartTooltip
           formatter={(value) => {
             const v = Number(value ?? 0);
             return [`${Math.floor(v / 60)}h ${v % 60}m`, minutesLabel];

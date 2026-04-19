@@ -15,7 +15,6 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   ResponsiveContainer,
   Legend,
   Area,
@@ -26,6 +25,7 @@ import {
 } from "recharts";
 import type { GarminHealthTrends, HRVTrendPoint } from "@/actions/dashboard";
 import { useChartColors } from "@/hooks/use-chart-colors";
+import { ChartTooltip } from "@/components/charts/chart-tooltip";
 import { EmptyState } from "@/components/shared/empty-state";
 import { SleepScoreWidget } from "./sleep-score-widget";
 
@@ -145,7 +145,7 @@ export function GarminHealthCharts({
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis dataKey="date" className="text-xs" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
                     <YAxis domain={[0, 100]} className="text-xs" />
-                    <Tooltip contentStyle={tooltipStyle} allowEscapeViewBox={{ x: true }} />
+                    <ChartTooltip allowEscapeViewBox={{ x: true }} />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
                     <Area
                       type="monotone"
@@ -197,7 +197,7 @@ export function GarminHealthCharts({
                     <XAxis dataKey="date" className="text-xs" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
                     <YAxis yAxisId="hours" className="text-xs" />
                     <YAxis yAxisId="score" orientation="right" domain={[0, 100]} className="text-xs" />
-                    <Tooltip contentStyle={tooltipStyle} allowEscapeViewBox={{ x: true }} />
+                    <ChartTooltip allowEscapeViewBox={{ x: true }} />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
                     <Bar yAxisId="hours" dataKey="deep" stackId="sleep" fill={CC.sleepDeep} name={labels.deep} />
                     <Bar yAxisId="hours" dataKey="rem" stackId="sleep" fill={CC.sleepRem} name={labels.rem} />
@@ -240,7 +240,7 @@ export function GarminHealthCharts({
                           <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                           <XAxis dataKey="date" className="text-xs" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
                           <YAxis domain={[0, 12]} className="text-xs" />
-                          <Tooltip contentStyle={tooltipStyle} formatter={(value) => { const v = Number(value); return [`${Math.floor(v)}h ${Math.round((v % 1) * 60)}m`, labels.sleepDuration]; }} />
+                          <ChartTooltip formatter={(value) => { const v = Number(value); return [`${Math.floor(v)}h ${Math.round((v % 1) * 60)}m`, labels.sleepDuration]; }} />
                           <ReferenceLine y={8} stroke={CC.sleepNeed} strokeDasharray="4 4" label={{ value: labels.sleepNeed, position: "right", fontSize: 10, fill: CC.sleepNeed }} />
                           <Bar dataKey="duration" name={labels.sleepDuration} radius={[2, 2, 0, 0]}>
                             {sleepData.map((entry, index) => (
@@ -287,8 +287,7 @@ export function GarminHealthCharts({
                       }}
                       ticks={[21, 23, 25, 27, 29, 31, 33]}
                     />
-                    <Tooltip
-                      contentStyle={tooltipStyle}
+                    <ChartTooltip
                       formatter={(value: unknown) => {
                         if (!Array.isArray(value)) return [String(value), ""];
                         const fmt = (v: number) => {
@@ -329,7 +328,7 @@ export function GarminHealthCharts({
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis dataKey="date" className="text-xs" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
                     <YAxis domain={[0, 100]} className="text-xs" />
-                    <Tooltip contentStyle={tooltipStyle} allowEscapeViewBox={{ x: true }} />
+                    <ChartTooltip allowEscapeViewBox={{ x: true }} />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
                     <Area type="monotone" dataKey="max" stroke="#f87171" fill="#f8717120" name={labels.max} connectNulls />
                     <Area type="monotone" dataKey="avg" stroke="#f59e0b" fill="#f59e0b20" name={labels.avg} connectNulls />
@@ -358,7 +357,7 @@ export function GarminHealthCharts({
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis dataKey="date" className="text-xs" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
                     <YAxis domain={[0, 100]} className="text-xs" />
-                    <Tooltip contentStyle={tooltipStyle} />
+                    <ChartTooltip />
                     <ReferenceLine y={70} stroke="#22c55e" strokeDasharray="3 3" strokeOpacity={0.5} />
                     <ReferenceLine y={50} stroke="#f59e0b" strokeDasharray="3 3" strokeOpacity={0.5} />
                     <Bar dataKey="readiness" name={labels.trainingReadiness} radius={[2, 2, 0, 0]}>
@@ -399,7 +398,7 @@ export function GarminHealthCharts({
                       <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                       <XAxis dataKey="date" className="text-xs" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
                       <YAxis className="text-xs" />
-                      <Tooltip contentStyle={tooltipStyle} allowEscapeViewBox={{ x: true }} />
+                      <ChartTooltip allowEscapeViewBox={{ x: true }} />
                       <Legend wrapperStyle={{ fontSize: 11 }} />
                       <Bar dataKey="lastNight" fill={`${CC.hrv}40`} stroke={CC.hrv} name={labels.hrvMs} />
                       <Line type="monotone" dataKey="weeklyAvg" stroke={CC.accent} strokeWidth={2} dot={false} name={labels.weeklyAvg} connectNulls />
@@ -434,7 +433,7 @@ export function GarminHealthCharts({
                       <XAxis dataKey="date" className="text-xs" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
                       <YAxis yAxisId="kg" className="text-xs" />
                       <YAxis yAxisId="pct" orientation="right" className="text-xs" />
-                      <Tooltip contentStyle={tooltipStyle} allowEscapeViewBox={{ x: true }} />
+                      <ChartTooltip allowEscapeViewBox={{ x: true }} />
                       <Legend wrapperStyle={{ fontSize: 11 }} />
                       <Line yAxisId="kg" type="monotone" dataKey="weight" stroke={CC.weight} strokeWidth={2} dot={{ r: 3 }} name={labels.weightKg} connectNulls />
                       <Line yAxisId="pct" type="monotone" dataKey="bmi" stroke={CC.bmi} strokeWidth={1} strokeDasharray="4 4" dot={false} name={labels.bmi} connectNulls />
@@ -466,7 +465,7 @@ export function GarminHealthCharts({
                       <XAxis dataKey="date" className="text-xs" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
                       <YAxis yAxisId="steps" className="text-xs" />
                       <YAxis yAxisId="minutes" orientation="right" className="text-xs" />
-                      <Tooltip contentStyle={tooltipStyle} allowEscapeViewBox={{ x: true }} />
+                      <ChartTooltip allowEscapeViewBox={{ x: true }} />
                       <Legend wrapperStyle={{ fontSize: 11 }} />
                       <Line yAxisId="steps" type="monotone" dataKey="steps" stroke={CC.steps} strokeWidth={2} dot={false} name={labels.steps} connectNulls />
                       <Line yAxisId="minutes" type="monotone" dataKey="activeMin" stroke={CC.activeMin} strokeWidth={2} dot={false} name={labels.activeMin} connectNulls />
@@ -496,7 +495,7 @@ export function GarminHealthCharts({
                       <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                       <XAxis dataKey="date" className="text-xs" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
                       <YAxis className="text-xs" />
-                      <Tooltip contentStyle={tooltipStyle} allowEscapeViewBox={{ x: true }} />
+                      <ChartTooltip allowEscapeViewBox={{ x: true }} />
                       <Legend wrapperStyle={{ fontSize: 11 }} />
                       <Bar dataKey="resting" stackId="cal" fill={CC.steps} name={labels.restingCalories} />
                       <Bar dataKey="active" stackId="cal" fill="#ef4444" name={labels.activeCalories} />

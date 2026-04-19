@@ -7,12 +7,12 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   ResponsiveContainer,
   ReferenceLine,
   Cell,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartTooltip } from "@/components/charts/chart-tooltip";
 import type { GarminHealthTrends } from "@/actions/dashboard";
 
 interface TrainingReadinessChartProps {
@@ -41,7 +41,7 @@ export function TrainingReadinessChart({ garminHealth, tooltipStyle }: TrainingR
               <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
               <XAxis dataKey="date" className="text-xs" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
               <YAxis domain={[0, 100]} className="text-xs" />
-              <Tooltip contentStyle={tooltipStyle} />
+              <ChartTooltip />
               <ReferenceLine y={70} stroke="#22c55e" strokeDasharray="3 3" strokeOpacity={0.5} />
               <ReferenceLine y={50} stroke="#f59e0b" strokeDasharray="3 3" strokeOpacity={0.5} />
               <Bar dataKey="readiness" name={t("training_readiness")} radius={[2, 2, 0, 0]}>

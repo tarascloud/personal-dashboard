@@ -7,11 +7,11 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   ResponsiveContainer,
   Legend,
 } from "recharts";
 import { useChartColors } from "@/hooks/use-chart-colors";
+import { ChartTooltip } from "@/components/charts/chart-tooltip";
 
 export interface PortfolioHistoryPoint {
   date: string;
@@ -56,8 +56,7 @@ export function PortfolioHistoryChart({ data, tooltipStyle, labels }: PortfolioH
                   tickFormatter={(v: string) => v.slice(5)}
                 />
                 <YAxis className="text-xs" />
-                <Tooltip
-                  contentStyle={tooltipStyle}
+                <ChartTooltip
                   formatter={(value, name) => {
                     const label = name === "totalNav" ? labels.capital
                       : name === "totalPnl" ? labels.pnl

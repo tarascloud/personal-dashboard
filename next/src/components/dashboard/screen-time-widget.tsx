@@ -32,8 +32,10 @@ export interface ScreenTimeWidgetProps {
 /* ------------------------------------------------------------------ */
 
 export function formatDuration(totalMinutes: number): string {
-  const h = Math.floor(totalMinutes / 60);
-  const m = totalMinutes % 60;
+  if (!Number.isFinite(totalMinutes)) return "0m";
+  const safe = Math.max(0, Math.round(totalMinutes));
+  const h = Math.floor(safe / 60);
+  const m = safe % 60;
   if (h === 0) return `${m}m`;
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }

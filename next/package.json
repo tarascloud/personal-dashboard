@@ -33,6 +33,7 @@
     "garmin-connect": "^1.6.2",
     "gost89": "^0.1.11",
     "ioredis": "^5.10.0",
+    "isomorphic-dompurify": "^3.9.0",
     "jkurwa": "^1.21.2",
     "lucide-react": "^0.577.0",
     "next": "^16.1.7",

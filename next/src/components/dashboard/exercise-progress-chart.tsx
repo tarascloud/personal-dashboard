@@ -16,7 +16,6 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   ResponsiveContainer,
   Legend,
   ComposedChart,
@@ -27,6 +26,7 @@ import type {
   WeeklyMuscleVolumeRow,
 } from "@/actions/dashboard";
 import { useChartColors } from "@/hooks/use-chart-colors";
+import { ChartTooltip } from "@/components/charts/chart-tooltip";
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
@@ -118,7 +118,7 @@ export function ExerciseProgressChart({
                       <XAxis dataKey="date" className="text-xs" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
                       <YAxis yAxisId="weight" className="text-xs" />
                       <YAxis yAxisId="volume" orientation="right" className="text-xs" />
-                      <Tooltip contentStyle={tooltipStyle} allowEscapeViewBox={{ x: true }} />
+                      <ChartTooltip allowEscapeViewBox={{ x: true }} />
                       <Legend wrapperStyle={{ fontSize: 11 }} />
                       <Bar
                         yAxisId="volume"
@@ -171,7 +171,7 @@ export function ExerciseProgressChart({
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis dataKey="week" className="text-xs" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
                     <YAxis className="text-xs" />
-                    <Tooltip contentStyle={tooltipStyle} allowEscapeViewBox={{ x: true }} />
+                    <ChartTooltip allowEscapeViewBox={{ x: true }} />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
                     {allMuscleGroups.filter(mg => !mg.startsWith("_")).map((mg) => (
                       <Bar
@@ -204,7 +204,7 @@ export function ExerciseProgressChart({
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis dataKey="week" className="text-xs" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
                     <YAxis className="text-xs" unit=" min" />
-                    <Tooltip contentStyle={tooltipStyle} formatter={(v) => `${v} min`} />
+                    <ChartTooltip formatter={(v) => `${v} min`} />
                     <Bar dataKey="_durationMin" fill={CC.exerciseDuration} radius={[4, 4, 0, 0]} name="Duration" />
                   </BarChart>
                 </ResponsiveContainer>

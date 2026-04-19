@@ -195,14 +195,43 @@ export function getTooltipStyle(): React.CSSProperties {
       backgroundColor: "var(--card)",
       border: "1px solid var(--border)",
       borderRadius: "8px",
+      color: "var(--card-foreground)",
     };
   }
   const style = getComputedStyle(document.documentElement);
+  const fg = style.getPropertyValue("--card-foreground").trim()
+    || style.getPropertyValue("--foreground").trim()
+    || "#0f172a";
   return {
     backgroundColor: style.getPropertyValue("--card").trim() || "#ffffff",
     border: `1px solid ${style.getPropertyValue("--border").trim() || "#e2e8f0"}`,
     borderRadius: "8px",
+    color: fg,
   };
+}
+
+/**
+ * Item text style for Recharts Tooltip — forces readable color so the item
+ * text does not inherit the series fill/stroke color (which blends with the
+ * bar/line color on the chart).
+ */
+export function getTooltipItemStyle(): React.CSSProperties {
+  if (typeof document === "undefined") {
+    return { color: "var(--card-foreground)" };
+  }
+  const style = getComputedStyle(document.documentElement);
+  const fg = style.getPropertyValue("--card-foreground").trim()
+    || style.getPropertyValue("--foreground").trim()
+    || "#0f172a";
+  return { color: fg };
+}
+
+/**
+ * Label (usually the X value / date) style for Recharts Tooltip.
+ */
+export function getTooltipLabelStyle(): React.CSSProperties {
+  const base = getTooltipItemStyle();
+  return { ...base, fontWeight: 600, marginBottom: 4 };
 }
 
 /**

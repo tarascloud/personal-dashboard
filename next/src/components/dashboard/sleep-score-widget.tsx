@@ -2,8 +2,9 @@
 
 import { MoonIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LineChart, Line, ResponsiveContainer, Tooltip } from "recharts";
+import { LineChart, Line, ResponsiveContainer } from "recharts";
 import type { GarminSleepPoint } from "@/actions/dashboard";
+import { ChartTooltip } from "@/components/charts/chart-tooltip";
 
 /* ------------------------------------------------------------------ */
 /* Helpers                                                             */
@@ -130,8 +131,7 @@ export function SleepScoreWidget({ sleep, tooltipStyle, labels }: SleepScoreWidg
                 <div className="w-28 h-12">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={trend7}>
-                      <Tooltip
-                        contentStyle={tooltipStyle}
+                      <ChartTooltip
                         formatter={(value) => [`${value}`, labels.score]}
                         labelFormatter={(label) => label}
                       />
