@@ -7,6 +7,8 @@
  */
 
 import { prisma } from "@/lib/db";
+import { redis } from "@/lib/redis";
+import { createHash } from "crypto";
 
 const OLLAMA_URL = process.env.OLLAMA_URL || "http://ollama:11434";
 const EMBEDDING_MODEL = "nomic-embed-text";
@@ -43,8 +45,29 @@ async function isModelAvailable(): Promise<boolean> {
  * using Ollama's nomic-embed-text model.
  * Returns null if the model is unavailable.
  */
+const EMBED_CACHE_TTL_SEC = 3600; // 1h
+
+function embedCacheKey(text: string): string {
+  const h = createHash("sha256").update(text).digest("hex");
+  return `embed:${h}`;
+}
+
 export async function generateEmbedding(text: string): Promise<number[] | null> {
   if (!(await isModelAvailable())) return null;
+
+  // Try Redis cache first (1h TTL on sha256 of input text)
+  const key = embedCacheKey(text);
+  if (redis) {
+    try {
+      const cached = await redis.get(key);
+      if (cached) {
+        const vec = JSON.parse(cached) as number[];
+        if (Array.isArray(vec) && vec.length === EMBEDDING_DIMS) return vec;
+      }
+    } catch (err) {
+      console.warn("[embeddings] redis get failed:", err);
+    }
+  }
 
   try {
     const res = await fetch(`${OLLAMA_URL}/api/embed`, {
@@ -67,6 +90,14 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
     if (!vec || vec.length !== EMBEDDING_DIMS) {
       console.error(`[embeddings] Unexpected embedding dimensions: ${vec?.length}`);
       return null;
+    }
+
+    if (redis) {
+      try {
+        await redis.set(key, JSON.stringify(vec), "EX", EMBED_CACHE_TTL_SEC);
+      } catch (err) {
+        console.warn("[embeddings] redis set failed:", err);
+      }
     }
 
     return vec;
@@ -92,6 +123,7 @@ export async function searchSimilar(
   query: string,
   limit = 5,
 ): Promise<{ sourceTable: string; sourceId: number; text: string; similarity: number }[]> {
+  const start = Date.now();
   const queryVec = await generateEmbedding(query);
   if (!queryVec) return [];
 
@@ -111,12 +143,14 @@ export async function searchSimilar(
       limit,
     );
 
-    return results.map((r) => ({
+    const mapped = results.map((r: { source_table: string; source_id: number; text: string; similarity: number }) => ({
       sourceTable: r.source_table,
       sourceId: r.source_id,
       text: r.text,
       similarity: r.similarity,
     }));
+    console.log(`[embed] query_ms=${Date.now() - start}`);
+    return mapped;
   } catch (err) {
     console.error("[embeddings] Search failed:", err);
     return [];

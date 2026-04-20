@@ -109,20 +109,33 @@ export async function POST(req: Request) {
     ]);
   }
 
-  let modelInstance;
-  if (modelName === "ollama") {
-    const ollama = createOpenAI({
-      baseURL: process.env.OLLAMA_BASE_URL || "http://ollama:11434/v1",
-      apiKey: "ollama",
-    });
-    modelInstance = ollama(process.env.OLLAMA_MODEL || "gemma4:e4b");
-  } else if (modelName === "groq" && groqKeyValue) {
-    const groq = createGroq({ apiKey: groqKeyValue });
-    modelInstance = groq("llama-3.3-70b-versatile");
-  } else if (geminiKeyValue) {
-    const googleAI = createGoogleGenerativeAI({ apiKey: geminiKeyValue });
-    modelInstance = googleAI("gemini-2.5-flash");
-  } else {
+  // Build ordered provider chain. User-selected provider is first, followed by
+  // other available providers as fallbacks for quota/429 errors.
+  type Provider = { name: string; build: () => ReturnType<typeof createOpenAI> extends infer _ ? unknown : never };
+  const providersAll: Array<{ name: string; available: boolean; build: () => unknown }> = [
+    {
+      name: "gemini",
+      available: !!geminiKeyValue,
+      build: () => createGoogleGenerativeAI({ apiKey: geminiKeyValue! })("gemini-2.5-flash"),
+    },
+    {
+      name: "groq",
+      available: !!groqKeyValue,
+      build: () => createGroq({ apiKey: groqKeyValue! })("llama-3.3-70b-versatile"),
+    },
+    {
+      name: "ollama",
+      available: true,
+      build: () => createOpenAI({
+        baseURL: process.env.OLLAMA_BASE_URL || "http://ollama:11434/v1",
+        apiKey: "ollama",
+      })(process.env.OLLAMA_MODEL || "gemma4:e4b"),
+    },
+  ];
+  const primary = providersAll.find(p => p.name === modelName && p.available);
+  const fallbacks = providersAll.filter(p => p.available && p.name !== primary?.name);
+  const chain = primary ? [primary, ...fallbacks] : fallbacks;
+  if (chain.length === 0) {
     return new Response("No AI provider configured", { status: 400 });
   }
 
@@ -168,35 +181,64 @@ export async function POST(req: Request) {
     .filter(Boolean)
     .join("\n");
 
-  try {
-    console.log(`[Chat] Starting stream with model=${modelName}, messages=${messages.length}`);
-    const result = streamText({
-      model: modelInstance,
-      system: systemPrompt,
-      messages,
-      onError: async ({ error }) => {
-        console.error("[Chat] Mid-stream error:", error);
-        await logError(session.user.email, "api/chat/streamError", error);
-      },
-      onFinish: async ({ text }) => {
-        try {
-          if (text) {
-            await saveChat("assistant", text, session.user.email);
-          }
-        } catch (e) {
-          console.error("[Chat] onFinish error:", e);
-          await logError(session.user.email, "api/chat/onFinish", e);
-        }
-      },
-    });
+  const isQuotaError = (err: unknown): boolean => {
+    if (!err) return false;
+    const anyErr = err as { status?: number; statusCode?: number; message?: string; cause?: { status?: number; message?: string } };
+    const status = anyErr.status ?? anyErr.statusCode ?? anyErr.cause?.status;
+    if (status === 429) return true;
+    const msg = (anyErr.message || anyErr.cause?.message || "").toLowerCase();
+    return msg.includes("quota") || msg.includes("rate limit") || msg.includes("429") || msg.includes("exceeded");
+  };
 
-    return result.toUIMessageStreamResponse();
-  } catch (e) {
-    console.error("[Chat] streamText error:", e);
-    await logError(session.user.email, "api/chat/streamText", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Chat failed" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+  let lastError: unknown = null;
+  for (let i = 0; i < chain.length; i++) {
+    const provider = chain[i];
+    const reason = i === 0 ? null : (isQuotaError(lastError) ? "quota/429" : "error");
+    try {
+      console.log(`[Chat] Starting stream with model=${provider.name} (attempt ${i + 1}/${chain.length}), messages=${messages.length}`);
+      const modelInstance = provider.build() as Parameters<typeof streamText>[0]["model"];
+      const result = streamText({
+        model: modelInstance,
+        system: systemPrompt,
+        messages,
+        onError: async ({ error }) => {
+          console.error("[Chat] Mid-stream error:", error);
+          await logError(session.user.email, "api/chat/streamError", error);
+        },
+        onFinish: async ({ text }) => {
+          try {
+            if (text) {
+              await saveChat("assistant", text, session.user.email);
+            }
+          } catch (e) {
+            console.error("[Chat] onFinish error:", e);
+            await logError(session.user.email, "api/chat/onFinish", e);
+          }
+        },
+      });
+
+      const headers: Record<string, string> = {};
+      if (reason) {
+        headers["X-Provider-Switched"] = `Switched to ${provider.name} due to ${reason}`;
+        headers["X-Provider-Used"] = provider.name;
+      }
+      return result.toUIMessageStreamResponse({ headers });
+    } catch (e) {
+      lastError = e;
+      console.error(`[Chat] streamText error on ${provider.name}:`, e);
+      await logError(session.user.email, `api/chat/streamText/${provider.name}`, e);
+      if (!isQuotaError(e) || i === chain.length - 1) {
+        return new Response(
+          JSON.stringify({ error: e instanceof Error ? e.message : "Chat failed" }),
+          { status: 500, headers: { "Content-Type": "application/json" } }
+        );
+      }
+      // else: fall through to next provider
+    }
   }
+
+  return new Response(
+    JSON.stringify({ error: "All providers failed" }),
+    { status: 503, headers: { "Content-Type": "application/json" } }
+  );
 }

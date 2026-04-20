@@ -415,6 +415,7 @@ export const ModelName = {
   GarminStaging: 'GarminStaging',
   GarminBodyComposition: 'GarminBodyComposition',
   WithingsMeasurement: 'WithingsMeasurement',
+  ScreenTime: 'ScreenTime',
   Embedding: 'Embedding',
   AiNote: 'AiNote',
   AiContextSnapshot: 'AiContextSnapshot',
@@ -456,7 +457,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "guestInvite" | "passkey" | "userPreference" | "auditLog" | "secret" | "telegramLink" | "telegramConnectCode" | "transaction" | "nbuRate" | "customAccount" | "categoryFavourite" | "customCategory" | "budget" | "budgetConfig" | "mandatoryCategory" | "recurringTransaction" | "savingsGoal" | "subscription" | "dailyLog" | "foodLog" | "shoppingItem" | "bigPurchase" | "shoppingHistory" | "garminDaily" | "garminActivity" | "garminSleep" | "garminHeartRate" | "garminStaging" | "garminBodyComposition" | "withingsMeasurement" | "embedding" | "aiNote" | "aiContextSnapshot" | "aiInsight" | "insightFeedback" | "chatHistory" | "gymExercise" | "gymWorkout" | "gymWorkoutExercise" | "gymSet" | "gymProgram" | "gymProgramDay" | "gymProgramExercise" | "syncFailure" | "taxDeclaration" | "taxDeclarationItem" | "receipt" | "taxIncomeRecord" | "taxDeadline" | "taxDocument" | "taxSimulation" | "brokerPosition" | "brokerAccountSummary" | "brokerTransaction" | "tradingStrategy" | "portfolioSnapshot"
+    modelProps: "user" | "guestInvite" | "passkey" | "userPreference" | "auditLog" | "secret" | "telegramLink" | "telegramConnectCode" | "transaction" | "nbuRate" | "customAccount" | "categoryFavourite" | "customCategory" | "budget" | "budgetConfig" | "mandatoryCategory" | "recurringTransaction" | "savingsGoal" | "subscription" | "dailyLog" | "foodLog" | "shoppingItem" | "bigPurchase" | "shoppingHistory" | "garminDaily" | "garminActivity" | "garminSleep" | "garminHeartRate" | "garminStaging" | "garminBodyComposition" | "withingsMeasurement" | "screenTime" | "embedding" | "aiNote" | "aiContextSnapshot" | "aiInsight" | "insightFeedback" | "chatHistory" | "gymExercise" | "gymWorkout" | "gymWorkoutExercise" | "gymSet" | "gymProgram" | "gymProgramDay" | "gymProgramExercise" | "syncFailure" | "taxDeclaration" | "taxDeclarationItem" | "receipt" | "taxIncomeRecord" | "taxDeadline" | "taxDocument" | "taxSimulation" | "brokerPosition" | "brokerAccountSummary" | "brokerTransaction" | "tradingStrategy" | "portfolioSnapshot"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2751,6 +2752,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.WithingsMeasurementCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.WithingsMeasurementCountAggregateOutputType> | number
+        }
+      }
+    }
+    ScreenTime: {
+      payload: Prisma.$ScreenTimePayload<ExtArgs>
+      fields: Prisma.ScreenTimeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ScreenTimeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreenTimePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ScreenTimeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreenTimePayload>
+        }
+        findFirst: {
+          args: Prisma.ScreenTimeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreenTimePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ScreenTimeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreenTimePayload>
+        }
+        findMany: {
+          args: Prisma.ScreenTimeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreenTimePayload>[]
+        }
+        create: {
+          args: Prisma.ScreenTimeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreenTimePayload>
+        }
+        createMany: {
+          args: Prisma.ScreenTimeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ScreenTimeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreenTimePayload>[]
+        }
+        delete: {
+          args: Prisma.ScreenTimeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreenTimePayload>
+        }
+        update: {
+          args: Prisma.ScreenTimeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreenTimePayload>
+        }
+        deleteMany: {
+          args: Prisma.ScreenTimeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ScreenTimeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ScreenTimeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreenTimePayload>[]
+        }
+        upsert: {
+          args: Prisma.ScreenTimeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScreenTimePayload>
+        }
+        aggregate: {
+          args: Prisma.ScreenTimeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateScreenTime>
+        }
+        groupBy: {
+          args: Prisma.ScreenTimeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ScreenTimeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ScreenTimeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ScreenTimeCountAggregateOutputType> | number
         }
       }
     }
@@ -5153,6 +5228,22 @@ export const WithingsMeasurementScalarFieldEnum = {
 export type WithingsMeasurementScalarFieldEnum = (typeof WithingsMeasurementScalarFieldEnum)[keyof typeof WithingsMeasurementScalarFieldEnum]
 
 
+export const ScreenTimeScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  date: 'date',
+  totalMinutes: 'totalMinutes',
+  categories: 'categories',
+  topApps: 'topApps',
+  pickups: 'pickups',
+  notifications: 'notifications',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ScreenTimeScalarFieldEnum = (typeof ScreenTimeScalarFieldEnum)[keyof typeof ScreenTimeScalarFieldEnum]
+
+
 export const EmbeddingScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -5225,6 +5316,7 @@ export type InsightFeedbackScalarFieldEnum = (typeof InsightFeedbackScalarFieldE
 
 export const ChatHistoryScalarFieldEnum = {
   id: 'id',
+  userId: 'userId',
   role: 'role',
   content: 'content',
   userEmail: 'userEmail',
@@ -5567,6 +5659,14 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -5581,6 +5681,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -5677,6 +5786,20 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Float[]'
  */
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -5819,6 +5942,7 @@ export type GlobalOmitConfig = {
   garminStaging?: Prisma.GarminStagingOmit
   garminBodyComposition?: Prisma.GarminBodyCompositionOmit
   withingsMeasurement?: Prisma.WithingsMeasurementOmit
+  screenTime?: Prisma.ScreenTimeOmit
   embedding?: Prisma.EmbeddingOmit
   aiNote?: Prisma.AiNoteOmit
   aiContextSnapshot?: Prisma.AiContextSnapshotOmit

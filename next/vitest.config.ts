@@ -7,8 +7,10 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Convention: unit tests in src/ (*.test.ts), E2E in tests/ (*.spec.ts via Playwright)
   test: {
     include: ["src/**/*.test.ts"],
+    exclude: ["tests/**", "node_modules/**"],
     environment: "node",
   },
 });

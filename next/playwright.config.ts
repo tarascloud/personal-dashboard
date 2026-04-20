@@ -19,6 +19,12 @@ export default defineConfig({
       use: { browserName: "chromium" },
       testMatch: /smoke\.spec|api-health\.spec|api-routes\.spec/,
     },
+    // Firefox smoke — cross-browser parity check
+    {
+      name: "smoke-firefox",
+      use: { browserName: "firefox" },
+      testMatch: /smoke\.spec|api-health\.spec|api-routes\.spec/,
+    },
     // Dev with demo auth (all tests)
     {
       name: "dev-demo",

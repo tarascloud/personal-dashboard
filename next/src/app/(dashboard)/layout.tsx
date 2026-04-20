@@ -7,6 +7,7 @@ import Image from "next/image";
 import { SessionProvider } from "next-auth/react";
 import { Sidebar } from "@/components/shared/sidebar";
 import { BottomNav } from "@/components/shared/bottom-nav";
+import { MobileTabBar } from "@/components/shared/mobile-tab-bar";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { LanguageToggle } from "@/components/shared/language-toggle";
 import { DemoBanner } from "@/components/shared/demo-banner";
@@ -89,10 +90,8 @@ export default async function DashboardLayout({
             </main>
           </KeyboardShortcutsProvider>
 
-          {/* Bottom nav — mobile only (thumb zone) */}
-          <nav className="fixed bottom-0 inset-x-0 z-40 bg-card/95 backdrop-blur-md border-t border-border/50 sm:hidden pb-safe">
-            <BottomNav userRole={role} />
-          </nav>
+          {/* Bottom tab bar — mobile only (thumb zone) */}
+          <MobileTabBar userRole={role} />
 
           <HealthAutoSync />
         </div>

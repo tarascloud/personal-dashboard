@@ -16,19 +16,24 @@ export interface NavItem {
   href: string;
   icon: LucideIcon;
   ownerOnly?: boolean;
+  /** Whether this item can appear as a pinned tab in the mobile bottom bar */
+  pinnable?: boolean;
 }
 
 export const navItems: NavItem[] = [
-  { key: "finance", href: "/finance", icon: WalletIcon },
-  { key: "my_day", href: "/my-day", icon: CalendarCheckIcon },
-  { key: "gym", href: "/gym", icon: DumbbellIcon },
-  { key: "food", href: "/food", icon: AppleIcon },
-  { key: "list", href: "/list", icon: ShoppingCartIcon },
-  { key: "dashboard", href: "/dashboard", icon: LayoutDashboardIcon },
-  { key: "ai_chat", href: "/ai-chat", icon: BotMessageSquareIcon },
+  { key: "finance", href: "/finance", icon: WalletIcon, pinnable: true },
+  { key: "my_day", href: "/my-day", icon: CalendarCheckIcon, pinnable: true },
+  { key: "gym", href: "/gym", icon: DumbbellIcon, pinnable: true },
+  { key: "food", href: "/food", icon: AppleIcon, pinnable: true },
+  { key: "list", href: "/list", icon: ShoppingCartIcon, pinnable: true },
+  { key: "dashboard", href: "/dashboard", icon: LayoutDashboardIcon, pinnable: true },
+  { key: "ai_chat", href: "/ai-chat", icon: BotMessageSquareIcon, pinnable: true },
   { key: "settings", href: "/settings", icon: SettingsIcon },
   { key: "admin", href: "/admin", icon: ShieldIcon, ownerOnly: true },
 ];
+
+/** Default pinned tab keys for mobile bottom bar (Phase 1: fixed order) */
+export const DEFAULT_PINNED_TABS = ["dashboard", "my_day", "finance", "ai_chat"] as const;
 
 // Finance sub-tabs
 export const financeSubTabs = [
