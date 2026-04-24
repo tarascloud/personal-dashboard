@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
@@ -51,6 +51,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    site: "@taaboroda",
+    creator: "@taaboroda",
     title: "Personal Dashboard — Privacy-First Life Management",
     description:
       "Open-source, self-hosted dashboard for finance, health, gym, investments, trading, and tax reporting.",
@@ -70,6 +72,11 @@ export const metadata: Metadata = {
   other: {
     "mobile-web-app-capable": "yes",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default async function RootLayout({

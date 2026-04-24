@@ -628,12 +628,15 @@ model InsightFeedback {
 }
 
 model ChatHistory {
-  id        Int       @id @default(autoincrement())
-  userId    Int       @map("user_id")
-  role      String
-  content   String
-  userEmail String?   @map("user_email")
-  createdAt DateTime? @default(now()) @map("created_at")
+  id              Int       @id @default(autoincrement())
+  userId          Int       @map("user_id")
+  role            String
+  content         String
+  userEmail       String?   @map("user_email")
+  createdAt       DateTime? @default(now()) @map("created_at")
+  tokenPrompt     Int?      @map("token_prompt")
+  tokenCompletion Int?      @map("token_completion")
+  model           String?
 
   user User @relation(fields: [userId], references: [id])
 

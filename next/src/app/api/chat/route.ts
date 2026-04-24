@@ -29,7 +29,16 @@ const chatRequestSchema = z.object({
   model: z.enum(ALLOWED_MODELS).optional().default("gemini"),
 });
 
-async function saveChat(role: string, content: string, email: string) {
+interface SaveChatOptions {
+  role: string;
+  content: string;
+  email: string;
+  tokenPrompt?: number;
+  tokenCompletion?: number;
+  model?: string;
+}
+
+async function saveChat({ role, content, email, tokenPrompt, tokenCompletion, model }: SaveChatOptions) {
   try {
     const user = await prisma.user.findUnique({ where: { email } });
     if (user) {
@@ -39,6 +48,9 @@ async function saveChat(role: string, content: string, email: string) {
           role,
           content,
           userEmail: email,
+          tokenPrompt: tokenPrompt ?? null,
+          tokenCompletion: tokenCompletion ?? null,
+          model: model ?? null,
         },
       });
     }
@@ -142,7 +154,7 @@ export async function POST(req: Request) {
   // Save user message to history (store original unwrapped content)
   const lastUserMessage = rawConverted[rawConverted.length - 1];
   if (lastUserMessage?.role === "user" && lastUserMessage.content) {
-    await saveChat("user", lastUserMessage.content, session.user.email);
+    await saveChat({ role: "user", content: lastUserMessage.content, email: session.user.email });
   }
 
   // Fetch user data context for the AI (RAG: intent-aware). Use the raw
@@ -205,10 +217,20 @@ export async function POST(req: Request) {
           console.error("[Chat] Mid-stream error:", error);
           await logError(session.user.email, "api/chat/streamError", error);
         },
-        onFinish: async ({ text }) => {
+        onFinish: async ({ text, usage }) => {
           try {
             if (text) {
-              await saveChat("assistant", text, session.user.email);
+              await saveChat({
+                role: "assistant",
+                content: text,
+                email: session.user.email,
+                tokenPrompt: usage?.promptTokens,
+                tokenCompletion: usage?.completionTokens,
+                model: provider.name,
+              });
+              if (usage?.promptTokens || usage?.completionTokens) {
+                console.log(`[Chat] Token usage: prompt=${usage.promptTokens ?? 0}, completion=${usage.completionTokens ?? 0}, model=${provider.name}`);
+              }
             }
           } catch (e) {
             console.error("[Chat] onFinish error:", e);
