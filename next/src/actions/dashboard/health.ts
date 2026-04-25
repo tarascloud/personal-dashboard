@@ -346,10 +346,12 @@ export async function getKidsTimeData(days: number = 30): Promise<KidsTimeData> 
     select: { date: true, kidsHours: true },
   });
 
-  const mapped: KidsTimeDayPoint[] = rows.map((r) => ({
-    date: dateToString(r.date),
-    minutes: Math.round((r.kidsHours ?? 0) * 60),
-  }));
+  const mapped: KidsTimeDayPoint[] = rows
+    .filter((r) => r.kidsHours != null && Number.isFinite(r.kidsHours))
+    .map((r) => ({
+      date: dateToString(r.date),
+      minutes: Math.round((r.kidsHours as number) * 60),
+    }));
 
   const count = mapped.length || 1;
   const avgDailyMinutes = Math.round(mapped.reduce((s, d) => s + d.minutes, 0) / count);

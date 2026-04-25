@@ -35,7 +35,7 @@ KEY TABLES AND USEFUL QUERIES:
    - NOTE: The column is "avg_hr" (NOT "heart_rate_avg"). There is no "total_distance_m" column, use "distance_m".
 
 5. **garmin_activities** — Garmin activities (running, cycling, etc.)
-   - Columns: activity_id, user_id, date, activity_type, distance_m, duration_s, avg_hr, calories
+   - Columns: activity_id, user_id, date, activity_type, distance_m, duration_seconds, avg_hr, calories
 
 6. **food_log** — food intake with macros
    - Columns: id, user_id, date, meal_type, description, calories, protein_g, carbs_g, fat_g

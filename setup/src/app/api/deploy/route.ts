@@ -1,8 +1,8 @@
 import { NextRequest } from "next/server";
 import { verifySetupToken } from "@/lib/setup-auth";
 import { randomBytes } from "crypto";
-import { writeFile, mkdir, access } from "fs/promises";
-import { execSync } from "child_process";
+import { writeFile, mkdir, access, readFile } from "fs/promises";
+import { execFileSync } from "child_process";
 import { join } from "path";
 
 const OUTPUT_DIR = process.env.OUTPUT_DIR || "/data";
@@ -214,31 +214,35 @@ function toYaml(obj: unknown, indent = 0): string {
 
 function hasDockerSocket(): boolean {
   try {
-    execSync("docker info", { timeout: 5000, stdio: "pipe" });
+    execFileSync("docker", ["info"], { timeout: 5000, stdio: "pipe" });
     return true;
   } catch {
     return false;
   }
 }
 
+function sleepSync(ms: number): void {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
 function waitForPostgres(log: (msg: string) => void, maxRetries = 30): boolean {
   for (let i = 0; i < maxRetries; i++) {
     try {
-      execSync(
-        'docker exec pg pg_isready -U pd -d pd_prod',
+      execFileSync(
+        "docker", ["exec", "pg", "pg_isready", "-U", "pd", "-d", "pd_prod"],
         { timeout: 5000, stdio: "pipe" }
       );
       return true;
     } catch {
       log(`  Waiting for PostgreSQL... (${i + 1}/${maxRetries})`);
-      execSync("sleep 2");
+      sleepSync(2000);
     }
   }
   return false;
 }
 
-function runCommand(cmd: string, timeoutMs = 60000): string {
-  return execSync(cmd, { timeout: timeoutMs, stdio: "pipe" }).toString();
+function runExec(file: string, args: string[], timeoutMs = 60000): string {
+  return execFileSync(file, args, { timeout: timeoutMs, stdio: "pipe" }).toString();
 }
 
 export async function POST(req: NextRequest) {
@@ -318,8 +322,9 @@ export async function POST(req: NextRequest) {
 
         step("Starting containers with docker compose...");
         try {
-          const output = runCommand(
-            `docker compose -f ${join(OUTPUT_DIR, "docker-compose.yml")} --env-file ${join(OUTPUT_DIR, ".env")} --project-directory ${OUTPUT_DIR} up -d 2>&1`,
+          const output = runExec(
+            "docker",
+            ["compose", "-f", join(OUTPUT_DIR, "docker-compose.yml"), "--env-file", join(OUTPUT_DIR, ".env"), "--project-directory", OUTPUT_DIR, "up", "-d"],
             120000
           );
           output.split("\n").filter(Boolean).forEach((line) => log("  " + line));
@@ -350,7 +355,7 @@ export async function POST(req: NextRequest) {
           let appRunning = false;
           for (let i = 0; i < 15; i++) {
             try {
-              const status = runCommand('docker inspect -f "{{.State.Running}}" pd-app');
+              const status = runExec("docker", ["inspect", "-f", "{{.State.Running}}", "pd-app"]);
               if (status.trim() === "true") {
                 appRunning = true;
                 break;
@@ -358,15 +363,15 @@ export async function POST(req: NextRequest) {
             } catch {
               // container not ready yet
             }
-            execSync("sleep 2");
+            sleepSync(2000);
           }
 
           if (!appRunning) {
             log("  WARNING: pd-app container not running yet, migrations may fail.");
           }
 
-          const migrateOutput = runCommand(
-            "docker exec pd-app npx prisma migrate deploy 2>&1",
+          const migrateOutput = runExec(
+            "docker", ["exec", "pd-app", "npx", "prisma", "migrate", "deploy"],
             120000
           );
           migrateOutput.split("\n").filter(Boolean).forEach((line) => log("  " + line));
@@ -391,10 +396,11 @@ export async function POST(req: NextRequest) {
 
             try {
               await access(seedPath);
-              const seedOutput = runCommand(
-                `cat ${seedPath} | docker exec -i pg psql -U pd pd_prod 2>&1`,
-                60000
-              );
+              const seedData = await readFile(seedPath);
+              const seedOutput = execFileSync(
+                "docker", ["exec", "-i", "pg", "psql", "-U", "pd", "pd_prod"],
+                { timeout: 60000, stdio: ["pipe", "pipe", "pipe"], input: seedData }
+              ).toString();
               const lines = seedOutput.split("\n").filter(Boolean);
               // Show summary, not every INSERT
               const insertCount = lines.filter((l) => l.startsWith("INSERT")).length;
@@ -427,7 +433,7 @@ export async function POST(req: NextRequest) {
 
         // Check final container status
         try {
-          const psOutput = runCommand('docker ps --format "{{.Names}}: {{.Status}}" --filter "name=pd-app" --filter "name=pg" --filter "name=redis" 2>&1');
+          const psOutput = runExec("docker", ["ps", "--format", "{{.Names}}: {{.Status}}", "--filter", "name=pd-app", "--filter", "name=pg", "--filter", "name=redis"]);
           log("  Container status:");
           psOutput.split("\n").filter(Boolean).forEach((line) => log("    " + line));
         } catch {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import { verifySetupToken } from "@/lib/setup-auth";
 
 interface ContainerStatus {
@@ -12,9 +12,10 @@ export async function GET(req: Request) {
   const authError = verifySetupToken(req);
   if (authError) return authError;
   try {
-    const output = execSync(
-      'docker ps --format "{{.Names}}|{{.Status}}" --filter "name=pd-app" --filter "name=pg" --filter "name=redis"',
-      { timeout: 5000 }
+    const output = execFileSync(
+      "docker",
+      ["ps", "--format", "{{.Names}}|{{.Status}}", "--filter", "name=pd-app", "--filter", "name=pg", "--filter", "name=redis"],
+      { timeout: 5000, stdio: "pipe" }
     ).toString().trim();
 
     const containers: ContainerStatus[] = output

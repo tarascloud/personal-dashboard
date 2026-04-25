@@ -492,7 +492,7 @@ def build_activities_context() -> str:
             df = read_sql(
                 "SELECT activity_type, COUNT(*) as cnt, "
                 "COALESCE(SUM(distance_m), 0) as total_dist, "
-                "COALESCE(SUM(duration_s), 0) as total_dur, "
+                "COALESCE(SUM(duration_seconds), 0) as total_dur, "
                 "COALESCE(AVG(avg_hr), 0) as avg_hr "
                 "FROM garmin_activities WHERE date >= ? "
                 "GROUP BY activity_type ORDER BY cnt DESC",
