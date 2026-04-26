@@ -217,7 +217,7 @@ export type SyncFailureGroupByOutputType = {
   _max: SyncFailureMaxAggregateOutputType | null
 }
 
-type GetSyncFailureGroupByPayload<T extends SyncFailureGroupByArgs> = Prisma.PrismaPromise<
+export type GetSyncFailureGroupByPayload<T extends SyncFailureGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<SyncFailureGroupByOutputType, T['by']> &
       {

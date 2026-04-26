@@ -116,9 +116,19 @@ def _sync_table(
 ) -> int:
     """Copy new rows from prod to dev for a single table.
 
-    Uses INSERT ... ON CONFLICT (pk) DO NOTHING so existing dev rows
-    are never overwritten and prod is only read (SELECT), never modified.
+    Uses INSERT ... ON CONFLICT DO NOTHING (no column list) so PG skips
+    *any* unique-constraint violation, regardless of which constraint
+    the conflict hits. Tables in this database have a mix of business
+    keys (e.g. `(user_id, date)`) and PK `id`; the per-table `pk_cols`
+    parameter is kept for backwards compat but no longer referenced.
+
+    Existing dev rows are never overwritten and prod is only read (SELECT),
+    never modified.
     """
+    # `pk_cols` retained for API compatibility — no longer used since
+    # we now rely on PG's bare ON CONFLICT DO NOTHING.
+    _ = pk_cols
+
     with prod_conn.cursor() as pcur:
         columns = _get_columns(pcur, table)
         if not columns:
@@ -127,11 +137,10 @@ def _sync_table(
 
     col_list = ", ".join(f'"{c}"' for c in columns)
     placeholders = ", ".join(["%s"] * len(columns))
-    conflict_cols = ", ".join(f'"{c}"' for c in pk_cols)
 
     insert_sql = (
         f'INSERT INTO "{table}" ({col_list}) VALUES ({placeholders}) '
-        f"ON CONFLICT ({conflict_cols}) DO NOTHING"
+        f"ON CONFLICT DO NOTHING"
     )
 
     total_inserted = 0

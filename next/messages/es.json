@@ -1304,6 +1304,29 @@
     "welcome_to_module": "Bienvenido a {module}!",
     "dismiss": "Entendido"
   },
+  "first_session_tour": {
+    "aria_label": "Recorrido por Personal Dashboard",
+    "skip": "Saltar",
+    "back": "Atras",
+    "next": "Siguiente",
+    "done": "Listo",
+    "step_nav": {
+      "title": "Aqui viven tus modulos",
+      "body": "Finance, My Day, Gym, Food, Dashboard, AI Chat — cada seccion a un toque. En movil fija las 4 mas usadas en la barra inferior."
+    },
+    "step_dashboard": {
+      "title": "Dashboard reune todo",
+      "body": "Patrimonio, tendencias mensuales, Garmin, volumen de entrenamiento, animo, tiempo de pantalla — KPIs de cada modulo en una pagina."
+    },
+    "step_my_day": {
+      "title": "My Day = hoy en una pantalla",
+      "body": "Animo, comida, entreno, sueno, tiempo con ninos, tiempo de pantalla — tu registro diario. Abrelo primero por la manana."
+    },
+    "step_settings": {
+      "title": "Settings: integraciones, modulos, perfil",
+      "body": "Conecta Garmin, Withings, Monobank, bunq, brokers. Activa o desactiva modulos. Gestiona passkeys. Configuracion en un sitio."
+    }
+  },
   "sync": {
     "syncing": "Sincronizando datos de salud...",
     "sync_complete": "Sincronizacion de datos de salud completada",

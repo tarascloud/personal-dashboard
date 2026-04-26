@@ -200,7 +200,7 @@ export type BudgetConfigGroupByOutputType = {
   _max: BudgetConfigMaxAggregateOutputType | null
 }
 
-type GetBudgetConfigGroupByPayload<T extends BudgetConfigGroupByArgs> = Prisma.PrismaPromise<
+export type GetBudgetConfigGroupByPayload<T extends BudgetConfigGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BudgetConfigGroupByOutputType, T['by']> &
       {

@@ -119,7 +119,7 @@ describe("getCurrentUser — no session", () => {
   it("returns null when session is missing", async () => {
     mockCookies.mockResolvedValue(makeCookieStore(undefined) as any);
     mockVerifyDemoToken.mockResolvedValue(false);
-    mockAuth.mockResolvedValue(null);
+    mockAuth.mockResolvedValue(null as any);
 
     const user = await getCurrentUser();
     expect(user).toBeNull();
@@ -160,7 +160,7 @@ describe("requireOwner", () => {
   it("throws Unauthorized when not logged in", async () => {
     mockCookies.mockResolvedValue(makeCookieStore(undefined) as any);
     mockVerifyDemoToken.mockResolvedValue(false);
-    mockAuth.mockResolvedValue(null);
+    mockAuth.mockResolvedValue(null as any);
 
     await expect(requireOwner()).rejects.toThrow("Unauthorized");
   });

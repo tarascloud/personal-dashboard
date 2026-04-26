@@ -1,10 +1,36 @@
 """AI chat and insights for the Streamlit dashboard — powered by Gemini REST API."""
 import os
 import json
+import re
 from typing import Generator
 import requests
 
 from src.database import get_db_schema, execute_readonly_query
+
+
+# Strip nonsense casts that Gemini sometimes emits when filtering native
+# DATE columns (e.g. transactions.date) — `::date::text` and `::text` on a
+# date expression force PG to compare `date >= text`, which fails. We can
+# safely drop these casts since the LHS column already has type `date`.
+# Match `::date::text`, `::TEXT`, and `::text` immediately after a closing
+# paren or simple identifier, conservatively only when used in a comparison.
+_DATE_TEXT_CAST_RE = re.compile(r"::\s*date\s*::\s*text\b", re.IGNORECASE)
+_TRAILING_TEXT_CAST_RE = re.compile(
+    r"(\bCURRENT_DATE\b[^)]*?\)\s*)::\s*text\b", re.IGNORECASE
+)
+
+
+def _scrub_bad_date_casts(sql: str) -> str:
+    """Remove `::date::text` / `::text` casts on date expressions.
+
+    AI-generated SQL occasionally adds these casts unnecessarily and they
+    break comparisons against native `date` columns ("operator does not
+    exist: date >= text"). Stripping them is safe — LHS column type is
+    already `date` and PG can implicitly compare two date values.
+    """
+    out = _DATE_TEXT_CAST_RE.sub("::date", sql)
+    out = _TRAILING_TEXT_CAST_RE.sub(r"\1", out)
+    return out
 
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models"
 GEMINI_MODEL = "gemini-2.5-flash"
@@ -84,6 +110,11 @@ CRITICAL COLUMN NAMES (use exactly these):
 - daily_log: use "level" for mood, "energy_level", "stress_level", "sex_count", "bj_count", "kids_hours" (NOT mood/energy/stress)
 - THERE IS NO "quality_of_life" TABLE — sex/intimacy data is in daily_log (sex_count, bj_count columns)
 
+CRITICAL DATA TYPES (PostgreSQL — date columns are NATIVE `date`, not text):
+- transactions.date: type DATE — compare with date literals (e.g. `date >= '2025-01-01'` or `date >= CURRENT_DATE - INTERVAL '30 days'`). NEVER cast to text via `::text` or `::date::text` — it produces "operator does not exist: date >= text" errors.
+- garmin_daily.date, garmin_sleep.date, garmin_activities.date, withings_measurements.date, daily_log.date: same, all native DATE.
+- For relative date filters use bare `CURRENT_DATE - INTERVAL '30 days'` (no `::text` cast).
+
 RULES:
 - Only SELECT queries (read-only)
 - Use proper PostgreSQL syntax
@@ -148,6 +179,7 @@ def _generate_and_execute_queries(question: str) -> str:
 
     results = []
     for sql in queries[:3]:  # max 3 queries
+        sql = _scrub_bad_date_casts(sql)
         result = execute_readonly_query(sql)
         if result and not result.startswith("ERROR"):
             results.append(result)

@@ -42,7 +42,7 @@ export function BottomNav({ userRole }: BottomNavProps) {
   }, [pathname]);
 
   return (
-    <nav role="navigation" aria-label="Main navigation">
+    <nav role="navigation" aria-label="Main navigation" data-tour="nav">
       <div
         ref={scrollRef}
         className="flex overflow-x-auto scrollbar-hide gap-1 px-2 py-1.5 border-t border-border/50"
@@ -60,6 +60,7 @@ export function BottomNav({ userRole }: BottomNavProps) {
               ref={isActive ? activeRef : undefined}
               href={item.href}
               data-testid={`nav-${item.key}`}
+              data-tour={item.key === "my_day" ? "my-day" : item.key === "settings" ? "settings" : undefined}
               onClick={() => navigator?.vibrate?.(10)}
               aria-current={isActive ? "page" : undefined}
               className={cn(

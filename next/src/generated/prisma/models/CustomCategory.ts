@@ -171,7 +171,7 @@ export type CustomCategoryGroupByOutputType = {
   _max: CustomCategoryMaxAggregateOutputType | null
 }
 
-type GetCustomCategoryGroupByPayload<T extends CustomCategoryGroupByArgs> = Prisma.PrismaPromise<
+export type GetCustomCategoryGroupByPayload<T extends CustomCategoryGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<CustomCategoryGroupByOutputType, T['by']> &
       {

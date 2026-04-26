@@ -233,7 +233,7 @@ export type PortfolioSnapshotGroupByOutputType = {
   _max: PortfolioSnapshotMaxAggregateOutputType | null
 }
 
-type GetPortfolioSnapshotGroupByPayload<T extends PortfolioSnapshotGroupByArgs> = Prisma.PrismaPromise<
+export type GetPortfolioSnapshotGroupByPayload<T extends PortfolioSnapshotGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PortfolioSnapshotGroupByOutputType, T['by']> &
       {

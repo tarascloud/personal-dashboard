@@ -15,6 +15,7 @@ import { HealthAutoSync } from "@/components/shared/health-auto-sync";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { KeyboardShortcutsProvider } from "@/components/shared/keyboard-shortcuts-provider";
 import { EnabledModulesProvider } from "@/hooks/use-enabled-modules";
+import { FirstSessionTour } from "@/components/shared/first-session-tour";
 
 export default async function DashboardLayout({
   children,
@@ -83,7 +84,11 @@ export default async function DashboardLayout({
           {isDemo && <DemoBanner />}
 
           <KeyboardShortcutsProvider>
-            <main id="main-content" className="flex-1 px-3 py-3 md:p-6 animate-page-in pb-20 sm:pb-0">
+            <main
+              id="main-content"
+              data-tour="dashboard"
+              className="flex-1 px-3 py-3 md:p-6 animate-page-in pb-20 sm:pb-0"
+            >
               <ErrorBoundary module="Page">
                 {children}
               </ErrorBoundary>
@@ -94,6 +99,10 @@ export default async function DashboardLayout({
           <MobileTabBar userRole={role} />
 
           <HealthAutoSync />
+
+          {/* First-session walk-through (UX-06). Reads UserPreference
+              first_session_tour_done to show once per user. */}
+          {!isDemo && <FirstSessionTour />}
         </div>
       </EnabledModulesProvider>
     </SessionProvider>

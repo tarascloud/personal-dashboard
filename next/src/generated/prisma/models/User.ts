@@ -192,7 +192,7 @@ export type UserGroupByOutputType = {
   _max: UserMaxAggregateOutputType | null
 }
 
-type GetUserGroupByPayload<T extends UserGroupByArgs> = Prisma.PrismaPromise<
+export type GetUserGroupByPayload<T extends UserGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<UserGroupByOutputType, T['by']> &
       {
@@ -224,6 +224,7 @@ export type UserWhereInput = {
   aiInsights?: Prisma.AiInsightListRelationFilter
   embeddings?: Prisma.EmbeddingListRelationFilter
   garminHeartRates?: Prisma.GarminHeartRateListRelationFilter
+  screenTimes?: Prisma.ScreenTimeListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -240,6 +241,7 @@ export type UserOrderByWithRelationInput = {
   aiInsights?: Prisma.AiInsightOrderByRelationAggregateInput
   embeddings?: Prisma.EmbeddingOrderByRelationAggregateInput
   garminHeartRates?: Prisma.GarminHeartRateOrderByRelationAggregateInput
+  screenTimes?: Prisma.ScreenTimeOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -259,6 +261,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   aiInsights?: Prisma.AiInsightListRelationFilter
   embeddings?: Prisma.EmbeddingListRelationFilter
   garminHeartRates?: Prisma.GarminHeartRateListRelationFilter
+  screenTimes?: Prisma.ScreenTimeListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -298,6 +301,7 @@ export type UserCreateInput = {
   aiInsights?: Prisma.AiInsightCreateNestedManyWithoutUserInput
   embeddings?: Prisma.EmbeddingCreateNestedManyWithoutUserInput
   garminHeartRates?: Prisma.GarminHeartRateCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -314,6 +318,7 @@ export type UserUncheckedCreateInput = {
   aiInsights?: Prisma.AiInsightUncheckedCreateNestedManyWithoutUserInput
   embeddings?: Prisma.EmbeddingUncheckedCreateNestedManyWithoutUserInput
   garminHeartRates?: Prisma.GarminHeartRateUncheckedCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -329,6 +334,7 @@ export type UserUpdateInput = {
   aiInsights?: Prisma.AiInsightUpdateManyWithoutUserNestedInput
   embeddings?: Prisma.EmbeddingUpdateManyWithoutUserNestedInput
   garminHeartRates?: Prisma.GarminHeartRateUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -345,6 +351,7 @@ export type UserUncheckedUpdateInput = {
   aiInsights?: Prisma.AiInsightUncheckedUpdateManyWithoutUserNestedInput
   embeddings?: Prisma.EmbeddingUncheckedUpdateManyWithoutUserNestedInput
   garminHeartRates?: Prisma.GarminHeartRateUncheckedUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -405,11 +412,6 @@ export type UserSumOrderByAggregateInput = {
 export type UserScalarRelationFilter = {
   is?: Prisma.UserWhereInput
   isNot?: Prisma.UserWhereInput
-}
-
-export type UserNullableScalarRelationFilter = {
-  is?: Prisma.UserWhereInput | null
-  isNot?: Prisma.UserWhereInput | null
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -502,6 +504,20 @@ export type UserUpdateOneRequiredWithoutGarminHeartRatesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutGarminHeartRatesInput, Prisma.UserUpdateWithoutGarminHeartRatesInput>, Prisma.UserUncheckedUpdateWithoutGarminHeartRatesInput>
 }
 
+export type UserCreateNestedOneWithoutScreenTimesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutScreenTimesInput, Prisma.UserUncheckedCreateWithoutScreenTimesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutScreenTimesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutScreenTimesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutScreenTimesInput, Prisma.UserUncheckedCreateWithoutScreenTimesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutScreenTimesInput
+  upsert?: Prisma.UserUpsertWithoutScreenTimesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutScreenTimesInput, Prisma.UserUpdateWithoutScreenTimesInput>, Prisma.UserUncheckedUpdateWithoutScreenTimesInput>
+}
+
 export type UserUpdateOneRequiredWithoutEmbeddingsNestedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutEmbeddingsInput, Prisma.UserUncheckedCreateWithoutEmbeddingsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutEmbeddingsInput
@@ -530,12 +546,10 @@ export type UserCreateNestedOneWithoutChatHistoryInput = {
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneWithoutChatHistoryNestedInput = {
+export type UserUpdateOneRequiredWithoutChatHistoryNestedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutChatHistoryInput, Prisma.UserUncheckedCreateWithoutChatHistoryInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutChatHistoryInput
   upsert?: Prisma.UserUpsertWithoutChatHistoryInput
-  disconnect?: Prisma.UserWhereInput | boolean
-  delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutChatHistoryInput, Prisma.UserUpdateWithoutChatHistoryInput>, Prisma.UserUncheckedUpdateWithoutChatHistoryInput>
 }
@@ -552,6 +566,7 @@ export type UserCreateWithoutPasskeysInput = {
   aiInsights?: Prisma.AiInsightCreateNestedManyWithoutUserInput
   embeddings?: Prisma.EmbeddingCreateNestedManyWithoutUserInput
   garminHeartRates?: Prisma.GarminHeartRateCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPasskeysInput = {
@@ -567,6 +582,7 @@ export type UserUncheckedCreateWithoutPasskeysInput = {
   aiInsights?: Prisma.AiInsightUncheckedCreateNestedManyWithoutUserInput
   embeddings?: Prisma.EmbeddingUncheckedCreateNestedManyWithoutUserInput
   garminHeartRates?: Prisma.GarminHeartRateUncheckedCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPasskeysInput = {
@@ -597,6 +613,7 @@ export type UserUpdateWithoutPasskeysInput = {
   aiInsights?: Prisma.AiInsightUpdateManyWithoutUserNestedInput
   embeddings?: Prisma.EmbeddingUpdateManyWithoutUserNestedInput
   garminHeartRates?: Prisma.GarminHeartRateUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPasskeysInput = {
@@ -612,6 +629,7 @@ export type UserUncheckedUpdateWithoutPasskeysInput = {
   aiInsights?: Prisma.AiInsightUncheckedUpdateManyWithoutUserNestedInput
   embeddings?: Prisma.EmbeddingUncheckedUpdateManyWithoutUserNestedInput
   garminHeartRates?: Prisma.GarminHeartRateUncheckedUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPreferencesInput = {
@@ -626,6 +644,7 @@ export type UserCreateWithoutPreferencesInput = {
   aiInsights?: Prisma.AiInsightCreateNestedManyWithoutUserInput
   embeddings?: Prisma.EmbeddingCreateNestedManyWithoutUserInput
   garminHeartRates?: Prisma.GarminHeartRateCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPreferencesInput = {
@@ -641,6 +660,7 @@ export type UserUncheckedCreateWithoutPreferencesInput = {
   aiInsights?: Prisma.AiInsightUncheckedCreateNestedManyWithoutUserInput
   embeddings?: Prisma.EmbeddingUncheckedCreateNestedManyWithoutUserInput
   garminHeartRates?: Prisma.GarminHeartRateUncheckedCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPreferencesInput = {
@@ -671,6 +691,7 @@ export type UserUpdateWithoutPreferencesInput = {
   aiInsights?: Prisma.AiInsightUpdateManyWithoutUserNestedInput
   embeddings?: Prisma.EmbeddingUpdateManyWithoutUserNestedInput
   garminHeartRates?: Prisma.GarminHeartRateUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPreferencesInput = {
@@ -686,6 +707,7 @@ export type UserUncheckedUpdateWithoutPreferencesInput = {
   aiInsights?: Prisma.AiInsightUncheckedUpdateManyWithoutUserNestedInput
   embeddings?: Prisma.EmbeddingUncheckedUpdateManyWithoutUserNestedInput
   garminHeartRates?: Prisma.GarminHeartRateUncheckedUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -700,6 +722,7 @@ export type UserCreateWithoutAuditLogsInput = {
   aiInsights?: Prisma.AiInsightCreateNestedManyWithoutUserInput
   embeddings?: Prisma.EmbeddingCreateNestedManyWithoutUserInput
   garminHeartRates?: Prisma.GarminHeartRateCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -715,6 +738,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   aiInsights?: Prisma.AiInsightUncheckedCreateNestedManyWithoutUserInput
   embeddings?: Prisma.EmbeddingUncheckedCreateNestedManyWithoutUserInput
   garminHeartRates?: Prisma.GarminHeartRateUncheckedCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -745,6 +769,7 @@ export type UserUpdateWithoutAuditLogsInput = {
   aiInsights?: Prisma.AiInsightUpdateManyWithoutUserNestedInput
   embeddings?: Prisma.EmbeddingUpdateManyWithoutUserNestedInput
   garminHeartRates?: Prisma.GarminHeartRateUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -760,6 +785,7 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   aiInsights?: Prisma.AiInsightUncheckedUpdateManyWithoutUserNestedInput
   embeddings?: Prisma.EmbeddingUncheckedUpdateManyWithoutUserNestedInput
   garminHeartRates?: Prisma.GarminHeartRateUncheckedUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTelegramLinksInput = {
@@ -774,6 +800,7 @@ export type UserCreateWithoutTelegramLinksInput = {
   aiInsights?: Prisma.AiInsightCreateNestedManyWithoutUserInput
   embeddings?: Prisma.EmbeddingCreateNestedManyWithoutUserInput
   garminHeartRates?: Prisma.GarminHeartRateCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTelegramLinksInput = {
@@ -789,6 +816,7 @@ export type UserUncheckedCreateWithoutTelegramLinksInput = {
   aiInsights?: Prisma.AiInsightUncheckedCreateNestedManyWithoutUserInput
   embeddings?: Prisma.EmbeddingUncheckedCreateNestedManyWithoutUserInput
   garminHeartRates?: Prisma.GarminHeartRateUncheckedCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTelegramLinksInput = {
@@ -819,6 +847,7 @@ export type UserUpdateWithoutTelegramLinksInput = {
   aiInsights?: Prisma.AiInsightUpdateManyWithoutUserNestedInput
   embeddings?: Prisma.EmbeddingUpdateManyWithoutUserNestedInput
   garminHeartRates?: Prisma.GarminHeartRateUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTelegramLinksInput = {
@@ -834,6 +863,7 @@ export type UserUncheckedUpdateWithoutTelegramLinksInput = {
   aiInsights?: Prisma.AiInsightUncheckedUpdateManyWithoutUserNestedInput
   embeddings?: Prisma.EmbeddingUncheckedUpdateManyWithoutUserNestedInput
   garminHeartRates?: Prisma.GarminHeartRateUncheckedUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutGarminHeartRatesInput = {
@@ -848,6 +878,7 @@ export type UserCreateWithoutGarminHeartRatesInput = {
   telegramLinks?: Prisma.TelegramLinkCreateNestedManyWithoutUserInput
   aiInsights?: Prisma.AiInsightCreateNestedManyWithoutUserInput
   embeddings?: Prisma.EmbeddingCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGarminHeartRatesInput = {
@@ -863,6 +894,7 @@ export type UserUncheckedCreateWithoutGarminHeartRatesInput = {
   telegramLinks?: Prisma.TelegramLinkUncheckedCreateNestedManyWithoutUserInput
   aiInsights?: Prisma.AiInsightUncheckedCreateNestedManyWithoutUserInput
   embeddings?: Prisma.EmbeddingUncheckedCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGarminHeartRatesInput = {
@@ -893,6 +925,7 @@ export type UserUpdateWithoutGarminHeartRatesInput = {
   telegramLinks?: Prisma.TelegramLinkUpdateManyWithoutUserNestedInput
   aiInsights?: Prisma.AiInsightUpdateManyWithoutUserNestedInput
   embeddings?: Prisma.EmbeddingUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGarminHeartRatesInput = {
@@ -908,6 +941,85 @@ export type UserUncheckedUpdateWithoutGarminHeartRatesInput = {
   telegramLinks?: Prisma.TelegramLinkUncheckedUpdateManyWithoutUserNestedInput
   aiInsights?: Prisma.AiInsightUncheckedUpdateManyWithoutUserNestedInput
   embeddings?: Prisma.EmbeddingUncheckedUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutScreenTimesInput = {
+  email: string
+  name?: string | null
+  role?: string
+  createdAt?: Date | string | null
+  passkeys?: Prisma.PasskeyCreateNestedManyWithoutUserInput
+  preferences?: Prisma.UserPreferenceCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  chatHistory?: Prisma.ChatHistoryCreateNestedManyWithoutUserInput
+  telegramLinks?: Prisma.TelegramLinkCreateNestedManyWithoutUserInput
+  aiInsights?: Prisma.AiInsightCreateNestedManyWithoutUserInput
+  embeddings?: Prisma.EmbeddingCreateNestedManyWithoutUserInput
+  garminHeartRates?: Prisma.GarminHeartRateCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutScreenTimesInput = {
+  id?: number
+  email: string
+  name?: string | null
+  role?: string
+  createdAt?: Date | string | null
+  passkeys?: Prisma.PasskeyUncheckedCreateNestedManyWithoutUserInput
+  preferences?: Prisma.UserPreferenceUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  chatHistory?: Prisma.ChatHistoryUncheckedCreateNestedManyWithoutUserInput
+  telegramLinks?: Prisma.TelegramLinkUncheckedCreateNestedManyWithoutUserInput
+  aiInsights?: Prisma.AiInsightUncheckedCreateNestedManyWithoutUserInput
+  embeddings?: Prisma.EmbeddingUncheckedCreateNestedManyWithoutUserInput
+  garminHeartRates?: Prisma.GarminHeartRateUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutScreenTimesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutScreenTimesInput, Prisma.UserUncheckedCreateWithoutScreenTimesInput>
+}
+
+export type UserUpsertWithoutScreenTimesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutScreenTimesInput, Prisma.UserUncheckedUpdateWithoutScreenTimesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutScreenTimesInput, Prisma.UserUncheckedCreateWithoutScreenTimesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutScreenTimesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutScreenTimesInput, Prisma.UserUncheckedUpdateWithoutScreenTimesInput>
+}
+
+export type UserUpdateWithoutScreenTimesInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passkeys?: Prisma.PasskeyUpdateManyWithoutUserNestedInput
+  preferences?: Prisma.UserPreferenceUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  chatHistory?: Prisma.ChatHistoryUpdateManyWithoutUserNestedInput
+  telegramLinks?: Prisma.TelegramLinkUpdateManyWithoutUserNestedInput
+  aiInsights?: Prisma.AiInsightUpdateManyWithoutUserNestedInput
+  embeddings?: Prisma.EmbeddingUpdateManyWithoutUserNestedInput
+  garminHeartRates?: Prisma.GarminHeartRateUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutScreenTimesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passkeys?: Prisma.PasskeyUncheckedUpdateManyWithoutUserNestedInput
+  preferences?: Prisma.UserPreferenceUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  chatHistory?: Prisma.ChatHistoryUncheckedUpdateManyWithoutUserNestedInput
+  telegramLinks?: Prisma.TelegramLinkUncheckedUpdateManyWithoutUserNestedInput
+  aiInsights?: Prisma.AiInsightUncheckedUpdateManyWithoutUserNestedInput
+  embeddings?: Prisma.EmbeddingUncheckedUpdateManyWithoutUserNestedInput
+  garminHeartRates?: Prisma.GarminHeartRateUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutEmbeddingsInput = {
@@ -922,6 +1034,7 @@ export type UserCreateWithoutEmbeddingsInput = {
   telegramLinks?: Prisma.TelegramLinkCreateNestedManyWithoutUserInput
   aiInsights?: Prisma.AiInsightCreateNestedManyWithoutUserInput
   garminHeartRates?: Prisma.GarminHeartRateCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutEmbeddingsInput = {
@@ -937,6 +1050,7 @@ export type UserUncheckedCreateWithoutEmbeddingsInput = {
   telegramLinks?: Prisma.TelegramLinkUncheckedCreateNestedManyWithoutUserInput
   aiInsights?: Prisma.AiInsightUncheckedCreateNestedManyWithoutUserInput
   garminHeartRates?: Prisma.GarminHeartRateUncheckedCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutEmbeddingsInput = {
@@ -967,6 +1081,7 @@ export type UserUpdateWithoutEmbeddingsInput = {
   telegramLinks?: Prisma.TelegramLinkUpdateManyWithoutUserNestedInput
   aiInsights?: Prisma.AiInsightUpdateManyWithoutUserNestedInput
   garminHeartRates?: Prisma.GarminHeartRateUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEmbeddingsInput = {
@@ -982,6 +1097,7 @@ export type UserUncheckedUpdateWithoutEmbeddingsInput = {
   telegramLinks?: Prisma.TelegramLinkUncheckedUpdateManyWithoutUserNestedInput
   aiInsights?: Prisma.AiInsightUncheckedUpdateManyWithoutUserNestedInput
   garminHeartRates?: Prisma.GarminHeartRateUncheckedUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAiInsightsInput = {
@@ -996,6 +1112,7 @@ export type UserCreateWithoutAiInsightsInput = {
   telegramLinks?: Prisma.TelegramLinkCreateNestedManyWithoutUserInput
   embeddings?: Prisma.EmbeddingCreateNestedManyWithoutUserInput
   garminHeartRates?: Prisma.GarminHeartRateCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAiInsightsInput = {
@@ -1011,6 +1128,7 @@ export type UserUncheckedCreateWithoutAiInsightsInput = {
   telegramLinks?: Prisma.TelegramLinkUncheckedCreateNestedManyWithoutUserInput
   embeddings?: Prisma.EmbeddingUncheckedCreateNestedManyWithoutUserInput
   garminHeartRates?: Prisma.GarminHeartRateUncheckedCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAiInsightsInput = {
@@ -1041,6 +1159,7 @@ export type UserUpdateWithoutAiInsightsInput = {
   telegramLinks?: Prisma.TelegramLinkUpdateManyWithoutUserNestedInput
   embeddings?: Prisma.EmbeddingUpdateManyWithoutUserNestedInput
   garminHeartRates?: Prisma.GarminHeartRateUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAiInsightsInput = {
@@ -1056,6 +1175,7 @@ export type UserUncheckedUpdateWithoutAiInsightsInput = {
   telegramLinks?: Prisma.TelegramLinkUncheckedUpdateManyWithoutUserNestedInput
   embeddings?: Prisma.EmbeddingUncheckedUpdateManyWithoutUserNestedInput
   garminHeartRates?: Prisma.GarminHeartRateUncheckedUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutChatHistoryInput = {
@@ -1070,6 +1190,7 @@ export type UserCreateWithoutChatHistoryInput = {
   aiInsights?: Prisma.AiInsightCreateNestedManyWithoutUserInput
   embeddings?: Prisma.EmbeddingCreateNestedManyWithoutUserInput
   garminHeartRates?: Prisma.GarminHeartRateCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutChatHistoryInput = {
@@ -1085,6 +1206,7 @@ export type UserUncheckedCreateWithoutChatHistoryInput = {
   aiInsights?: Prisma.AiInsightUncheckedCreateNestedManyWithoutUserInput
   embeddings?: Prisma.EmbeddingUncheckedCreateNestedManyWithoutUserInput
   garminHeartRates?: Prisma.GarminHeartRateUncheckedCreateNestedManyWithoutUserInput
+  screenTimes?: Prisma.ScreenTimeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutChatHistoryInput = {
@@ -1115,6 +1237,7 @@ export type UserUpdateWithoutChatHistoryInput = {
   aiInsights?: Prisma.AiInsightUpdateManyWithoutUserNestedInput
   embeddings?: Prisma.EmbeddingUpdateManyWithoutUserNestedInput
   garminHeartRates?: Prisma.GarminHeartRateUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutChatHistoryInput = {
@@ -1130,6 +1253,7 @@ export type UserUncheckedUpdateWithoutChatHistoryInput = {
   aiInsights?: Prisma.AiInsightUncheckedUpdateManyWithoutUserNestedInput
   embeddings?: Prisma.EmbeddingUncheckedUpdateManyWithoutUserNestedInput
   garminHeartRates?: Prisma.GarminHeartRateUncheckedUpdateManyWithoutUserNestedInput
+  screenTimes?: Prisma.ScreenTimeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1146,6 +1270,7 @@ export type UserCountOutputType = {
   aiInsights: number
   embeddings: number
   garminHeartRates: number
+  screenTimes: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1157,6 +1282,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   aiInsights?: boolean | UserCountOutputTypeCountAiInsightsArgs
   embeddings?: boolean | UserCountOutputTypeCountEmbeddingsArgs
   garminHeartRates?: boolean | UserCountOutputTypeCountGarminHeartRatesArgs
+  screenTimes?: boolean | UserCountOutputTypeCountScreenTimesArgs
 }
 
 /**
@@ -1225,6 +1351,13 @@ export type UserCountOutputTypeCountGarminHeartRatesArgs<ExtArgs extends runtime
   where?: Prisma.GarminHeartRateWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountScreenTimesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ScreenTimeWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1240,6 +1373,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   aiInsights?: boolean | Prisma.User$aiInsightsArgs<ExtArgs>
   embeddings?: boolean | Prisma.User$embeddingsArgs<ExtArgs>
   garminHeartRates?: boolean | Prisma.User$garminHeartRatesArgs<ExtArgs>
+  screenTimes?: boolean | Prisma.User$screenTimesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1277,6 +1411,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   aiInsights?: boolean | Prisma.User$aiInsightsArgs<ExtArgs>
   embeddings?: boolean | Prisma.User$embeddingsArgs<ExtArgs>
   garminHeartRates?: boolean | Prisma.User$garminHeartRatesArgs<ExtArgs>
+  screenTimes?: boolean | Prisma.User$screenTimesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1293,6 +1428,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     aiInsights: Prisma.$AiInsightPayload<ExtArgs>[]
     embeddings: Prisma.$EmbeddingPayload<ExtArgs>[]
     garminHeartRates: Prisma.$GarminHeartRatePayload<ExtArgs>[]
+    screenTimes: Prisma.$ScreenTimePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1702,6 +1838,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   aiInsights<T extends Prisma.User$aiInsightsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$aiInsightsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AiInsightPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   embeddings<T extends Prisma.User$embeddingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$embeddingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmbeddingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   garminHeartRates<T extends Prisma.User$garminHeartRatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$garminHeartRatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GarminHeartRatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  screenTimes<T extends Prisma.User$screenTimesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$screenTimesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScreenTimePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2318,6 +2455,30 @@ export type User$garminHeartRatesArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.GarminHeartRateScalarFieldEnum | Prisma.GarminHeartRateScalarFieldEnum[]
+}
+
+/**
+ * User.screenTimes
+ */
+export type User$screenTimesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ScreenTime
+   */
+  select?: Prisma.ScreenTimeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ScreenTime
+   */
+  omit?: Prisma.ScreenTimeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ScreenTimeInclude<ExtArgs> | null
+  where?: Prisma.ScreenTimeWhereInput
+  orderBy?: Prisma.ScreenTimeOrderByWithRelationInput | Prisma.ScreenTimeOrderByWithRelationInput[]
+  cursor?: Prisma.ScreenTimeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ScreenTimeScalarFieldEnum | Prisma.ScreenTimeScalarFieldEnum[]
 }
 
 /**

@@ -1329,6 +1329,29 @@
     "welcome_to_module": "Ласкаво просимо до {module}!",
     "dismiss": "Зрозуміло"
   },
+  "first_session_tour": {
+    "aria_label": "Знайомство з Personal Dashboard",
+    "skip": "Пропустити",
+    "back": "Назад",
+    "next": "Далі",
+    "done": "Готово",
+    "step_nav": {
+      "title": "Тут живуть твої модулі",
+      "body": "Finance, My Day, Gym, Food, Dashboard, AI Chat — кожен розділ за один тап. На мобільному закріпи 4 улюблені знизу."
+    },
+    "step_dashboard": {
+      "title": "Dashboard зводить усе",
+      "body": "Net worth, місячні тренди, Garmin, об’єм тренувань, настрій, screen time — KPI з усіх модулів на одній сторінці."
+    },
+    "step_my_day": {
+      "title": "My Day = сьогодні в одному екрані",
+      "body": "Настрій, харчування, тренування, сон, час з дітьми, screen time — щоденний лог. Відкривай вранці першим."
+    },
+    "step_settings": {
+      "title": "Settings: інтеграції, модулі, профіль",
+      "body": "Підключи Garmin, Withings, Monobank, bunq, брокерів. Вмикай/вимикай модулі. Керуй passkeys. Уся конфігурація тут."
+    }
+  },
   "sync": {
     "syncing": "Синхронізація даних здоров'я...",
     "sync_complete": "Синхронізацію здоров'я завершено",

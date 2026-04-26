@@ -1309,6 +1309,29 @@
     "welcome_to_module": "Welcome to {module}!",
     "dismiss": "Got it"
   },
+  "first_session_tour": {
+    "aria_label": "Personal Dashboard walkthrough",
+    "skip": "Skip tour",
+    "back": "Back",
+    "next": "Next",
+    "done": "Got it",
+    "step_nav": {
+      "title": "Your modules live here",
+      "body": "Finance, My Day, Gym, Food, Dashboard, AI Chat — every section of Personal Dashboard is one tap away. Pin the four you use most to the bottom bar on mobile."
+    },
+    "step_dashboard": {
+      "title": "Dashboard pulls it all together",
+      "body": "Net worth, monthly trends, Garmin trends, exercise volume, mood, screen time — your KPIs from every module on one page."
+    },
+    "step_my_day": {
+      "title": "My Day = today, in one screen",
+      "body": "Mood, food, training, sleep, kids time, screen time — your daily log. Open it first thing in the morning."
+    },
+    "step_settings": {
+      "title": "Settings: integrations, modules, profile",
+      "body": "Connect Garmin, Withings, Monobank, bunq, brokers. Toggle modules on or off. Manage passkeys. Your single config home."
+    }
+  },
   "sync": {
     "syncing": "Syncing health data...",
     "sync_complete": "Health data sync complete",

@@ -28,68 +28,104 @@ export type AggregateChatHistory = {
 
 export type ChatHistoryAvgAggregateOutputType = {
   id: number | null
+  userId: number | null
+  tokenPrompt: number | null
+  tokenCompletion: number | null
 }
 
 export type ChatHistorySumAggregateOutputType = {
   id: number | null
+  userId: number | null
+  tokenPrompt: number | null
+  tokenCompletion: number | null
 }
 
 export type ChatHistoryMinAggregateOutputType = {
   id: number | null
+  userId: number | null
   role: string | null
   content: string | null
   userEmail: string | null
   createdAt: Date | null
+  tokenPrompt: number | null
+  tokenCompletion: number | null
+  model: string | null
 }
 
 export type ChatHistoryMaxAggregateOutputType = {
   id: number | null
+  userId: number | null
   role: string | null
   content: string | null
   userEmail: string | null
   createdAt: Date | null
+  tokenPrompt: number | null
+  tokenCompletion: number | null
+  model: string | null
 }
 
 export type ChatHistoryCountAggregateOutputType = {
   id: number
+  userId: number
   role: number
   content: number
   userEmail: number
   createdAt: number
+  tokenPrompt: number
+  tokenCompletion: number
+  model: number
   _all: number
 }
 
 
 export type ChatHistoryAvgAggregateInputType = {
   id?: true
+  userId?: true
+  tokenPrompt?: true
+  tokenCompletion?: true
 }
 
 export type ChatHistorySumAggregateInputType = {
   id?: true
+  userId?: true
+  tokenPrompt?: true
+  tokenCompletion?: true
 }
 
 export type ChatHistoryMinAggregateInputType = {
   id?: true
+  userId?: true
   role?: true
   content?: true
   userEmail?: true
   createdAt?: true
+  tokenPrompt?: true
+  tokenCompletion?: true
+  model?: true
 }
 
 export type ChatHistoryMaxAggregateInputType = {
   id?: true
+  userId?: true
   role?: true
   content?: true
   userEmail?: true
   createdAt?: true
+  tokenPrompt?: true
+  tokenCompletion?: true
+  model?: true
 }
 
 export type ChatHistoryCountAggregateInputType = {
   id?: true
+  userId?: true
   role?: true
   content?: true
   userEmail?: true
   createdAt?: true
+  tokenPrompt?: true
+  tokenCompletion?: true
+  model?: true
   _all?: true
 }
 
@@ -181,10 +217,14 @@ export type ChatHistoryGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
 
 export type ChatHistoryGroupByOutputType = {
   id: number
+  userId: number
   role: string
   content: string
   userEmail: string | null
   createdAt: Date | null
+  tokenPrompt: number | null
+  tokenCompletion: number | null
+  model: string | null
   _count: ChatHistoryCountAggregateOutputType | null
   _avg: ChatHistoryAvgAggregateOutputType | null
   _sum: ChatHistorySumAggregateOutputType | null
@@ -192,7 +232,7 @@ export type ChatHistoryGroupByOutputType = {
   _max: ChatHistoryMaxAggregateOutputType | null
 }
 
-type GetChatHistoryGroupByPayload<T extends ChatHistoryGroupByArgs> = Prisma.PrismaPromise<
+export type GetChatHistoryGroupByPayload<T extends ChatHistoryGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ChatHistoryGroupByOutputType, T['by']> &
       {
@@ -212,19 +252,27 @@ export type ChatHistoryWhereInput = {
   OR?: Prisma.ChatHistoryWhereInput[]
   NOT?: Prisma.ChatHistoryWhereInput | Prisma.ChatHistoryWhereInput[]
   id?: Prisma.IntFilter<"ChatHistory"> | number
+  userId?: Prisma.IntFilter<"ChatHistory"> | number
   role?: Prisma.StringFilter<"ChatHistory"> | string
   content?: Prisma.StringFilter<"ChatHistory"> | string
   userEmail?: Prisma.StringNullableFilter<"ChatHistory"> | string | null
   createdAt?: Prisma.DateTimeNullableFilter<"ChatHistory"> | Date | string | null
-  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  tokenPrompt?: Prisma.IntNullableFilter<"ChatHistory"> | number | null
+  tokenCompletion?: Prisma.IntNullableFilter<"ChatHistory"> | number | null
+  model?: Prisma.StringNullableFilter<"ChatHistory"> | string | null
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type ChatHistoryOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
   userEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  tokenPrompt?: Prisma.SortOrderInput | Prisma.SortOrder
+  tokenCompletion?: Prisma.SortOrderInput | Prisma.SortOrder
+  model?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -233,19 +281,27 @@ export type ChatHistoryWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ChatHistoryWhereInput | Prisma.ChatHistoryWhereInput[]
   OR?: Prisma.ChatHistoryWhereInput[]
   NOT?: Prisma.ChatHistoryWhereInput | Prisma.ChatHistoryWhereInput[]
+  userId?: Prisma.IntFilter<"ChatHistory"> | number
   role?: Prisma.StringFilter<"ChatHistory"> | string
   content?: Prisma.StringFilter<"ChatHistory"> | string
   userEmail?: Prisma.StringNullableFilter<"ChatHistory"> | string | null
   createdAt?: Prisma.DateTimeNullableFilter<"ChatHistory"> | Date | string | null
-  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  tokenPrompt?: Prisma.IntNullableFilter<"ChatHistory"> | number | null
+  tokenCompletion?: Prisma.IntNullableFilter<"ChatHistory"> | number | null
+  model?: Prisma.StringNullableFilter<"ChatHistory"> | string | null
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type ChatHistoryOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
   userEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  tokenPrompt?: Prisma.SortOrderInput | Prisma.SortOrder
+  tokenCompletion?: Prisma.SortOrderInput | Prisma.SortOrder
+  model?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ChatHistoryCountOrderByAggregateInput
   _avg?: Prisma.ChatHistoryAvgOrderByAggregateInput
   _max?: Prisma.ChatHistoryMaxOrderByAggregateInput
@@ -258,62 +314,94 @@ export type ChatHistoryScalarWhereWithAggregatesInput = {
   OR?: Prisma.ChatHistoryScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ChatHistoryScalarWhereWithAggregatesInput | Prisma.ChatHistoryScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"ChatHistory"> | number
+  userId?: Prisma.IntWithAggregatesFilter<"ChatHistory"> | number
   role?: Prisma.StringWithAggregatesFilter<"ChatHistory"> | string
   content?: Prisma.StringWithAggregatesFilter<"ChatHistory"> | string
   userEmail?: Prisma.StringNullableWithAggregatesFilter<"ChatHistory"> | string | null
   createdAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ChatHistory"> | Date | string | null
+  tokenPrompt?: Prisma.IntNullableWithAggregatesFilter<"ChatHistory"> | number | null
+  tokenCompletion?: Prisma.IntNullableWithAggregatesFilter<"ChatHistory"> | number | null
+  model?: Prisma.StringNullableWithAggregatesFilter<"ChatHistory"> | string | null
 }
 
 export type ChatHistoryCreateInput = {
   role: string
   content: string
+  userEmail?: string | null
   createdAt?: Date | string | null
-  user?: Prisma.UserCreateNestedOneWithoutChatHistoryInput
+  tokenPrompt?: number | null
+  tokenCompletion?: number | null
+  model?: string | null
+  user: Prisma.UserCreateNestedOneWithoutChatHistoryInput
 }
 
 export type ChatHistoryUncheckedCreateInput = {
   id?: number
+  userId: number
   role: string
   content: string
   userEmail?: string | null
   createdAt?: Date | string | null
+  tokenPrompt?: number | null
+  tokenCompletion?: number | null
+  model?: string | null
 }
 
 export type ChatHistoryUpdateInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  userEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  user?: Prisma.UserUpdateOneWithoutChatHistoryNestedInput
+  tokenPrompt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  tokenCompletion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  user?: Prisma.UserUpdateOneRequiredWithoutChatHistoryNestedInput
 }
 
 export type ChatHistoryUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
   role?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   userEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tokenPrompt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  tokenCompletion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ChatHistoryCreateManyInput = {
   id?: number
+  userId: number
   role: string
   content: string
   userEmail?: string | null
   createdAt?: Date | string | null
+  tokenPrompt?: number | null
+  tokenCompletion?: number | null
+  model?: string | null
 }
 
 export type ChatHistoryUpdateManyMutationInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  userEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tokenPrompt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  tokenCompletion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ChatHistoryUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
   role?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
   userEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tokenPrompt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  tokenCompletion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ChatHistoryListRelationFilter = {
@@ -328,34 +416,52 @@ export type ChatHistoryOrderByRelationAggregateInput = {
 
 export type ChatHistoryCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
   userEmail?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  tokenPrompt?: Prisma.SortOrder
+  tokenCompletion?: Prisma.SortOrder
+  model?: Prisma.SortOrder
 }
 
 export type ChatHistoryAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
+  tokenPrompt?: Prisma.SortOrder
+  tokenCompletion?: Prisma.SortOrder
 }
 
 export type ChatHistoryMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
   userEmail?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  tokenPrompt?: Prisma.SortOrder
+  tokenCompletion?: Prisma.SortOrder
+  model?: Prisma.SortOrder
 }
 
 export type ChatHistoryMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
   userEmail?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  tokenPrompt?: Prisma.SortOrder
+  tokenCompletion?: Prisma.SortOrder
+  model?: Prisma.SortOrder
 }
 
 export type ChatHistorySumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
+  tokenPrompt?: Prisma.SortOrder
+  tokenCompletion?: Prisma.SortOrder
 }
 
 export type ChatHistoryCreateNestedManyWithoutUserInput = {
@@ -403,14 +509,22 @@ export type ChatHistoryUncheckedUpdateManyWithoutUserNestedInput = {
 export type ChatHistoryCreateWithoutUserInput = {
   role: string
   content: string
+  userEmail?: string | null
   createdAt?: Date | string | null
+  tokenPrompt?: number | null
+  tokenCompletion?: number | null
+  model?: string | null
 }
 
 export type ChatHistoryUncheckedCreateWithoutUserInput = {
   id?: number
   role: string
   content: string
+  userEmail?: string | null
   createdAt?: Date | string | null
+  tokenPrompt?: number | null
+  tokenCompletion?: number | null
+  model?: string | null
 }
 
 export type ChatHistoryCreateOrConnectWithoutUserInput = {
@@ -444,98 +558,138 @@ export type ChatHistoryScalarWhereInput = {
   OR?: Prisma.ChatHistoryScalarWhereInput[]
   NOT?: Prisma.ChatHistoryScalarWhereInput | Prisma.ChatHistoryScalarWhereInput[]
   id?: Prisma.IntFilter<"ChatHistory"> | number
+  userId?: Prisma.IntFilter<"ChatHistory"> | number
   role?: Prisma.StringFilter<"ChatHistory"> | string
   content?: Prisma.StringFilter<"ChatHistory"> | string
   userEmail?: Prisma.StringNullableFilter<"ChatHistory"> | string | null
   createdAt?: Prisma.DateTimeNullableFilter<"ChatHistory"> | Date | string | null
+  tokenPrompt?: Prisma.IntNullableFilter<"ChatHistory"> | number | null
+  tokenCompletion?: Prisma.IntNullableFilter<"ChatHistory"> | number | null
+  model?: Prisma.StringNullableFilter<"ChatHistory"> | string | null
 }
 
 export type ChatHistoryCreateManyUserInput = {
   id?: number
   role: string
   content: string
+  userEmail?: string | null
   createdAt?: Date | string | null
+  tokenPrompt?: number | null
+  tokenCompletion?: number | null
+  model?: string | null
 }
 
 export type ChatHistoryUpdateWithoutUserInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  userEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tokenPrompt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  tokenCompletion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ChatHistoryUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   role?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  userEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tokenPrompt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  tokenCompletion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ChatHistoryUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   role?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  userEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tokenPrompt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  tokenCompletion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
 
 export type ChatHistorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  userId?: boolean
   role?: boolean
   content?: boolean
   userEmail?: boolean
   createdAt?: boolean
-  user?: boolean | Prisma.ChatHistory$userArgs<ExtArgs>
+  tokenPrompt?: boolean
+  tokenCompletion?: boolean
+  model?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["chatHistory"]>
 
 export type ChatHistorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  userId?: boolean
   role?: boolean
   content?: boolean
   userEmail?: boolean
   createdAt?: boolean
-  user?: boolean | Prisma.ChatHistory$userArgs<ExtArgs>
+  tokenPrompt?: boolean
+  tokenCompletion?: boolean
+  model?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["chatHistory"]>
 
 export type ChatHistorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  userId?: boolean
   role?: boolean
   content?: boolean
   userEmail?: boolean
   createdAt?: boolean
-  user?: boolean | Prisma.ChatHistory$userArgs<ExtArgs>
+  tokenPrompt?: boolean
+  tokenCompletion?: boolean
+  model?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["chatHistory"]>
 
 export type ChatHistorySelectScalar = {
   id?: boolean
+  userId?: boolean
   role?: boolean
   content?: boolean
   userEmail?: boolean
   createdAt?: boolean
+  tokenPrompt?: boolean
+  tokenCompletion?: boolean
+  model?: boolean
 }
 
-export type ChatHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "role" | "content" | "userEmail" | "createdAt", ExtArgs["result"]["chatHistory"]>
+export type ChatHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "role" | "content" | "userEmail" | "createdAt" | "tokenPrompt" | "tokenCompletion" | "model", ExtArgs["result"]["chatHistory"]>
 export type ChatHistoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.ChatHistory$userArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type ChatHistoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.ChatHistory$userArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type ChatHistoryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.ChatHistory$userArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $ChatHistoryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ChatHistory"
   objects: {
-    user: Prisma.$UserPayload<ExtArgs> | null
+    user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
+    userId: number
     role: string
     content: string
     userEmail: string | null
     createdAt: Date | null
+    tokenPrompt: number | null
+    tokenCompletion: number | null
+    model: string | null
   }, ExtArgs["result"]["chatHistory"]>
   composites: {}
 }
@@ -930,7 +1084,7 @@ readonly fields: ChatHistoryFieldRefs;
  */
 export interface Prisma__ChatHistoryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  user<T extends Prisma.ChatHistory$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChatHistory$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -961,10 +1115,14 @@ export interface Prisma__ChatHistoryClient<T, Null = never, ExtArgs extends runt
  */
 export interface ChatHistoryFieldRefs {
   readonly id: Prisma.FieldRef<"ChatHistory", 'Int'>
+  readonly userId: Prisma.FieldRef<"ChatHistory", 'Int'>
   readonly role: Prisma.FieldRef<"ChatHistory", 'String'>
   readonly content: Prisma.FieldRef<"ChatHistory", 'String'>
   readonly userEmail: Prisma.FieldRef<"ChatHistory", 'String'>
   readonly createdAt: Prisma.FieldRef<"ChatHistory", 'DateTime'>
+  readonly tokenPrompt: Prisma.FieldRef<"ChatHistory", 'Int'>
+  readonly tokenCompletion: Prisma.FieldRef<"ChatHistory", 'Int'>
+  readonly model: Prisma.FieldRef<"ChatHistory", 'String'>
 }
     
 
@@ -1363,25 +1521,6 @@ export type ChatHistoryDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Limit how many ChatHistories to delete.
    */
   limit?: number
-}
-
-/**
- * ChatHistory.user
- */
-export type ChatHistory$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the User
-   */
-  select?: Prisma.UserSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the User
-   */
-  omit?: Prisma.UserOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.UserInclude<ExtArgs> | null
-  where?: Prisma.UserWhereInput
 }
 
 /**

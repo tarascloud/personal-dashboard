@@ -203,7 +203,7 @@ export type GarminStagingGroupByOutputType = {
   _max: GarminStagingMaxAggregateOutputType | null
 }
 
-type GetGarminStagingGroupByPayload<T extends GarminStagingGroupByArgs> = Prisma.PrismaPromise<
+export type GetGarminStagingGroupByPayload<T extends GarminStagingGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<GarminStagingGroupByOutputType, T['by']> &
       {

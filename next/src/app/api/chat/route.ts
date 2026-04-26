@@ -224,12 +224,12 @@ export async function POST(req: Request) {
                 role: "assistant",
                 content: text,
                 email: session.user.email,
-                tokenPrompt: usage?.promptTokens,
-                tokenCompletion: usage?.completionTokens,
+                tokenPrompt: usage?.inputTokens,
+                tokenCompletion: usage?.outputTokens,
                 model: provider.name,
               });
-              if (usage?.promptTokens || usage?.completionTokens) {
-                console.log(`[Chat] Token usage: prompt=${usage.promptTokens ?? 0}, completion=${usage.completionTokens ?? 0}, model=${provider.name}`);
+              if (usage?.inputTokens || usage?.outputTokens) {
+                console.log(`[Chat] Token usage: prompt=${usage.inputTokens ?? 0}, completion=${usage.outputTokens ?? 0}, model=${provider.name}`);
               }
             }
           } catch (e) {

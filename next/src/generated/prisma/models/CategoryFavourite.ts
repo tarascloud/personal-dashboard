@@ -171,7 +171,7 @@ export type CategoryFavouriteGroupByOutputType = {
   _max: CategoryFavouriteMaxAggregateOutputType | null
 }
 
-type GetCategoryFavouriteGroupByPayload<T extends CategoryFavouriteGroupByArgs> = Prisma.PrismaPromise<
+export type GetCategoryFavouriteGroupByPayload<T extends CategoryFavouriteGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<CategoryFavouriteGroupByOutputType, T['by']> &
       {
