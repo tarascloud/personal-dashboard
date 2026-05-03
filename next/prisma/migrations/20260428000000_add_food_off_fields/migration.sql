@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "food_log" ADD COLUMN IF NOT EXISTS "barcode" TEXT;
+ALTER TABLE "food_log" ADD COLUMN IF NOT EXISTS "product_name" TEXT;
+ALTER TABLE "food_log" ADD COLUMN IF NOT EXISTS "serving_size" DOUBLE PRECISION;

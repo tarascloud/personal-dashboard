@@ -577,7 +577,15 @@
     "target": "objetivo",
     "calorie_target_label": "Objetivo",
     "target_saved": "Objetivo calorico guardado",
-    "of_target": "del objetivo"
+    "of_target": "del objetivo",
+    "search_food": "Buscar Comida",
+    "search_placeholder": "Buscar productos (ej. pechuga de pollo, avena...)",
+    "no_results": "No se encontraron productos",
+    "weight_g": "Peso (g)",
+    "serving": "Porcion",
+    "food_added": "Comida anadida",
+    "back_to_search": "Volver",
+    "search_food_placeholder": "Buscar producto..."
   },
   "list": {
     "shopping_list": "Lista de la Compra",
@@ -725,6 +733,11 @@
     "level": "Nivel",
     "income_chart_label": "Ingresos",
     "expenses_chart_label": "Gastos",
+    "chart_categories_filter": "Categorias",
+    "chart_categories_all": "Todas",
+    "chart_categories_select_all": "Seleccionar todas",
+    "chart_categories_clear": "Limpiar",
+    "chart_categories_count": "{selected} de {total}",
     "steps_active_min": "Pasos y minutos activos",
     "mood_no_data": "Anade entradas de animo para ver el grafico",
     "sleep_score": "Puntuacion del Sueno",

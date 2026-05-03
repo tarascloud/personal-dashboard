@@ -579,7 +579,15 @@
     "target": "ціль",
     "calorie_target_label": "Ціль",
     "target_saved": "Ціль калорій збережено",
-    "of_target": "від цілі"
+    "of_target": "від цілі",
+    "search_food": "Пошук їжі",
+    "search_placeholder": "Шукати продукти (напр. куряча грудка, вівсянка...)",
+    "no_results": "Продуктів не знайдено",
+    "weight_g": "Вага (г)",
+    "serving": "Порція",
+    "food_added": "Їжу додано",
+    "back_to_search": "Назад",
+    "search_food_placeholder": "Шукати продукт..."
   },
   "list": {
     "shopping_list": "Список покупок",
@@ -730,6 +738,11 @@
     "level": "Рівень",
     "income_chart_label": "Дохід",
     "expenses_chart_label": "Витрати",
+    "chart_categories_filter": "Категорії",
+    "chart_categories_all": "Всі",
+    "chart_categories_select_all": "Вибрати всі",
+    "chart_categories_clear": "Очистити",
+    "chart_categories_count": "{selected} з {total}",
     "steps_active_min": "Кроки та активні хвилини",
     "mood_no_data": "Додайте записи настрою для відображення графіка",
     "sleep_score": "Оцінка сну",

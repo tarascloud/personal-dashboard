@@ -6,6 +6,7 @@ import { invalidateAiContextSnapshot } from "@/actions/chat-context/index";
 import { z } from "zod";
 import { dateSchema, addFoodEntrySchema } from "@/lib/validations";
 import { toDateOnly, dateToString } from "@/lib/date-utils";
+import { searchProducts } from "@/lib/openfoodfacts";
 
 export async function getFoodEntries(date: string) {
   dateSchema.parse(date);
@@ -113,4 +114,74 @@ export async function getCalorieTrend(days: number = 30) {
   }
 
   return result;
+}
+
+const searchFoodSchema = z.string().min(2).max(200);
+
+export async function searchFood(query: string, locale = "en") {
+  const validated = searchFoodSchema.parse(query);
+  await requireUser();
+  const { products, count } = await searchProducts(validated, 1, locale);
+  return { products, count };
+}
+
+const addFoodFromOFFSchema = z.object({
+  barcode: z.string().optional(),
+  productName: z.string().min(1).max(500),
+  caloriesPer100g: z.number().min(0),
+  proteinPer100g: z.number().min(0),
+  fatPer100g: z.number().min(0),
+  carbsPer100g: z.number().min(0),
+  weightG: z.number().min(1).max(10000),
+  date: dateSchema,
+  time: z.string().optional(),
+});
+
+export async function addFoodFromOFF(data: {
+  barcode?: string;
+  productName: string;
+  caloriesPer100g: number;
+  proteinPer100g: number;
+  fatPer100g: number;
+  carbsPer100g: number;
+  weightG: number;
+  date: string;
+  time?: string;
+}) {
+  const validated = addFoodFromOFFSchema.parse(data);
+  const user = await requireUser();
+
+  const factor = validated.weightG / 100;
+  const calories = Math.round(validated.caloriesPer100g * factor * 10) / 10;
+  const proteinG = Math.round(validated.proteinPer100g * factor * 10) / 10;
+  const fatG = Math.round(validated.fatPer100g * factor * 10) / 10;
+  const carbsG = Math.round(validated.carbsPer100g * factor * 10) / 10;
+
+  const entry = await prisma.foodLog.create({
+    data: {
+      date: toDateOnly(validated.date),
+      time: validated.time ?? null,
+      description: validated.productName,
+      weightG: validated.weightG,
+      calories,
+      proteinG,
+      fatG,
+      carbsG,
+      source: "openfoodfacts",
+      barcode: validated.barcode ?? null,
+      productName: validated.productName,
+      servingSize: validated.weightG,
+      confirmed: true,
+      userId: user.id,
+    },
+  });
+
+  await invalidateAiContextSnapshot(user.id);
+  return { ...entry, date: dateToString(entry.date) };
+}
+
+export async function lookupBarcode(barcode: string) {
+  await requireUser();
+  const { getProductByBarcode } = await import("@/lib/openfoodfacts");
+  return getProductByBarcode(barcode);
 }

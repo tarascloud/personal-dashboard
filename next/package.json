@@ -32,6 +32,7 @@
     "dompurify": "^3.4.0",
     "garmin-connect": "^1.6.2",
     "gost89": "^0.1.11",
+    "html5-qrcode": "^2.3.8",
     "ioredis": "^5.10.0",
     "isomorphic-dompurify": "^3.9.0",
     "jkurwa": "^1.21.2",

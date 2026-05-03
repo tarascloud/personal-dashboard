@@ -315,6 +315,9 @@ model FoodLog {
   photoFileId   String?   @map("photo_file_id")
   aiRawResponse String?   @map("ai_raw_response")
   confirmed     Boolean?  @default(true)
+  barcode       String?
+  productName   String?   @map("product_name")
+  servingSize   Float?    @map("serving_size")
   createdAt     DateTime? @default(now()) @map("created_at")
 
   @@index([date], map: "idx_food_log_date")

@@ -579,7 +579,15 @@
     "target": "target",
     "calorie_target_label": "Target",
     "target_saved": "Calorie target saved",
-    "of_target": "of target"
+    "of_target": "of target",
+    "search_food": "Search Food",
+    "search_placeholder": "Search products (e.g. chicken breast, oatmeal...)",
+    "no_results": "No products found",
+    "weight_g": "Weight (g)",
+    "serving": "Serving",
+    "food_added": "Food added",
+    "back_to_search": "Back",
+    "search_food_placeholder": "Search product..."
   },
   "list": {
     "shopping_list": "Shopping List",
@@ -727,6 +735,11 @@
     "level": "Level",
     "income_chart_label": "Income",
     "expenses_chart_label": "Expenses",
+    "chart_categories_filter": "Categories",
+    "chart_categories_all": "All",
+    "chart_categories_select_all": "Select all",
+    "chart_categories_clear": "Clear",
+    "chart_categories_count": "{selected} of {total}",
     "steps_active_min": "Steps & Active Minutes",
     "mood_no_data": "Add mood entries to see the chart",
     "sleep_score": "Sleep Score",
