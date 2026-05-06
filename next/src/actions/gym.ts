@@ -3,7 +3,7 @@ export {
   // workouts
   getWorkouts, getWorkout, createWorkout, completeWorkout, updateWorkout, deleteWorkout,
   // workout-exercises
-  addExerciseToWorkout, removeExerciseFromWorkout, addSet, updateSet, deleteSet, getLastSetsForExercise,
+  addExerciseToWorkout, removeExerciseFromWorkout, reorderExercises, addSet, updateSet, deleteSet, getLastSetsForExercise,
   // exercises
   createExercise, updateExercise, deleteExercise, getCustomExercises, getExerciseUsageStats, getExercises, getExercise, getDefaultExercises, addDefaultExercise, DEFAULT_EXERCISES,
   // programs

@@ -301,7 +301,9 @@ export function GymPage({
             onAddDefaultExercise={handlers.handleAddDefaultExerciseToActive}
             onRemoveExercise={handlers.handleRemoveExercise}
             onAddSet={handlers.handleAddSet}
+            onCopyPreviousSet={handlers.handleCopyPreviousSet}
             onLoadPrevious={handlers.handleLoadPrevious}
+            onReorderExercises={handlers.handleReorderExercises}
           />
         </ErrorBoundary>
       )}

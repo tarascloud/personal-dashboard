@@ -253,7 +253,7 @@ export type TradingStrategyGroupByOutputType = {
   _max: TradingStrategyMaxAggregateOutputType | null
 }
 
-export type GetTradingStrategyGroupByPayload<T extends TradingStrategyGroupByArgs> = Prisma.PrismaPromise<
+type GetTradingStrategyGroupByPayload<T extends TradingStrategyGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<TradingStrategyGroupByOutputType, T['by']> &
       {

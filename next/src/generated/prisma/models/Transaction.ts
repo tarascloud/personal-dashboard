@@ -307,7 +307,7 @@ export type TransactionGroupByOutputType = {
   _max: TransactionMaxAggregateOutputType | null
 }
 
-export type GetTransactionGroupByPayload<T extends TransactionGroupByArgs> = Prisma.PrismaPromise<
+type GetTransactionGroupByPayload<T extends TransactionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<TransactionGroupByOutputType, T['by']> &
       {

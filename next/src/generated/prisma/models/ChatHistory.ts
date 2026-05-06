@@ -29,15 +29,11 @@ export type AggregateChatHistory = {
 export type ChatHistoryAvgAggregateOutputType = {
   id: number | null
   userId: number | null
-  tokenPrompt: number | null
-  tokenCompletion: number | null
 }
 
 export type ChatHistorySumAggregateOutputType = {
   id: number | null
   userId: number | null
-  tokenPrompt: number | null
-  tokenCompletion: number | null
 }
 
 export type ChatHistoryMinAggregateOutputType = {
@@ -47,9 +43,6 @@ export type ChatHistoryMinAggregateOutputType = {
   content: string | null
   userEmail: string | null
   createdAt: Date | null
-  tokenPrompt: number | null
-  tokenCompletion: number | null
-  model: string | null
 }
 
 export type ChatHistoryMaxAggregateOutputType = {
@@ -59,9 +52,6 @@ export type ChatHistoryMaxAggregateOutputType = {
   content: string | null
   userEmail: string | null
   createdAt: Date | null
-  tokenPrompt: number | null
-  tokenCompletion: number | null
-  model: string | null
 }
 
 export type ChatHistoryCountAggregateOutputType = {
@@ -71,9 +61,6 @@ export type ChatHistoryCountAggregateOutputType = {
   content: number
   userEmail: number
   createdAt: number
-  tokenPrompt: number
-  tokenCompletion: number
-  model: number
   _all: number
 }
 
@@ -81,15 +68,11 @@ export type ChatHistoryCountAggregateOutputType = {
 export type ChatHistoryAvgAggregateInputType = {
   id?: true
   userId?: true
-  tokenPrompt?: true
-  tokenCompletion?: true
 }
 
 export type ChatHistorySumAggregateInputType = {
   id?: true
   userId?: true
-  tokenPrompt?: true
-  tokenCompletion?: true
 }
 
 export type ChatHistoryMinAggregateInputType = {
@@ -99,9 +82,6 @@ export type ChatHistoryMinAggregateInputType = {
   content?: true
   userEmail?: true
   createdAt?: true
-  tokenPrompt?: true
-  tokenCompletion?: true
-  model?: true
 }
 
 export type ChatHistoryMaxAggregateInputType = {
@@ -111,9 +91,6 @@ export type ChatHistoryMaxAggregateInputType = {
   content?: true
   userEmail?: true
   createdAt?: true
-  tokenPrompt?: true
-  tokenCompletion?: true
-  model?: true
 }
 
 export type ChatHistoryCountAggregateInputType = {
@@ -123,9 +100,6 @@ export type ChatHistoryCountAggregateInputType = {
   content?: true
   userEmail?: true
   createdAt?: true
-  tokenPrompt?: true
-  tokenCompletion?: true
-  model?: true
   _all?: true
 }
 
@@ -222,9 +196,6 @@ export type ChatHistoryGroupByOutputType = {
   content: string
   userEmail: string | null
   createdAt: Date | null
-  tokenPrompt: number | null
-  tokenCompletion: number | null
-  model: string | null
   _count: ChatHistoryCountAggregateOutputType | null
   _avg: ChatHistoryAvgAggregateOutputType | null
   _sum: ChatHistorySumAggregateOutputType | null
@@ -232,7 +203,7 @@ export type ChatHistoryGroupByOutputType = {
   _max: ChatHistoryMaxAggregateOutputType | null
 }
 
-export type GetChatHistoryGroupByPayload<T extends ChatHistoryGroupByArgs> = Prisma.PrismaPromise<
+type GetChatHistoryGroupByPayload<T extends ChatHistoryGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ChatHistoryGroupByOutputType, T['by']> &
       {
@@ -257,9 +228,6 @@ export type ChatHistoryWhereInput = {
   content?: Prisma.StringFilter<"ChatHistory"> | string
   userEmail?: Prisma.StringNullableFilter<"ChatHistory"> | string | null
   createdAt?: Prisma.DateTimeNullableFilter<"ChatHistory"> | Date | string | null
-  tokenPrompt?: Prisma.IntNullableFilter<"ChatHistory"> | number | null
-  tokenCompletion?: Prisma.IntNullableFilter<"ChatHistory"> | number | null
-  model?: Prisma.StringNullableFilter<"ChatHistory"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
@@ -270,9 +238,6 @@ export type ChatHistoryOrderByWithRelationInput = {
   content?: Prisma.SortOrder
   userEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  tokenPrompt?: Prisma.SortOrderInput | Prisma.SortOrder
-  tokenCompletion?: Prisma.SortOrderInput | Prisma.SortOrder
-  model?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -286,9 +251,6 @@ export type ChatHistoryWhereUniqueInput = Prisma.AtLeast<{
   content?: Prisma.StringFilter<"ChatHistory"> | string
   userEmail?: Prisma.StringNullableFilter<"ChatHistory"> | string | null
   createdAt?: Prisma.DateTimeNullableFilter<"ChatHistory"> | Date | string | null
-  tokenPrompt?: Prisma.IntNullableFilter<"ChatHistory"> | number | null
-  tokenCompletion?: Prisma.IntNullableFilter<"ChatHistory"> | number | null
-  model?: Prisma.StringNullableFilter<"ChatHistory"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
@@ -299,9 +261,6 @@ export type ChatHistoryOrderByWithAggregationInput = {
   content?: Prisma.SortOrder
   userEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  tokenPrompt?: Prisma.SortOrderInput | Prisma.SortOrder
-  tokenCompletion?: Prisma.SortOrderInput | Prisma.SortOrder
-  model?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ChatHistoryCountOrderByAggregateInput
   _avg?: Prisma.ChatHistoryAvgOrderByAggregateInput
   _max?: Prisma.ChatHistoryMaxOrderByAggregateInput
@@ -319,9 +278,6 @@ export type ChatHistoryScalarWhereWithAggregatesInput = {
   content?: Prisma.StringWithAggregatesFilter<"ChatHistory"> | string
   userEmail?: Prisma.StringNullableWithAggregatesFilter<"ChatHistory"> | string | null
   createdAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ChatHistory"> | Date | string | null
-  tokenPrompt?: Prisma.IntNullableWithAggregatesFilter<"ChatHistory"> | number | null
-  tokenCompletion?: Prisma.IntNullableWithAggregatesFilter<"ChatHistory"> | number | null
-  model?: Prisma.StringNullableWithAggregatesFilter<"ChatHistory"> | string | null
 }
 
 export type ChatHistoryCreateInput = {
@@ -329,9 +285,6 @@ export type ChatHistoryCreateInput = {
   content: string
   userEmail?: string | null
   createdAt?: Date | string | null
-  tokenPrompt?: number | null
-  tokenCompletion?: number | null
-  model?: string | null
   user: Prisma.UserCreateNestedOneWithoutChatHistoryInput
 }
 
@@ -342,9 +295,6 @@ export type ChatHistoryUncheckedCreateInput = {
   content: string
   userEmail?: string | null
   createdAt?: Date | string | null
-  tokenPrompt?: number | null
-  tokenCompletion?: number | null
-  model?: string | null
 }
 
 export type ChatHistoryUpdateInput = {
@@ -352,9 +302,6 @@ export type ChatHistoryUpdateInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   userEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  tokenPrompt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  tokenCompletion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutChatHistoryNestedInput
 }
 
@@ -365,9 +312,6 @@ export type ChatHistoryUncheckedUpdateInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   userEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  tokenPrompt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  tokenCompletion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ChatHistoryCreateManyInput = {
@@ -377,9 +321,6 @@ export type ChatHistoryCreateManyInput = {
   content: string
   userEmail?: string | null
   createdAt?: Date | string | null
-  tokenPrompt?: number | null
-  tokenCompletion?: number | null
-  model?: string | null
 }
 
 export type ChatHistoryUpdateManyMutationInput = {
@@ -387,9 +328,6 @@ export type ChatHistoryUpdateManyMutationInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   userEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  tokenPrompt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  tokenCompletion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ChatHistoryUncheckedUpdateManyInput = {
@@ -399,9 +337,6 @@ export type ChatHistoryUncheckedUpdateManyInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   userEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  tokenPrompt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  tokenCompletion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ChatHistoryListRelationFilter = {
@@ -421,16 +356,11 @@ export type ChatHistoryCountOrderByAggregateInput = {
   content?: Prisma.SortOrder
   userEmail?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  tokenPrompt?: Prisma.SortOrder
-  tokenCompletion?: Prisma.SortOrder
-  model?: Prisma.SortOrder
 }
 
 export type ChatHistoryAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  tokenPrompt?: Prisma.SortOrder
-  tokenCompletion?: Prisma.SortOrder
 }
 
 export type ChatHistoryMaxOrderByAggregateInput = {
@@ -440,9 +370,6 @@ export type ChatHistoryMaxOrderByAggregateInput = {
   content?: Prisma.SortOrder
   userEmail?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  tokenPrompt?: Prisma.SortOrder
-  tokenCompletion?: Prisma.SortOrder
-  model?: Prisma.SortOrder
 }
 
 export type ChatHistoryMinOrderByAggregateInput = {
@@ -452,16 +379,11 @@ export type ChatHistoryMinOrderByAggregateInput = {
   content?: Prisma.SortOrder
   userEmail?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  tokenPrompt?: Prisma.SortOrder
-  tokenCompletion?: Prisma.SortOrder
-  model?: Prisma.SortOrder
 }
 
 export type ChatHistorySumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  tokenPrompt?: Prisma.SortOrder
-  tokenCompletion?: Prisma.SortOrder
 }
 
 export type ChatHistoryCreateNestedManyWithoutUserInput = {
@@ -511,9 +433,6 @@ export type ChatHistoryCreateWithoutUserInput = {
   content: string
   userEmail?: string | null
   createdAt?: Date | string | null
-  tokenPrompt?: number | null
-  tokenCompletion?: number | null
-  model?: string | null
 }
 
 export type ChatHistoryUncheckedCreateWithoutUserInput = {
@@ -522,9 +441,6 @@ export type ChatHistoryUncheckedCreateWithoutUserInput = {
   content: string
   userEmail?: string | null
   createdAt?: Date | string | null
-  tokenPrompt?: number | null
-  tokenCompletion?: number | null
-  model?: string | null
 }
 
 export type ChatHistoryCreateOrConnectWithoutUserInput = {
@@ -563,9 +479,6 @@ export type ChatHistoryScalarWhereInput = {
   content?: Prisma.StringFilter<"ChatHistory"> | string
   userEmail?: Prisma.StringNullableFilter<"ChatHistory"> | string | null
   createdAt?: Prisma.DateTimeNullableFilter<"ChatHistory"> | Date | string | null
-  tokenPrompt?: Prisma.IntNullableFilter<"ChatHistory"> | number | null
-  tokenCompletion?: Prisma.IntNullableFilter<"ChatHistory"> | number | null
-  model?: Prisma.StringNullableFilter<"ChatHistory"> | string | null
 }
 
 export type ChatHistoryCreateManyUserInput = {
@@ -574,9 +487,6 @@ export type ChatHistoryCreateManyUserInput = {
   content: string
   userEmail?: string | null
   createdAt?: Date | string | null
-  tokenPrompt?: number | null
-  tokenCompletion?: number | null
-  model?: string | null
 }
 
 export type ChatHistoryUpdateWithoutUserInput = {
@@ -584,9 +494,6 @@ export type ChatHistoryUpdateWithoutUserInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   userEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  tokenPrompt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  tokenCompletion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ChatHistoryUncheckedUpdateWithoutUserInput = {
@@ -595,9 +502,6 @@ export type ChatHistoryUncheckedUpdateWithoutUserInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   userEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  tokenPrompt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  tokenCompletion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ChatHistoryUncheckedUpdateManyWithoutUserInput = {
@@ -606,9 +510,6 @@ export type ChatHistoryUncheckedUpdateManyWithoutUserInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   userEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  tokenPrompt?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  tokenCompletion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -620,9 +521,6 @@ export type ChatHistorySelect<ExtArgs extends runtime.Types.Extensions.InternalA
   content?: boolean
   userEmail?: boolean
   createdAt?: boolean
-  tokenPrompt?: boolean
-  tokenCompletion?: boolean
-  model?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["chatHistory"]>
 
@@ -633,9 +531,6 @@ export type ChatHistorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   content?: boolean
   userEmail?: boolean
   createdAt?: boolean
-  tokenPrompt?: boolean
-  tokenCompletion?: boolean
-  model?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["chatHistory"]>
 
@@ -646,9 +541,6 @@ export type ChatHistorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   content?: boolean
   userEmail?: boolean
   createdAt?: boolean
-  tokenPrompt?: boolean
-  tokenCompletion?: boolean
-  model?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["chatHistory"]>
 
@@ -659,12 +551,9 @@ export type ChatHistorySelectScalar = {
   content?: boolean
   userEmail?: boolean
   createdAt?: boolean
-  tokenPrompt?: boolean
-  tokenCompletion?: boolean
-  model?: boolean
 }
 
-export type ChatHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "role" | "content" | "userEmail" | "createdAt" | "tokenPrompt" | "tokenCompletion" | "model", ExtArgs["result"]["chatHistory"]>
+export type ChatHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "role" | "content" | "userEmail" | "createdAt", ExtArgs["result"]["chatHistory"]>
 export type ChatHistoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -687,9 +576,6 @@ export type $ChatHistoryPayload<ExtArgs extends runtime.Types.Extensions.Interna
     content: string
     userEmail: string | null
     createdAt: Date | null
-    tokenPrompt: number | null
-    tokenCompletion: number | null
-    model: string | null
   }, ExtArgs["result"]["chatHistory"]>
   composites: {}
 }
@@ -1120,9 +1006,6 @@ export interface ChatHistoryFieldRefs {
   readonly content: Prisma.FieldRef<"ChatHistory", 'String'>
   readonly userEmail: Prisma.FieldRef<"ChatHistory", 'String'>
   readonly createdAt: Prisma.FieldRef<"ChatHistory", 'DateTime'>
-  readonly tokenPrompt: Prisma.FieldRef<"ChatHistory", 'Int'>
-  readonly tokenCompletion: Prisma.FieldRef<"ChatHistory", 'Int'>
-  readonly model: Prisma.FieldRef<"ChatHistory", 'String'>
 }
     
 

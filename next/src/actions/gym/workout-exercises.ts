@@ -29,6 +29,34 @@ export async function addExerciseToWorkout(
   return we;
 }
 
+export async function reorderExercises(workoutId: number, exerciseIds: number[]) {
+  z.number().int().positive().parse(workoutId);
+  z.array(z.number().int().positive()).min(1).parse(exerciseIds);
+  const user = await requireUser();
+
+  // Verify all exercises belong to this workout and user
+  const existing = await prisma.gymWorkoutExercise.findMany({
+    where: { workoutId, userId: user.id },
+    select: { id: true },
+  });
+  const existingIds = new Set(existing.map((e) => e.id));
+  for (const id of exerciseIds) {
+    if (!existingIds.has(id)) {
+      throw new Error("Exercise not found in workout");
+    }
+  }
+
+  await prisma.$transaction(
+    exerciseIds.map((id, index) =>
+      prisma.gymWorkoutExercise.update({
+        where: { id, userId: user.id },
+        data: { orderNum: index },
+      })
+    )
+  );
+  updateTag(CACHE_TAGS.gym);
+}
+
 export async function removeExerciseFromWorkout(workoutExerciseId: number) {
   z.number().int().positive().parse(workoutExerciseId);
   const user = await requireUser();
@@ -112,8 +140,9 @@ export async function getLastSetsForExercise(exerciseId: number, currentWorkoutI
       userId: user.id,
       exerciseId,
       ...(currentWorkoutId ? { workoutId: { not: currentWorkoutId } } : {}),
+      workout: { endTime: { not: null } },
     },
-    orderBy: { id: "desc" },
+    orderBy: { workout: { date: "desc" } },
     include: {
       sets: { orderBy: { setNum: "asc" } },
     },
@@ -124,5 +153,6 @@ export async function getLastSetsForExercise(exerciseId: number, currentWorkoutI
     weightKg: s.weightKg,
     reps: s.reps,
     rpe: s.rpe,
+    intensity: s.intensity,
   }));
 }

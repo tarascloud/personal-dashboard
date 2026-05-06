@@ -189,7 +189,7 @@ export type GarminHeartRateGroupByOutputType = {
   _max: GarminHeartRateMaxAggregateOutputType | null
 }
 
-export type GetGarminHeartRateGroupByPayload<T extends GarminHeartRateGroupByArgs> = Prisma.PrismaPromise<
+type GetGarminHeartRateGroupByPayload<T extends GarminHeartRateGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<GarminHeartRateGroupByOutputType, T['by']> &
       {

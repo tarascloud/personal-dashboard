@@ -242,7 +242,7 @@ export type AiInsightGroupByOutputType = {
   _max: AiInsightMaxAggregateOutputType | null
 }
 
-export type GetAiInsightGroupByPayload<T extends AiInsightGroupByArgs> = Prisma.PrismaPromise<
+type GetAiInsightGroupByPayload<T extends AiInsightGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<AiInsightGroupByOutputType, T['by']> &
       {

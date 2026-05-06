@@ -445,7 +445,7 @@ export type GarminDailyGroupByOutputType = {
   _max: GarminDailyMaxAggregateOutputType | null
 }
 
-export type GetGarminDailyGroupByPayload<T extends GarminDailyGroupByArgs> = Prisma.PrismaPromise<
+type GetGarminDailyGroupByPayload<T extends GarminDailyGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<GarminDailyGroupByOutputType, T['by']> &
       {

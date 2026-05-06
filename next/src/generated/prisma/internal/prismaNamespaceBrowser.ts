@@ -671,10 +671,7 @@ export const ChatHistoryScalarFieldEnum = {
   role: 'role',
   content: 'content',
   userEmail: 'userEmail',
-  createdAt: 'createdAt',
-  tokenPrompt: 'tokenPrompt',
-  tokenCompletion: 'tokenCompletion',
-  model: 'model'
+  createdAt: 'createdAt'
 } as const
 
 export type ChatHistoryScalarFieldEnum = (typeof ChatHistoryScalarFieldEnum)[keyof typeof ChatHistoryScalarFieldEnum]

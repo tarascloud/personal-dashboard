@@ -203,7 +203,7 @@ export type AiNoteGroupByOutputType = {
   _max: AiNoteMaxAggregateOutputType | null
 }
 
-export type GetAiNoteGroupByPayload<T extends AiNoteGroupByArgs> = Prisma.PrismaPromise<
+type GetAiNoteGroupByPayload<T extends AiNoteGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<AiNoteGroupByOutputType, T['by']> &
       {

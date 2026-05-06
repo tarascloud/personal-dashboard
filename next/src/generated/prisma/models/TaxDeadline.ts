@@ -220,7 +220,7 @@ export type TaxDeadlineGroupByOutputType = {
   _max: TaxDeadlineMaxAggregateOutputType | null
 }
 
-export type GetTaxDeadlineGroupByPayload<T extends TaxDeadlineGroupByArgs> = Prisma.PrismaPromise<
+type GetTaxDeadlineGroupByPayload<T extends TaxDeadlineGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<TaxDeadlineGroupByOutputType, T['by']> &
       {

@@ -231,7 +231,7 @@ export type ScreenTimeGroupByOutputType = {
   _max: ScreenTimeMaxAggregateOutputType | null
 }
 
-export type GetScreenTimeGroupByPayload<T extends ScreenTimeGroupByArgs> = Prisma.PrismaPromise<
+type GetScreenTimeGroupByPayload<T extends ScreenTimeGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ScreenTimeGroupByOutputType, T['by']> &
       {

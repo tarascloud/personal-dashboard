@@ -327,7 +327,7 @@ export type DailyLogGroupByOutputType = {
   _max: DailyLogMaxAggregateOutputType | null
 }
 
-export type GetDailyLogGroupByPayload<T extends DailyLogGroupByArgs> = Prisma.PrismaPromise<
+type GetDailyLogGroupByPayload<T extends DailyLogGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<DailyLogGroupByOutputType, T['by']> &
       {

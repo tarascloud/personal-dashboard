@@ -277,7 +277,7 @@ export type GarminBodyCompositionGroupByOutputType = {
   _max: GarminBodyCompositionMaxAggregateOutputType | null
 }
 
-export type GetGarminBodyCompositionGroupByPayload<T extends GarminBodyCompositionGroupByArgs> = Prisma.PrismaPromise<
+type GetGarminBodyCompositionGroupByPayload<T extends GarminBodyCompositionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<GarminBodyCompositionGroupByOutputType, T['by']> &
       {

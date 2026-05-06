@@ -238,7 +238,7 @@ export type PasskeyGroupByOutputType = {
   _max: PasskeyMaxAggregateOutputType | null
 }
 
-export type GetPasskeyGroupByPayload<T extends PasskeyGroupByArgs> = Prisma.PrismaPromise<
+type GetPasskeyGroupByPayload<T extends PasskeyGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PasskeyGroupByOutputType, T['by']> &
       {

@@ -235,7 +235,7 @@ export type InsightFeedbackGroupByOutputType = {
   _max: InsightFeedbackMaxAggregateOutputType | null
 }
 
-export type GetInsightFeedbackGroupByPayload<T extends InsightFeedbackGroupByArgs> = Prisma.PrismaPromise<
+type GetInsightFeedbackGroupByPayload<T extends InsightFeedbackGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<InsightFeedbackGroupByOutputType, T['by']> &
       {

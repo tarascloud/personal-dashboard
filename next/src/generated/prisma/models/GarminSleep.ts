@@ -258,7 +258,7 @@ export type GarminSleepGroupByOutputType = {
   _max: GarminSleepMaxAggregateOutputType | null
 }
 
-export type GetGarminSleepGroupByPayload<T extends GarminSleepGroupByArgs> = Prisma.PrismaPromise<
+type GetGarminSleepGroupByPayload<T extends GarminSleepGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<GarminSleepGroupByOutputType, T['by']> &
       {

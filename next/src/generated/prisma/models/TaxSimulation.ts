@@ -224,7 +224,7 @@ export type TaxSimulationGroupByOutputType = {
   _max: TaxSimulationMaxAggregateOutputType | null
 }
 
-export type GetTaxSimulationGroupByPayload<T extends TaxSimulationGroupByArgs> = Prisma.PrismaPromise<
+type GetTaxSimulationGroupByPayload<T extends TaxSimulationGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<TaxSimulationGroupByOutputType, T['by']> &
       {

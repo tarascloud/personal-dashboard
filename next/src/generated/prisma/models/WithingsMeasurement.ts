@@ -244,7 +244,7 @@ export type WithingsMeasurementGroupByOutputType = {
   _max: WithingsMeasurementMaxAggregateOutputType | null
 }
 
-export type GetWithingsMeasurementGroupByPayload<T extends WithingsMeasurementGroupByArgs> = Prisma.PrismaPromise<
+type GetWithingsMeasurementGroupByPayload<T extends WithingsMeasurementGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<WithingsMeasurementGroupByOutputType, T['by']> &
       {

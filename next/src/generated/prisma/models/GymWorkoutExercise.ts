@@ -226,7 +226,7 @@ export type GymWorkoutExerciseGroupByOutputType = {
   _max: GymWorkoutExerciseMaxAggregateOutputType | null
 }
 
-export type GetGymWorkoutExerciseGroupByPayload<T extends GymWorkoutExerciseGroupByArgs> = Prisma.PrismaPromise<
+type GetGymWorkoutExerciseGroupByPayload<T extends GymWorkoutExerciseGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<GymWorkoutExerciseGroupByOutputType, T['by']> &
       {

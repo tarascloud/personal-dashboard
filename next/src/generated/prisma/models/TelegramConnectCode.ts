@@ -144,7 +144,7 @@ export type TelegramConnectCodeGroupByOutputType = {
   _max: TelegramConnectCodeMaxAggregateOutputType | null
 }
 
-export type GetTelegramConnectCodeGroupByPayload<T extends TelegramConnectCodeGroupByArgs> = Prisma.PrismaPromise<
+type GetTelegramConnectCodeGroupByPayload<T extends TelegramConnectCodeGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<TelegramConnectCodeGroupByOutputType, T['by']> &
       {

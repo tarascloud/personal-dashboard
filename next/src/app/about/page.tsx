@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import {
   Wallet,
   TrendingUp,
@@ -27,11 +27,35 @@ import {
   Calculator,
 } from "lucide-react";
 
+const localeToOgLocale: Record<string, string> = {
+  uk: "uk_UA",
+  en: "en_US",
+  es: "es_ES",
+};
+
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("about");
+  const [t, locale] = await Promise.all([
+    getTranslations("about"),
+    getLocale(),
+  ]);
+  const ogLocale = localeToOgLocale[locale] ?? "en_US";
   return {
     title: `${t("title")} — About`,
     description: t("meta_description"),
+    alternates: {
+      canonical: "https://pd.taras.cloud/about",
+      languages: {
+        "x-default": "https://pd.taras.cloud/about",
+        "en": "https://pd.taras.cloud/about",
+        "uk": "https://pd.taras.cloud/about",
+        "es": "https://pd.taras.cloud/about",
+      },
+    },
+    openGraph: {
+      url: "https://pd.taras.cloud/about",
+      locale: ogLocale,
+      alternateLocale: Object.values(localeToOgLocale).filter((l) => l !== ogLocale),
+    },
   };
 }
 
@@ -51,8 +75,8 @@ function FeatureCard({
   screenshot: string;
 }) {
   return (
-    <div className="group relative rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 transition-all hover:border-[#FFC700]/30 hover:bg-white/[0.04]">
-      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-[#FFC700]/10 text-[#FFC700]">
+    <div className="group relative rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 transition-all hover:border-[var(--landing-accent)]/30 hover:bg-white/[0.04]">
+      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--landing-accent)]/10 text-[var(--landing-accent)]">
         {icon}
       </div>
       <h3 className="mb-2 text-lg font-semibold text-white">{title}</h3>
@@ -74,8 +98,8 @@ function FeatureCard({
 
 function IntBadge({ name }: { name: string }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-[#9a9ea6] transition-colors hover:border-[#FFC700]/30 hover:text-white">
-      <Link2 className="h-3 w-3 text-[#FFC700]/60" />
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-[#9a9ea6] transition-colors hover:border-[var(--landing-accent)]/30 hover:text-white">
+      <Link2 className="h-3 w-3 text-[var(--landing-accent)]/60" />
       {name}
     </span>
   );
@@ -128,18 +152,18 @@ export default async function AboutPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#26282B] text-white selection:bg-[#FFC700]/20">
+    <div className="min-h-screen bg-[#26282B] text-white selection:bg-[var(--landing-accent)]/20">
       {/* ==================== HERO ==================== */}
       <section className="relative overflow-hidden px-4 pb-20 pt-24 sm:px-6 lg:px-8">
         {/* Gradient glow */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute left-1/2 top-0 h-[600px] w-[900px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-[#FFC700]/[0.04] blur-[120px]" />
+          <div className="absolute left-1/2 top-0 h-[600px] w-[900px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-[var(--landing-accent)]/[0.04] blur-[120px]" />
         </div>
 
         <div className="relative mx-auto max-w-4xl text-center">
           {/* Logo */}
           <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.03] shadow-lg shadow-black/20">
-            <span className="text-3xl font-bold bg-gradient-to-br from-[#FFC700] to-[#FFA800] bg-clip-text text-transparent">
+            <span className="text-3xl font-bold bg-gradient-to-br from-[var(--landing-accent)] to-[#FFA800] bg-clip-text text-transparent">
               PD
             </span>
           </div>
@@ -157,7 +181,7 @@ export default async function AboutPage() {
             {badges.map((b) => (
               <span
                 key={b.label}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#FFC700]/20 bg-[#FFC700]/[0.06] px-4 py-1.5 text-sm font-medium text-[#FFC700]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[var(--landing-accent)]/20 bg-[var(--landing-accent)]/[0.06] px-4 py-1.5 text-sm font-medium text-[var(--landing-accent)]"
               >
                 {b.icon}
                 {b.label}
@@ -171,7 +195,7 @@ export default async function AboutPage() {
               href="https://github.com/tarascloud/personal-dashboard"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#FFC700] to-[#FFA800] px-6 py-3 text-sm font-semibold text-[#26282B] shadow-lg shadow-[#FFC700]/20 transition-all hover:shadow-[#FFC700]/30 hover:brightness-110"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[var(--landing-accent)] to-[#FFA800] px-6 py-3 text-sm font-semibold text-[#26282B] shadow-lg shadow-[var(--landing-accent)]/20 transition-all hover:shadow-[var(--landing-accent)]/30 hover:brightness-110"
             >
               <Github className="h-4 w-4" />
               {t("get_started")}
@@ -255,57 +279,57 @@ export default async function AboutPage() {
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {/* Frontend */}
             <div>
-              <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#FFC700]">
+              <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[var(--landing-accent)]">
                 Frontend
               </h3>
               <div className="flex flex-col gap-2">
-                <TechBadge icon={<Zap className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="Next.js 16" />
-                <TechBadge icon={<Zap className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="React 19" />
-                <TechBadge icon={<Zap className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="TypeScript 5" />
-                <TechBadge icon={<Zap className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="Tailwind CSS 4" />
-                <TechBadge icon={<Smartphone className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="PWA (Serwist)" />
+                <TechBadge icon={<Zap className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="Next.js 16" />
+                <TechBadge icon={<Zap className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="React 19" />
+                <TechBadge icon={<Zap className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="TypeScript 5" />
+                <TechBadge icon={<Zap className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="Tailwind CSS 4" />
+                <TechBadge icon={<Smartphone className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="PWA (Serwist)" />
               </div>
             </div>
 
             {/* Backend */}
             <div>
-              <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#FFC700]">
+              <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[var(--landing-accent)]">
                 Backend
               </h3>
               <div className="flex flex-col gap-2">
-                <TechBadge icon={<Database className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="PostgreSQL" />
-                <TechBadge icon={<Database className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="Prisma 7" />
-                <TechBadge icon={<Zap className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="Python Scheduler" />
-                <TechBadge icon={<Database className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="Redis" />
-                <TechBadge icon={<Database className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="PgBouncer" />
+                <TechBadge icon={<Database className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="PostgreSQL" />
+                <TechBadge icon={<Database className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="Prisma 7" />
+                <TechBadge icon={<Zap className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="Python Scheduler" />
+                <TechBadge icon={<Database className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="Redis" />
+                <TechBadge icon={<Database className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="PgBouncer" />
               </div>
             </div>
 
             {/* AI */}
             <div>
-              <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#FFC700]">
+              <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[var(--landing-accent)]">
                 AI
               </h3>
               <div className="flex flex-col gap-2">
-                <TechBadge icon={<Brain className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="Ollama (local)" />
-                <TechBadge icon={<Brain className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="Gemini 2.5" />
-                <TechBadge icon={<Brain className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="Groq" />
-                <TechBadge icon={<Database className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="pgvector" />
-                <TechBadge icon={<Brain className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="Vercel AI SDK" />
+                <TechBadge icon={<Brain className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="Ollama (local)" />
+                <TechBadge icon={<Brain className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="Gemini 2.5" />
+                <TechBadge icon={<Brain className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="Groq" />
+                <TechBadge icon={<Database className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="pgvector" />
+                <TechBadge icon={<Brain className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="Vercel AI SDK" />
               </div>
             </div>
 
             {/* Infra */}
             <div>
-              <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#FFC700]">
+              <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[var(--landing-accent)]">
                 Infrastructure
               </h3>
               <div className="flex flex-col gap-2">
-                <TechBadge icon={<Server className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="Docker" />
-                <TechBadge icon={<Globe className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="3 Languages" />
-                <TechBadge icon={<Lock className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="NextAuth 5" />
-                <TechBadge icon={<Lock className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="Infisical" />
-                <TechBadge icon={<Calculator className="h-3.5 w-3.5 text-[#FFC700]/60" />} name="Playwright + Vitest" />
+                <TechBadge icon={<Server className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="Docker" />
+                <TechBadge icon={<Globe className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="3 Languages" />
+                <TechBadge icon={<Lock className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="NextAuth 5" />
+                <TechBadge icon={<Lock className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="Infisical" />
+                <TechBadge icon={<Calculator className="h-3.5 w-3.5 text-[var(--landing-accent)]/60" />} name="Playwright + Vitest" />
               </div>
             </div>
           </div>
@@ -316,8 +340,8 @@ export default async function AboutPage() {
       <section className="px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <div className="flex items-center gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 sm:p-8">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#FFC700]/10">
-              <Smartphone className="h-6 w-6 text-[#FFC700]" />
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--landing-accent)]/10">
+              <Smartphone className="h-6 w-6 text-[var(--landing-accent)]" />
             </div>
             <div>
               <h3 className="mb-1 text-base font-semibold text-white sm:text-lg">
@@ -334,9 +358,9 @@ export default async function AboutPage() {
       {/* ==================== SELF-HOSTED ==================== */}
       <section className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
-          <div className="rounded-2xl border border-[#FFC700]/20 bg-gradient-to-br from-[#FFC700]/[0.04] to-transparent p-8 sm:p-12">
-            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FFC700]/10">
-              <Server className="h-7 w-7 text-[#FFC700]" />
+          <div className="rounded-2xl border border-[var(--landing-accent)]/20 bg-gradient-to-br from-[var(--landing-accent)]/[0.04] to-transparent p-8 sm:p-12">
+            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--landing-accent)]/10">
+              <Server className="h-7 w-7 text-[var(--landing-accent)]" />
             </div>
 
             <h2 className="mb-4 text-2xl font-bold sm:text-3xl">
@@ -346,8 +370,8 @@ export default async function AboutPage() {
             <div className="space-y-4 text-[#9a9ea6]">
               {(["selfhosted_1", "selfhosted_2", "selfhosted_3", "selfhosted_4"] as const).map((key) => (
                 <div key={key} className="flex items-start gap-3">
-                  <div className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#FFC700]/10">
-                    <ChevronRight className="h-3 w-3 text-[#FFC700]" />
+                  <div className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--landing-accent)]/10">
+                    <ChevronRight className="h-3 w-3 text-[var(--landing-accent)]" />
                   </div>
                   <p className="text-sm leading-relaxed">{t(key)}</p>
                 </div>

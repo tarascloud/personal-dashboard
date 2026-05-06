@@ -8,6 +8,7 @@ import {
   deleteWorkout,
   addExerciseToWorkout,
   removeExerciseFromWorkout,
+  reorderExercises,
   addSet,
   updateSet,
   deleteSet,
@@ -312,6 +313,28 @@ export function useGymHandlers({ state, dispatch, timer }: UseGymHandlersParams)
     });
   }
 
+  function handleCopyPreviousSet(
+    workoutExerciseId: number,
+    existingSetsCount: number,
+    data: { weightKg?: number; reps?: number; intensity?: string }
+  ) {
+    startTransition(async () => {
+      const newSet = await addSet(workoutExerciseId, {
+        setNum: existingSetsCount + 1,
+        weightKg: data.weightKg,
+        reps: data.reps,
+        intensity: data.intensity,
+      });
+      const gymSet: GymSet = {
+        id: newSet.id, workoutExerciseId: newSet.workoutExerciseId, setNum: newSet.setNum,
+        weightKg: newSet.weightKg as number | null, reps: newSet.reps as number | null,
+        isWarmup: newSet.isWarmup, isFailure: newSet.isFailure, rpe: newSet.rpe as number | null,
+        notes: null, intensity: newSet.intensity,
+      };
+      dispatch({ type: "UPDATE_ACTIVE_WORKOUT", updater: (w) => ({ ...w, exercises: w.exercises.map((e) => e.id === workoutExerciseId ? { ...e, sets: [...e.sets, gymSet] } : e) }) });
+    });
+  }
+
   function handleLoadPrevious(workoutExerciseId: number, exerciseId: number) {
     startTransition(async () => {
       const prevSets = await getLastSetsForExercise(exerciseId, activeWorkout?.id);
@@ -327,6 +350,29 @@ export function useGymHandlers({ state, dispatch, timer }: UseGymHandlersParams)
         });
       }
       dispatch({ type: "UPDATE_ACTIVE_WORKOUT", updater: (w) => ({ ...w, exercises: w.exercises.map((e) => e.id === workoutExerciseId ? { ...e, sets: [...e.sets, ...createdSets] } : e) }) });
+    });
+  }
+
+  function handleReorderExercises(exerciseIds: number[]) {
+    if (!activeWorkout) return;
+    const workoutId = activeWorkout.id;
+    // Optimistic: reorder exercises in local state immediately
+    dispatch({
+      type: "UPDATE_ACTIVE_WORKOUT",
+      updater: (w) => {
+        const exerciseMap = new Map(w.exercises.map((e) => [e.id, e]));
+        const reordered = exerciseIds
+          .map((id, idx) => {
+            const ex = exerciseMap.get(id);
+            return ex ? { ...ex, orderNum: idx } : null;
+          })
+          .filter(Boolean) as typeof w.exercises;
+        return { ...w, exercises: reordered };
+      },
+    });
+    // Persist to server
+    startTransition(async () => {
+      await reorderExercises(workoutId, exerciseIds);
     });
   }
 
@@ -346,6 +392,7 @@ export function useGymHandlers({ state, dispatch, timer }: UseGymHandlersParams)
     handleAddExerciseToWorkout,
     handleRemoveExercise,
     handleAddSet,
+    handleCopyPreviousSet,
     handleEditSet,
     handleSaveSet,
     handleDeleteSet,
@@ -357,6 +404,7 @@ export function useGymHandlers({ state, dispatch, timer }: UseGymHandlersParams)
     handleRemoveExerciseFromHistory,
     handleAddSetToHistory,
     handleLoadPrevious,
+    handleReorderExercises,
   };
 }
 

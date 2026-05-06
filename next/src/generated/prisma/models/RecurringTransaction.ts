@@ -239,7 +239,7 @@ export type RecurringTransactionGroupByOutputType = {
   _max: RecurringTransactionMaxAggregateOutputType | null
 }
 
-export type GetRecurringTransactionGroupByPayload<T extends RecurringTransactionGroupByArgs> = Prisma.PrismaPromise<
+type GetRecurringTransactionGroupByPayload<T extends RecurringTransactionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<RecurringTransactionGroupByOutputType, T['by']> &
       {

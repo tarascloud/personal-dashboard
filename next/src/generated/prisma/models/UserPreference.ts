@@ -178,7 +178,7 @@ export type UserPreferenceGroupByOutputType = {
   _max: UserPreferenceMaxAggregateOutputType | null
 }
 
-export type GetUserPreferenceGroupByPayload<T extends UserPreferenceGroupByArgs> = Prisma.PrismaPromise<
+type GetUserPreferenceGroupByPayload<T extends UserPreferenceGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<UserPreferenceGroupByOutputType, T['by']> &
       {

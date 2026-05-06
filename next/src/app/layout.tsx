@@ -119,7 +119,7 @@ export default async function RootLayout({
               screenshot: "https://pd.taras.cloud/og-image.png",
               softwareVersion: "1.0",
               applicationSubCategory: "Personal Finance, Health Tracking",
-            }),
+            }).replace(/</g, "\\u003c"),
           }}
         />
         <meta name="apple-mobile-web-app-capable" content="yes" />

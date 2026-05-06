@@ -203,7 +203,7 @@ export type ShoppingHistoryGroupByOutputType = {
   _max: ShoppingHistoryMaxAggregateOutputType | null
 }
 
-export type GetShoppingHistoryGroupByPayload<T extends ShoppingHistoryGroupByArgs> = Prisma.PrismaPromise<
+type GetShoppingHistoryGroupByPayload<T extends ShoppingHistoryGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ShoppingHistoryGroupByOutputType, T['by']> &
       {

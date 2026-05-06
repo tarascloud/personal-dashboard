@@ -281,7 +281,7 @@ export type BigPurchaseGroupByOutputType = {
   _max: BigPurchaseMaxAggregateOutputType | null
 }
 
-export type GetBigPurchaseGroupByPayload<T extends BigPurchaseGroupByArgs> = Prisma.PrismaPromise<
+type GetBigPurchaseGroupByPayload<T extends BigPurchaseGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BigPurchaseGroupByOutputType, T['by']> &
       {

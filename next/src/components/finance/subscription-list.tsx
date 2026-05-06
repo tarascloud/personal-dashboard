@@ -18,37 +18,7 @@ import {
   type SubscriptionSpending,
 } from "@/actions/finance/subscriptions";
 import { cn } from "@/lib/utils";
-
-// ---------- Brand color map ----------
-
-const BRAND_COLORS: Record<string, { bg: string; text: string }> = {
-  "Claude Pro": { bg: "bg-[#d97706]", text: "text-white" },
-  "Netflix": { bg: "bg-[#E50914]", text: "text-white" },
-  "Spotify": { bg: "bg-[#1DB954]", text: "text-white" },
-  "iCloud": { bg: "bg-[#3693F3]", text: "text-white" },
-  "YouTube Premium": { bg: "bg-[#FF0000]", text: "text-white" },
-  "GitHub": { bg: "bg-[#24292e]", text: "text-white" },
-  "Cloudflare": { bg: "bg-[#F38020]", text: "text-white" },
-  "Google One": { bg: "bg-[#4285F4]", text: "text-white" },
-  "OpenAI": { bg: "bg-[#10a37f]", text: "text-white" },
-  "Forus": { bg: "bg-[#2563eb]", text: "text-white" },
-  "TIE": { bg: "bg-[#1e3a5f]", text: "text-white" },
-  "Amazon Prime": { bg: "bg-[#FF9900]", text: "text-black" },
-  "Docker": { bg: "bg-[#2496ED]", text: "text-white" },
-  "Duolingo": { bg: "bg-[#58CC02]", text: "text-white" },
-  "HomeMoney": { bg: "bg-[#22c55e]", text: "text-white" },
-  "Xbox Game Pass": { bg: "bg-[#107C10]", text: "text-white" },
-};
-
-const DEFAULT_BRAND = { bg: "bg-muted", text: "text-muted-foreground" };
-
-function getBrandColors(name: string) {
-  if (BRAND_COLORS[name]) return BRAND_COLORS[name];
-  for (const key of Object.keys(BRAND_COLORS)) {
-    if (name.toLowerCase().includes(key.toLowerCase())) return BRAND_COLORS[key];
-  }
-  return DEFAULT_BRAND;
-}
+import { getBrandColors } from "@/lib/subscription-brands";
 
 function getAbbreviation(name: string): string {
   const words = name.trim().split(/\s+/);

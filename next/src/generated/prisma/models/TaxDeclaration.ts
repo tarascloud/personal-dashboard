@@ -263,7 +263,7 @@ export type TaxDeclarationGroupByOutputType = {
   _max: TaxDeclarationMaxAggregateOutputType | null
 }
 
-export type GetTaxDeclarationGroupByPayload<T extends TaxDeclarationGroupByArgs> = Prisma.PrismaPromise<
+type GetTaxDeclarationGroupByPayload<T extends TaxDeclarationGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<TaxDeclarationGroupByOutputType, T['by']> &
       {
