@@ -104,8 +104,38 @@ def _get_all_telegram_chat_ids() -> list[int]:
     return []
 
 
+TG_MAX_MESSAGE_LENGTH = 4096
+
+
+def _split_message(text: str, max_len: int = TG_MAX_MESSAGE_LENGTH) -> list[str]:
+    """Split a long message into chunks respecting the Telegram limit.
+
+    Splits at newline boundaries when possible to preserve formatting.
+    """
+    if len(text) <= max_len:
+        return [text]
+
+    chunks: list[str] = []
+    while text:
+        if len(text) <= max_len:
+            chunks.append(text)
+            break
+        # Find last newline within the limit
+        split_pos = text.rfind("\n", 0, max_len)
+        if split_pos <= 0:
+            # No newline found — hard split at max_len
+            split_pos = max_len
+        chunks.append(text[:split_pos])
+        text = text[split_pos:].lstrip("\n")
+    return chunks
+
+
 def send_telegram_message(text, parse_mode="Markdown", chat_id=None):
-    """Send Telegram message to a specific user or all linked users."""
+    """Send Telegram message to a specific user or all linked users.
+
+    Handles message length limits (splits into chunks if >4096 chars).
+    Falls back to plain text if Markdown parsing fails (HTTP 400).
+    """
     import requests
 
     token = _get_bot_token()
@@ -121,18 +151,36 @@ def send_telegram_message(text, parse_mode="Markdown", chat_id=None):
     if not chat_ids:
         return False
 
+    chunks = _split_message(text)
     success = False
     for cid in chat_ids:
-        try:
-            resp = requests.post(
-                f"https://api.telegram.org/bot{token}/sendMessage",
-                json={"chat_id": cid, "text": text, "parse_mode": parse_mode},
-                timeout=15,
-            )
-            resp.raise_for_status()
-            success = True
-        except Exception as e:
-            logger.error("Telegram send to %s failed: %s", cid, e)
+        for chunk in chunks:
+            try:
+                payload = {"chat_id": cid, "text": chunk}
+                if parse_mode:
+                    payload["parse_mode"] = parse_mode
+                resp = requests.post(
+                    f"https://api.telegram.org/bot{token}/sendMessage",
+                    json=payload,
+                    timeout=15,
+                )
+                if resp.status_code == 400 and parse_mode:
+                    # Markdown parsing failed — retry without parse_mode
+                    logger.warning(
+                        "Telegram send to %s failed with parse_mode=%s (400), retrying as plain text. "
+                        "Response: %s",
+                        cid, parse_mode, resp.text[:200],
+                    )
+                    payload.pop("parse_mode", None)
+                    resp = requests.post(
+                        f"https://api.telegram.org/bot{token}/sendMessage",
+                        json=payload,
+                        timeout=15,
+                    )
+                resp.raise_for_status()
+                success = True
+            except Exception as e:
+                logger.error("Telegram send to %s failed: %s", cid, e)
     return success
 
 
@@ -1019,17 +1067,22 @@ Return ONLY the JSON array.
                 m = _re.search(r'\[[\s\S]*\]', content)
                 insights = json.loads(m.group(0)) if m else []
 
+                # NOTE: ai_insights UNIQUE index is (user_id, page, period, variant)
+                # since migration 20260324_ab_test_insights. The scheduler runs daily
+                # so we use period=today (daily granularity) and variant='default'.
+                # Next.js writers (saveInsightVariant) follow the same convention.
                 with get_conn() as conn:
                     cur = conn.cursor()
                     cur.execute("""
-                        INSERT INTO ai_insights (user_id, page, date, insights_json, prompt_used, model, generation_ms)
-                        VALUES (%s, %s, %s, %s, %s, 'pd-assistant', %s)
-                        ON CONFLICT (user_id, page, date) DO UPDATE SET
+                        INSERT INTO ai_insights (user_id, page, date, period, variant, insights_json, prompt_used, model, generation_ms)
+                        VALUES (%s, %s, %s, %s, 'default', %s, %s, 'pd-assistant', %s)
+                        ON CONFLICT (user_id, page, period, variant) DO UPDATE SET
+                            date = EXCLUDED.date,
                             insights_json = EXCLUDED.insights_json,
                             prompt_used = EXCLUDED.prompt_used,
                             generation_ms = EXCLUDED.generation_ms,
                             created_at = NOW()
-                    """, (user_id, page, today, json.dumps(insights), prompt, elapsed_ms))
+                    """, (user_id, page, today, today, json.dumps(insights), prompt, elapsed_ms))
                     cur.close()
 
                 logger.info("  ✓ %s: %d insights in %dms", page, len(insights), elapsed_ms)
@@ -1080,9 +1133,11 @@ def job_improve_insight_prompts():
         with get_conn() as conn:
             with conn.cursor() as cur:
                 cur.execute("""
-                    SELECT id, user_id, page, comment, insight_text
-                    FROM insight_feedback
-                    WHERE reaction = 'dislike' AND processed = false
+                    SELECT f.id, f.user_id, f.page, f.comment,
+                           COALESCE(i.insights_json, '') AS insight_text
+                    FROM insight_feedback f
+                    LEFT JOIN ai_insights i ON i.id = f.insight_id
+                    WHERE f.reaction = 'dislike' AND f.processed = false
                 """)
                 rows = cur.fetchall()
 

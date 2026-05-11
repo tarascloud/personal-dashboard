@@ -637,29 +637,53 @@ ALL_MODULES = ["Finance", "My Day", "Gym", "Food", "List", "Dashboard", "AI Chat
 
 
 def get_user_preference(email: str, key: str, default: str | None = None) -> str | None:
+    from src.db_backend import is_postgres
     with get_conn() as conn:
-        row = conn.execute(
-            "SELECT value FROM user_preferences WHERE user_email = ? AND key = ?",
-            (email, key),
-        ).fetchone()
+        if is_postgres():
+            # PG: user_id scoping is auto-injected by _inject_user_id
+            row = conn.execute(
+                "SELECT value FROM user_preferences WHERE key = ?",
+                (key,),
+            ).fetchone()
+        else:
+            row = conn.execute(
+                "SELECT value FROM user_preferences WHERE user_email = ? AND key = ?",
+                (email, key),
+            ).fetchone()
     return row[0] if row else default
 
 
 def set_user_preference(email: str, key: str, value: str):
+    from src.db_backend import is_postgres
     with get_conn() as conn:
-        conn.execute(
-            "INSERT INTO user_preferences (user_email, key, value) VALUES (?, ?, ?) "
-            "ON CONFLICT(user_email, key) DO UPDATE SET value = excluded.value",
-            (email, key, value),
-        )
+        if is_postgres():
+            # PG: user_id column + ON CONFLICT handled by _inject_user_id
+            conn.execute(
+                "INSERT INTO user_preferences (key, value) VALUES (?, ?) "
+                "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+                (key, value),
+            )
+        else:
+            conn.execute(
+                "INSERT INTO user_preferences (user_email, key, value) VALUES (?, ?, ?) "
+                "ON CONFLICT(user_email, key) DO UPDATE SET value = excluded.value",
+                (email, key, value),
+            )
 
 
 def get_user_preferences(email: str) -> dict:
+    from src.db_backend import is_postgres
     with get_conn() as conn:
-        rows = conn.execute(
-            "SELECT key, value FROM user_preferences WHERE user_email = ?",
-            (email,),
-        ).fetchall()
+        if is_postgres():
+            # PG: user_id scoping is auto-injected by _inject_user_id
+            rows = conn.execute(
+                "SELECT key, value FROM user_preferences",
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT key, value FROM user_preferences WHERE user_email = ?",
+                (email,),
+            ).fetchall()
     return {r[0]: r[1] for r in rows}
 
 

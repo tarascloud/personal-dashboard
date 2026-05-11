@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone
 import requests
 
 from src.database import add_transaction, get_conn
+from src.retry import retry_request
 
 log = logging.getLogger(__name__)
 
@@ -205,7 +206,7 @@ def sync_monobank(
     from src.nbu import uah_to_eur, usd_to_eur
 
     # Determine account currency
-    client_info = get_client_info(token)
+    client_info = retry_request(get_client_info, token, retries=3, backoff=[2, 4, 8])
     account_info = None
     for acc in client_info.get("accounts", []):
         if acc["id"] == account_id:
@@ -251,9 +252,12 @@ def sync_monobank(
             time.sleep(61)
 
         try:
-            statements = get_statements(token, account_id, from_ts, to_ts)
-        except requests.HTTPError as e:
-            log.error("Failed to fetch statements for chunk %d: %s", i, e)
+            statements = retry_request(
+                get_statements, token, account_id, from_ts, to_ts,
+                retries=3, backoff=[2, 4, 8],
+            )
+        except Exception as e:
+            log.error("Failed to fetch statements for chunk %d after retries: %s", i, e)
             result["errors"] += 1
             continue
 

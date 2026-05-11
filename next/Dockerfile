@@ -16,6 +16,8 @@ ARG NEXT_PUBLIC_GITHUB_AUTH_ENABLED
 ENV DATABASE_URL=${DATABASE_URL}
 ENV NEXT_PUBLIC_GITHUB_AUTH_ENABLED=${NEXT_PUBLIC_GITHUB_AUTH_ENABLED}
 RUN npx prisma generate
+# Run unit tests before build — fails fast on broken commits
+RUN npm run test:unit
 RUN npm run build
 
 # Stage 3: Production
