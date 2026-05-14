@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -14,65 +14,89 @@ const inter = Inter({
   subsets: ["latin", "cyrillic"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Personal Dashboard — Privacy-First Life Management",
-    template: "%s | Personal Dashboard",
-  },
-  description:
-    "Open-source, self-hosted dashboard for finance, health, gym, investments, trading, and tax reporting. Your life, your data, your server.",
-  keywords: [
-    "personal dashboard",
-    "self-hosted",
-    "open source",
-    "finance tracker",
-    "health dashboard",
-    "gym tracker",
-    "investment portfolio",
-    "trading bot",
-    "tax reporting",
-    "privacy-first",
-    "PWA",
-    "next.js",
-  ],
-  metadataBase: new URL("https://pd.taras.cloud"),
-  alternates: {
-    canonical: "https://pd.taras.cloud",
-  },
-  openGraph: {
-    type: "website",
-    url: "https://pd.taras.cloud",
-    title: "Personal Dashboard — Privacy-First Life Management",
-    description:
-      "Open-source, self-hosted dashboard for finance, health, gym, investments, trading, and tax reporting. Your life, your data, your server.",
-    siteName: "Personal Dashboard",
-    // opengraph-image.tsx auto-generates OG image via Next.js App Router convention
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: "@taaboroda",
-    creator: "@taaboroda",
-    title: "Personal Dashboard — Privacy-First Life Management",
-    description:
-      "Open-source, self-hosted dashboard for finance, health, gym, investments, trading, and tax reporting.",
-    // opengraph-image.tsx auto-generates OG image via Next.js App Router convention
-  },
-  manifest: "/manifest.webmanifest",
-  icons: {
-    icon: "/PD.png",
-    shortcut: "/PD.png",
-    apple: "/icons/icon-192x192.png",
-  },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "PD",
-  },
-  other: {
-    "mobile-web-app-capable": "yes",
-  },
+// DES-20260507-0003: locale-aware metadata. Static metadata.openGraph.locale
+// was hardcoded en_US even though next-intl serves uk content based on cookie.
+// Switching to generateMetadata + getLocale aligns og:locale with html lang.
+const ogLocaleMap: Record<string, string> = {
+  uk: 'uk_UA',
+  en: 'en_US',
+  ru: 'ru_RU',
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const ogLocale = ogLocaleMap[locale] ?? 'en_US';
+  // DEV-20260512-0011: title/description must match <html lang>. Previously
+  // static English copy was served regardless of locale cookie, so a uk
+  // visitor saw lang="uk" but English meta tags — fails SEO locale signals.
+  const tSeo = await getTranslations({ locale, namespace: "seo" });
+  const localizedTitle = tSeo("title");
+  const localizedDescription = tSeo("description");
+  return {
+    title: {
+      default: localizedTitle,
+      template: "%s | Personal Dashboard",
+    },
+    description: localizedDescription,
+    keywords: [
+      "personal dashboard",
+      "self-hosted",
+      "open source",
+      "finance tracker",
+      "health dashboard",
+      "gym tracker",
+      "investment portfolio",
+      "trading bot",
+      "tax reporting",
+      "privacy-first",
+      "PWA",
+      "next.js",
+    ],
+    metadataBase: new URL("https://pd.taras.cloud"),
+    // REV-20260512-015: align hreflang map with actual supported locales
+    // (en, uk, es — see src/i18n/routing.ts) and add x-default for crawlers.
+    alternates: {
+      canonical: "https://pd.taras.cloud",
+      languages: {
+        en: "https://pd.taras.cloud",
+        uk: "https://pd.taras.cloud",
+        es: "https://pd.taras.cloud",
+        "x-default": "https://pd.taras.cloud",
+      },
+    },
+    openGraph: {
+      type: "website",
+      url: "https://pd.taras.cloud",
+      title: localizedTitle,
+      description: localizedDescription,
+      siteName: "Personal Dashboard",
+      // opengraph-image.tsx auto-generates OG image via Next.js App Router convention
+      locale: ogLocale,
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: "@taaboroda",
+      creator: "@taaboroda",
+      title: localizedTitle,
+      description: localizedDescription,
+      // opengraph-image.tsx auto-generates OG image via Next.js App Router convention
+    },
+    manifest: "/manifest.webmanifest",
+    icons: {
+      icon: "/PD.png",
+      shortcut: "/PD.png",
+      apple: "/icons/icon-192x192.png",
+    },
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "black-translucent",
+      title: "PD",
+    },
+    other: {
+      "mobile-web-app-capable": "yes",
+    },
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -119,6 +143,31 @@ export default async function RootLayout({
               screenshot: "https://pd.taras.cloud/og-image.png",
               softwareVersion: "1.0",
               applicationSubCategory: "Personal Finance, Health Tracking",
+            }).replace(/</g, "\\u003c"),
+          }}
+        />
+        {/* REV-20260512-015: WebSite entity exposes sitelink search box and
+            canonical site name to Google. Distinct from SoftwareApplication
+            above which describes the product itself. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "Personal Dashboard",
+              url: "https://pd.taras.cloud",
+              inLanguage: ["en", "uk", "es"],
+              publisher: {
+                "@type": "Person",
+                name: "Taras Pedchenko",
+                url: "https://taras.cloud",
+              },
+              potentialAction: {
+                "@type": "SearchAction",
+                target: "https://pd.taras.cloud/search?q={search_term_string}",
+                "query-input": "required name=search_term_string",
+              },
             }).replace(/</g, "\\u003c"),
           }}
         />

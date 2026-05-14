@@ -165,7 +165,7 @@ export type ReceiptGroupByOutputType = {
   _max: ReceiptMaxAggregateOutputType | null
 }
 
-type GetReceiptGroupByPayload<T extends ReceiptGroupByArgs> = Prisma.PrismaPromise<
+export type GetReceiptGroupByPayload<T extends ReceiptGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ReceiptGroupByOutputType, T['by']> &
       {

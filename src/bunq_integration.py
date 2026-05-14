@@ -361,27 +361,45 @@ def create_api_context(api_key: str, user_suffix: str = "") -> dict:
     return {"display_name": display_name or "bunq User", "id": user_id}
 
 
-def _ensure_context(api_key: str, user_suffix: str = "") -> dict:
+def _ensure_context(api_key: str, user_suffix: str = "", force_refresh: bool = False) -> dict:
     """Ensure bunq session is active. Creates new if needed.
 
     Returns session_data dict with session_token, user_id, etc.
+
+    If force_refresh is True, the cached session is discarded and a fresh
+    installation+device+session is created. Used to recover from 401
+    "Insufficient authorisation" responses where the server-side session
+    was invalidated before the local 80-day age check would refresh it.
     """
-    session = _load_session(user_suffix)
-    if session and session.get("session_token"):
-        # Check if session is still valid (bunq sessions last ~90 days)
-        created = session.get("created_at", "")
-        if created:
-            try:
-                created_dt = datetime.fromisoformat(created)
-                age_days = (datetime.now(timezone.utc) - created_dt).days
-                if age_days < 80:  # Refresh before 90-day expiry
-                    return session
-            except Exception:
-                pass
+    if not force_refresh:
+        session = _load_session(user_suffix)
+        if session and session.get("session_token"):
+            # Check if session is still valid (bunq sessions last ~90 days)
+            created = session.get("created_at", "")
+            if created:
+                try:
+                    created_dt = datetime.fromisoformat(created)
+                    age_days = (datetime.now(timezone.utc) - created_dt).days
+                    if age_days < 80:  # Refresh before 90-day expiry
+                        return session
+                except Exception:
+                    pass
 
     # Create new session
     info = create_api_context(api_key, user_suffix)
     return _load_session(user_suffix)
+
+
+def _is_session_invalid_error(err: Exception) -> bool:
+    """Return True if a bunq error indicates a stale/invalidated session.
+
+    bunq returns HTTP 401 with body containing "Insufficient authorisation."
+    when the session_token is revoked, expired prematurely, or otherwise
+    rejected. Distinct from "Incorrect API key" (revoked key) — here only
+    the session is dead and recreating it usually resolves the issue.
+    """
+    msg = str(err).lower()
+    return "401" in msg and "insufficient authorisation" in msg
 
 
 # ─── Account listing ─────────────────────────────────────────────────────────
@@ -516,10 +534,27 @@ def sync_bunq(
         payments = _fetch_payments(session_token, user_id, account_id, since_date=since_date,
                                    private_key_pem=private_key_pem)
     except Exception as e:
-        log.error("Failed to fetch bunq payments: %s", e)
-        if progress_callback:
-            progress_callback(1, 1, f"Error: {e}")
-        return {"synced": 0, "skipped": 0, "errors": 1}
+        # 401 "Insufficient authorisation" → stale session. Force-refresh once and retry.
+        if _is_session_invalid_error(e):
+            log.warning("bunq session invalidated (401), recreating and retrying once: %s", e)
+            try:
+                session = _ensure_context(api_key, user_suffix, force_refresh=True)
+                session_token = session["session_token"]
+                user_id = session["user_id"]
+                private_key_pem = session.get("private_key_pem")
+                payments = _fetch_payments(session_token, user_id, account_id,
+                                           since_date=since_date,
+                                           private_key_pem=private_key_pem)
+            except Exception as retry_err:
+                log.error("Failed to fetch bunq payments after session refresh: %s", retry_err)
+                if progress_callback:
+                    progress_callback(1, 1, f"Error: {retry_err}")
+                return {"synced": 0, "skipped": 0, "errors": 1}
+        else:
+            log.error("Failed to fetch bunq payments: %s", e)
+            if progress_callback:
+                progress_callback(1, 1, f"Error: {e}")
+            return {"synced": 0, "skipped": 0, "errors": 1}
 
     if progress_callback:
         progress_callback(0, len(payments) or 1, f"Processing {len(payments)} payments...")

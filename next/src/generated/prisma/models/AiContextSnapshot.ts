@@ -210,7 +210,7 @@ export type AiContextSnapshotGroupByOutputType = {
   _max: AiContextSnapshotMaxAggregateOutputType | null
 }
 
-type GetAiContextSnapshotGroupByPayload<T extends AiContextSnapshotGroupByArgs> = Prisma.PrismaPromise<
+export type GetAiContextSnapshotGroupByPayload<T extends AiContextSnapshotGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<AiContextSnapshotGroupByOutputType, T['by']> &
       {

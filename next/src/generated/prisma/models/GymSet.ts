@@ -269,7 +269,7 @@ export type GymSetGroupByOutputType = {
   _max: GymSetMaxAggregateOutputType | null
 }
 
-type GetGymSetGroupByPayload<T extends GymSetGroupByArgs> = Prisma.PrismaPromise<
+export type GetGymSetGroupByPayload<T extends GymSetGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<GymSetGroupByOutputType, T['by']> &
       {

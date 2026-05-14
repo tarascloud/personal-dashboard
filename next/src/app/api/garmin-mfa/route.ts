@@ -56,35 +56,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid or missing MFA code" }, { status: 400 });
     }
 
-    // Require an explicit userId — no "any pending user" fallback.
+    // Require an explicit userId in the request body. No env-var fallback.
     // Previously, a caller with the API token could submit an MFA code
     // without knowing which user it belonged to, and the handler would
     // pick "any user with status=required". That made it possible to
     // hijack another user's Garmin login with a stolen/brute-forced
     // code, or to deliver the wrong code to the wrong user.
     //
-    // Resolution order for the target user:
-    //   1. body.userId (from Email Worker that is aware of the user)
-    //   2. GARMIN_MFA_DEFAULT_USER_ID env var (single-user deployments)
-    // If neither resolves to a user with garmin_mfa_status = "required",
-    // the request is rejected.
-    let requestedUserId: number | null = null;
-    if (typeof body.userId === "number" && Number.isInteger(body.userId)) {
-      requestedUserId = body.userId;
-    } else if (process.env.GARMIN_MFA_DEFAULT_USER_ID) {
-      const parsed = parseInt(process.env.GARMIN_MFA_DEFAULT_USER_ID, 10);
-      if (Number.isInteger(parsed)) requestedUserId = parsed;
-    }
-
-    if (requestedUserId === null) {
+    // DEV-20260512-0008: removed GARMIN_MFA_DEFAULT_USER_ID env-var fallback.
+    // It was meant for single-user deployments, but it silently couples MFA
+    // to one account regardless of which user the email actually belongs to —
+    // unsafe as soon as a second user is invited. Callers (Email Worker)
+    // must now resolve the user explicitly and include body.userId.
+    if (typeof body.userId !== "number" || !Number.isInteger(body.userId)) {
       return NextResponse.json(
         {
           error:
-            "Missing userId. Provide body.userId or set GARMIN_MFA_DEFAULT_USER_ID env var.",
+            "Missing or invalid userId. Provide body.userId (integer) — env-var fallback removed.",
         },
         { status: 400 }
       );
     }
+    const requestedUserId: number = body.userId;
 
     const verified = await prisma.userPreference.findFirst({
       where: {

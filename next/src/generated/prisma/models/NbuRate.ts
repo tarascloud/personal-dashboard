@@ -178,7 +178,7 @@ export type NbuRateGroupByOutputType = {
   _max: NbuRateMaxAggregateOutputType | null
 }
 
-type GetNbuRateGroupByPayload<T extends NbuRateGroupByArgs> = Prisma.PrismaPromise<
+export type GetNbuRateGroupByPayload<T extends NbuRateGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<NbuRateGroupByOutputType, T['by']> &
       {

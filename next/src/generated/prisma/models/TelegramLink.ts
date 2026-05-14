@@ -178,7 +178,7 @@ export type TelegramLinkGroupByOutputType = {
   _max: TelegramLinkMaxAggregateOutputType | null
 }
 
-type GetTelegramLinkGroupByPayload<T extends TelegramLinkGroupByArgs> = Prisma.PrismaPromise<
+export type GetTelegramLinkGroupByPayload<T extends TelegramLinkGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<TelegramLinkGroupByOutputType, T['by']> &
       {

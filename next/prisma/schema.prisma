@@ -230,6 +230,7 @@ model RecurringTransaction {
   createdAt  DateTime? @default(now()) @map("created_at")
   userId     Int       @map("user_id")
 
+  @@index([userId], map: "idx_recurring_transactions_user_id")
   @@map("recurring_transactions")
 }
 
@@ -243,6 +244,7 @@ model SavingsGoal {
   createdAt  DateTime? @default(now()) @map("created_at")
   userId     Int       @map("user_id")
 
+  @@index([userId], map: "idx_savings_goals_user_id")
   @@map("savings_goals")
 }
 
@@ -340,6 +342,7 @@ model ShoppingItem {
   userId   Int       @map("user_id")
 
   @@index([boughtAt], map: "idx_shopping_items_bought")
+  @@index([userId], map: "idx_shopping_items_user_id")
   @@map("shopping_items")
 }
 
@@ -479,6 +482,7 @@ model GarminStaging {
   fetchedAt DateTime? @default(now()) @map("fetched_at")
   userId    Int       @map("user_id")
 
+  @@index([userId], map: "idx_garmin_staging_user_id")
   @@map("garmin_staging")
 }
 
@@ -561,6 +565,7 @@ model Embedding {
   user User @relation(fields: [userId], references: [id])
 
   @@unique([sourceTable, sourceId])
+  @@index([userId], map: "idx_embeddings_user_id")
   @@map("embeddings")
 }
 
@@ -731,6 +736,7 @@ model GymSet {
   workoutExercise GymWorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
 
   @@index([workoutExerciseId], map: "idx_gym_sets_workout_exercise")
+  @@index([userId], map: "idx_gym_sets_user_id")
   @@map("gym_sets")
 }
 
@@ -760,6 +766,7 @@ model GymProgramDay {
   program   GymProgram           @relation(fields: [programId], references: [id], onDelete: Cascade)
   exercises GymProgramExercise[]
 
+  @@index([userId], map: "idx_gym_program_days_user_id")
   @@map("gym_program_days")
 }
 
@@ -776,6 +783,7 @@ model GymProgramExercise {
   programDay GymProgramDay @relation(fields: [programDayId], references: [id], onDelete: Cascade)
   exercise   GymExercise   @relation(fields: [exerciseId], references: [id])
 
+  @@index([userId], map: "idx_gym_program_exercises_user_id")
   @@map("gym_program_exercises")
 }
 
@@ -794,6 +802,7 @@ model SyncFailure {
   resolvedAt   DateTime? @map("resolved_at")
 
   @@index([status], map: "idx_sync_failures_status")
+  @@index([userId], map: "idx_sync_failures_user_id")
   @@map("sync_failures")
 }
 

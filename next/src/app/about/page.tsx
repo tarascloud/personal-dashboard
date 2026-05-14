@@ -80,7 +80,7 @@ function FeatureCard({
         {icon}
       </div>
       <h3 className="mb-2 text-lg font-semibold text-white">{title}</h3>
-      <p className="text-sm leading-relaxed text-[#9a9ea6]">{desc}</p>
+      <p className="text-sm leading-relaxed text-[var(--landing-text-muted)]">{desc}</p>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={`/screenshots/${screenshot}.png?v=20260324`}
@@ -98,7 +98,7 @@ function FeatureCard({
 
 function IntBadge({ name }: { name: string }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-[#9a9ea6] transition-colors hover:border-[var(--landing-accent)]/30 hover:text-white">
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-[var(--landing-text-muted)] transition-colors hover:border-[var(--landing-accent)]/30 hover:text-white">
       <Link2 className="h-3 w-3 text-[var(--landing-accent)]/60" />
       {name}
     </span>
@@ -117,7 +117,7 @@ function TechBadge({
   name: string;
 }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-sm text-[#9a9ea6]">
+    <span className="inline-flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-sm text-[var(--landing-text-muted)]">
       {icon}
       {name}
     </span>
@@ -152,7 +152,7 @@ export default async function AboutPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#26282B] text-white selection:bg-[var(--landing-accent)]/20">
+    <div className="min-h-screen bg-[var(--landing-bg)] text-white selection:bg-[var(--landing-accent)]/20">
       {/* ==================== HERO ==================== */}
       <section className="relative overflow-hidden px-4 pb-20 pt-24 sm:px-6 lg:px-8">
         {/* Gradient glow */}
@@ -163,7 +163,7 @@ export default async function AboutPage() {
         <div className="relative mx-auto max-w-4xl text-center">
           {/* Logo */}
           <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.03] shadow-lg shadow-black/20">
-            <span className="text-3xl font-bold bg-gradient-to-br from-[var(--landing-accent)] to-[#FFA800] bg-clip-text text-transparent">
+            <span className="text-3xl font-bold bg-gradient-to-br from-[var(--landing-accent)] to-[var(--landing-accent-deep)] bg-clip-text text-transparent">
               PD
             </span>
           </div>
@@ -172,7 +172,7 @@ export default async function AboutPage() {
             {t("title")}
           </h1>
 
-          <p className="mb-8 text-lg text-[#9a9ea6] sm:text-xl">
+          <p className="mb-8 text-lg text-[var(--landing-text-muted)] sm:text-xl">
             {t("subtitle")}
           </p>
 
@@ -195,7 +195,7 @@ export default async function AboutPage() {
               href="https://github.com/tarascloud/personal-dashboard"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[var(--landing-accent)] to-[#FFA800] px-6 py-3 text-sm font-semibold text-[#26282B] shadow-lg shadow-[var(--landing-accent)]/20 transition-all hover:shadow-[var(--landing-accent)]/30 hover:brightness-110"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[var(--landing-accent)] to-[var(--landing-accent-deep)] px-6 py-3 text-sm font-semibold text-[var(--landing-bg)] shadow-lg shadow-[var(--landing-accent)]/20 transition-all hover:shadow-[var(--landing-accent)]/30 hover:brightness-110"
             >
               <Github className="h-4 w-4" />
               {t("get_started")}
@@ -221,7 +221,7 @@ export default async function AboutPage() {
             <h2 className="mb-3 text-3xl font-bold sm:text-4xl">
               {t("features_title")}
             </h2>
-            <p className="text-[#9a9ea6]">
+            <p className="text-[var(--landing-text-muted)]">
               {t("features_subtitle")}
             </p>
           </div>
@@ -246,7 +246,7 @@ export default async function AboutPage() {
           <h2 className="mb-3 text-3xl font-bold sm:text-4xl">
             {t("integrations_title")}
           </h2>
-          <p className="mb-8 text-[#9a9ea6]">
+          <p className="mb-8 text-[var(--landing-text-muted)]">
             {t("integrations_subtitle")}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -347,7 +347,7 @@ export default async function AboutPage() {
               <h3 className="mb-1 text-base font-semibold text-white sm:text-lg">
                 {t("pwa_title")}
               </h3>
-              <p className="text-sm text-[#9a9ea6]">
+              <p className="text-sm text-[var(--landing-text-muted)]">
                 {t("pwa_desc")}
               </p>
             </div>
@@ -367,7 +367,7 @@ export default async function AboutPage() {
               {t("selfhosted_title")}
             </h2>
 
-            <div className="space-y-4 text-[#9a9ea6]">
+            <div className="space-y-4 text-[var(--landing-text-muted)]">
               {(["selfhosted_1", "selfhosted_2", "selfhosted_3", "selfhosted_4"] as const).map((key) => (
                 <div key={key} className="flex items-start gap-3">
                   <div className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--landing-accent)]/10">
@@ -389,24 +389,24 @@ export default async function AboutPage() {
               href="https://github.com/tarascloud/personal-dashboard"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-[#9a9ea6] transition-colors hover:text-white"
+              className="inline-flex items-center gap-2 text-sm text-[var(--landing-text-muted)] transition-colors hover:text-white"
             >
               <Github className="h-4 w-4" />
               GitHub
             </a>
             <span className="text-white/20">|</span>
-            <span className="text-sm text-[#9a9ea6]">AGPL-3.0</span>
+            <span className="text-sm text-[var(--landing-text-muted)]">AGPL-3.0</span>
             <span className="text-white/20">|</span>
             <a
               href="https://taras.cloud"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-[#9a9ea6] transition-colors hover:text-white"
+              className="text-sm text-[var(--landing-text-muted)] transition-colors hover:text-white"
             >
               taras.cloud
             </a>
           </div>
-          <p className="text-xs text-[#9a9ea6]/60">
+          <p className="text-xs text-[var(--landing-text-muted)]/60">
             {t("footer_made_by")}
           </p>
         </div>

@@ -1,7 +1,26 @@
 import { z } from "zod";
 import { ALL_INTENSITY_VALUES } from "@/components/gym/gym-constants";
 
-export const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+// dateSchema accepts strict ISO YYYY-MM-DD and also rejects calendar-invalid
+// strings (e.g. "2026-02-30", "NaN-NaN-NaN") that would otherwise reach Prisma
+// as `new Date("...")` → Invalid Date → PrismaClientValidationError at runtime.
+// DEV-20260507-0043: 5+2 prod errors `invalid input syntax for type date`.
+export const dateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Date must be YYYY-MM-DD" })
+  .refine(
+    (s) => {
+      const ts = Date.parse(s);
+      if (Number.isNaN(ts)) return false;
+      // Round-trip: ensure parsed back-to-string matches input (rejects "2026-02-30")
+      const d = new Date(ts);
+      const yyyy = d.getUTCFullYear().toString().padStart(4, "0");
+      const mm = (d.getUTCMonth() + 1).toString().padStart(2, "0");
+      const dd = d.getUTCDate().toString().padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}` === s;
+    },
+    { message: "Date is not a valid calendar date" },
+  );
 export const positiveNumber = z.number().positive();
 export const currencyCode = z.enum(["EUR", "UAH", "USD", "PLN", "GBP", "CZK"]);
 export const transactionType = z.enum(["INCOME", "EXPENSE"]);

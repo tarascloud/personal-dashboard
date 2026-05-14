@@ -1,4 +1,8 @@
 {
+  "seo": {
+    "title": "Personal Dashboard — Privacy-First Life Management",
+    "description": "Open-source, self-hosted dashboard for finance, health, gym, investments, trading, and tax reporting. Your life, your data, your server."
+  },
   "login": {
     "title": "Personal Dashboard",
     "subtitle": "Sign in to access your personal dashboard",
@@ -48,6 +52,7 @@
     "sign_in_google": "Sign in with Google",
     "sign_in_github": "Sign in with GitHub",
     "self_host": "Self-Host",
+    "self_host_github": "Self-Host on GitHub",
     "hero_title": "Your Life, Your Data, Your Server",
     "hero_subtitle": "Privacy-first personal dashboard for finance, health, fitness, and investments. Self-hosted, open source, fully yours.",
     "features_title": "Everything you need, nothing you don't",
@@ -242,6 +247,7 @@
     "rate_date": "as of {date}",
     "no_rates": "Rates unavailable",
     "account_balances": "Account Balances",
+    "connect_bank_hint": "Connect a bank account to see balances",
     "weekly_budget": "Weekly Budget",
     "auto_budget": "Auto Budget",
     "monthly_limit": "Monthly limit",

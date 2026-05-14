@@ -40,7 +40,7 @@ export function LanguageToggle() {
               ${
                 isActive
                   ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  : "text-foreground/85 hover:text-foreground hover:bg-muted"
               }
             `}
           >

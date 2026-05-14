@@ -258,7 +258,7 @@ export type BrokerAccountSummaryGroupByOutputType = {
   _max: BrokerAccountSummaryMaxAggregateOutputType | null
 }
 
-type GetBrokerAccountSummaryGroupByPayload<T extends BrokerAccountSummaryGroupByArgs> = Prisma.PrismaPromise<
+export type GetBrokerAccountSummaryGroupByPayload<T extends BrokerAccountSummaryGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BrokerAccountSummaryGroupByOutputType, T['by']> &
       {

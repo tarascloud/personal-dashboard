@@ -2,6 +2,14 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* TODO REV-20260512-011: replace the local :root token block below with
+   `@import "@taras-cloud/design-tokens/tokens/brands/pd.css";`
+   Blocked: @taras-cloud/design-tokens is not yet consumable cross-repo
+   (no workspace setup; package.json has no dep on @taras-cloud/design-tokens).
+   Plan: file:-link to vs-private/packages/design-tokens OR introduce a
+   token sync script (see vs-private/docs/adr/shared-design-tokens.md).
+   Until then, brand-specific overrides live inline. */
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

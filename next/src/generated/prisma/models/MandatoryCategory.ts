@@ -189,7 +189,7 @@ export type MandatoryCategoryGroupByOutputType = {
   _max: MandatoryCategoryMaxAggregateOutputType | null
 }
 
-type GetMandatoryCategoryGroupByPayload<T extends MandatoryCategoryGroupByArgs> = Prisma.PrismaPromise<
+export type GetMandatoryCategoryGroupByPayload<T extends MandatoryCategoryGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<MandatoryCategoryGroupByOutputType, T['by']> &
       {

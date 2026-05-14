@@ -52,8 +52,13 @@ async function refreshDemoDataIfNeeded() {
     // Generate with: openssl dgst -sha256 scripts/daily-demo-data.sql
     const EXPECTED_DIGEST = process.env.DEMO_SQL_SHA256;
     if (!EXPECTED_DIGEST) {
-      console.error("[demo] DEMO_SQL_SHA256 env var is not set — refusing to execute demo SQL without checksum verification");
-      return;
+      // ARC-20260507-0008: explicit failure instead of silent skip so that
+      // operators notice when demo data stops refreshing. Health endpoint
+      // exposes `demoChecksumConfigured: false` and the thrown error reaches
+      // application logs / Sentry. Caller (refreshDemoDataIfNeeded) catches
+      // and logs but the error is observable rather than absorbed silently.
+      console.error("[demo] DEMO_SQL_SHA256 env var is not set — demo data refresh DISABLED. Set DEMO_SQL_SHA256 in env to re-enable.");
+      throw new Error("DEMO_SQL_SHA256 env var is not configured — demo refresh disabled");
     }
 
     const actual = crypto.createHash("sha256").update(sql, "utf-8").digest("hex");
@@ -64,8 +69,13 @@ async function refreshDemoDataIfNeeded() {
 
     console.info("[demo] Refreshing demo data via daily-demo-data.sql");
     await prisma.$executeRawUnsafe(sql);
-  } catch {
-    // non-critical, don't block demo login
+  } catch (e) {
+    // Demo refresh is not critical to login flow, but log it so failures
+    // are visible in monitoring (`pg:status.errors`) and not absorbed silently.
+    console.warn(
+      "[demo] refreshDemoDataIfNeeded skipped:",
+      e instanceof Error ? e.message : String(e),
+    );
   }
 }
 

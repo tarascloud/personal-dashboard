@@ -1,4 +1,8 @@
 {
+  "seo": {
+    "title": "Personal Dashboard — panel privado de tu vida",
+    "description": "Panel personal de código abierto y autoalojado para finanzas, salud, fitness, inversiones, trading y declaración fiscal. Tu vida, tus datos, tu servidor."
+  },
   "login": {
     "title": "Panel Personal",
     "subtitle": "Inicia sesion para acceder a tu panel personal",
@@ -48,6 +52,7 @@
     "sign_in_google": "Iniciar con Google",
     "sign_in_github": "Iniciar con GitHub",
     "self_host": "Self-Host",
+    "self_host_github": "Auto-alojar en GitHub",
     "hero_title": "Tu vida, tus datos, tu servidor",
     "hero_subtitle": "Panel personal para finanzas, salud, fitness e inversiones. Privacidad primero, self-hosted, open source.",
     "features_title": "Todo lo que necesitas, nada que no",
@@ -242,6 +247,7 @@
     "rate_date": "a fecha de {date}",
     "no_rates": "Tipos no disponibles",
     "account_balances": "Saldos de Cuentas",
+    "connect_bank_hint": "Conecta una cuenta bancaria para ver saldos",
     "weekly_budget": "Presupuesto Semanal",
     "auto_budget": "Presupuesto Automatico",
     "monthly_limit": "Limite mensual",

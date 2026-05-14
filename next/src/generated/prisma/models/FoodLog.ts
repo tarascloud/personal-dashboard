@@ -286,7 +286,7 @@ export type FoodLogGroupByOutputType = {
   _max: FoodLogMaxAggregateOutputType | null
 }
 
-type GetFoodLogGroupByPayload<T extends FoodLogGroupByArgs> = Prisma.PrismaPromise<
+export type GetFoodLogGroupByPayload<T extends FoodLogGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<FoodLogGroupByOutputType, T['by']> &
       {

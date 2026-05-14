@@ -32,6 +32,9 @@ interface HealthResponse {
   status: "ok" | "degraded" | "error";
   timestamp: string;
   version: string;
+  // ARC-20260507-0008: surface whether the demo refresh checksum is set.
+  // false on prod is an alert: demo data will not auto-refresh.
+  demoChecksumConfigured: boolean;
   checks: {
     database: CheckResult;
     integrations: Record<string, IntegrationCheck>;
@@ -199,6 +202,9 @@ export async function GET(request: Request) {
     status: overallStatus,
     timestamp: new Date().toISOString(),
     version: process.env.npm_package_version || "1.0.0",
+    // ARC-20260507-0008: false on prod = demo SQL refresh disabled until
+    // DEMO_SQL_SHA256 env var is set. Surface in monitoring.
+    demoChecksumConfigured: !!process.env.DEMO_SQL_SHA256,
     checks: {
       database: dbCheck,
       integrations,

@@ -268,7 +268,7 @@ export type BrokerTransactionGroupByOutputType = {
   _max: BrokerTransactionMaxAggregateOutputType | null
 }
 
-type GetBrokerTransactionGroupByPayload<T extends BrokerTransactionGroupByArgs> = Prisma.PrismaPromise<
+export type GetBrokerTransactionGroupByPayload<T extends BrokerTransactionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BrokerTransactionGroupByOutputType, T['by']> &
       {
