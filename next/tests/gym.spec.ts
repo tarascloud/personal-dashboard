@@ -69,29 +69,6 @@ test.describe("Gym", () => {
 
 test.describe("Workout flow", () => {
   test("start free workout → add exercise → complete", async ({ page, jsErrors, baseURL }) => {
-    // Track workout ID for cleanup
-    let createdWorkoutId: number | null = null;
-
-    // Intercept server action responses to capture the created workout ID
-    page.on("response", async (response) => {
-      if (
-        response.url().includes("/_next/") ||
-        response.request().method() !== "POST"
-      ) return;
-      try {
-        const contentType = response.headers()["content-type"] ?? "";
-        if (!contentType.includes("text/x-component") && !contentType.includes("application/json")) return;
-        const text = await response.text().catch(() => "");
-        // Server action responses include the workout object with id field
-        const idMatch = text.match(/"id"\s*:\s*(\d+)/);
-        if (idMatch && !createdWorkoutId) {
-          createdWorkoutId = parseInt(idMatch[1], 10);
-        }
-      } catch {
-        // Ignore parse errors
-      }
-    });
-
     // 1. Navigate to /gym and wait for page to load
     await goTo(page, "/gym");
     await page.locator('[data-testid="recovery-chip"]').first().waitFor({ timeout: 15000 });
@@ -113,40 +90,45 @@ test.describe("Workout flow", () => {
     const exerciseList = page.locator('[data-testid="exercise-list"]');
     await expect(exerciseList).toBeVisible({ timeout: 5000 });
 
-    // 5. Click "Add Exercise" to open the exercise picker dialog
+    // 5. Read workout ID from DOM attribute (stable, no response-interception race)
+    const workoutPanel = page.locator('[data-testid="active-workout-panel"]');
+    await expect(workoutPanel).toBeVisible({ timeout: 5000 });
+    const createdWorkoutId = await workoutPanel.getAttribute("data-workout-id");
+
+    // 6. Click "Add Exercise" to open the exercise picker dialog
     const addExerciseBtn = page.locator('[data-testid="add-exercise-btn"]');
     await expect(addExerciseBtn).toBeVisible({ timeout: 5000 });
     await addExerciseBtn.click();
 
-    // 6. Wait for exercise picker dialog to appear
+    // 7. Wait for exercise picker dialog to appear
     const exerciseDialog = page.locator('[role="dialog"]').filter({
       has: page.locator('input[placeholder]'),
     });
     await expect(exerciseDialog).toBeVisible({ timeout: 5000 });
 
-    // 7. Select the first available exercise from the list
+    // 8. Select the first available exercise from the list
     const exerciseOption = exerciseDialog.locator("button.flex-1").first();
     await expect(exerciseOption).toBeVisible({ timeout: 5000 });
     const exerciseName = await exerciseOption.locator(".font-medium").first().textContent();
     await exerciseOption.click();
 
-    // 8. Verify exercise appears in the active workout panel
+    // 9. Verify exercise appears in the active workout panel
     await expect(exerciseList.locator("text=" + exerciseName!.trim())).toBeVisible({ timeout: 10000 });
 
-    // 9. Click "Finish Workout" button
+    // 10. Click "Finish Workout" button
     await finishBtn.click();
 
-    // 10. Verify workout completed: finish button disappears, FAB returns
+    // 11. Verify workout completed: finish button disappears, FAB returns
     await expect(finishBtn).not.toBeVisible({ timeout: 15000 });
     await expect(page.locator('[data-testid="fab"]')).toBeVisible({ timeout: 10000 });
 
-    // 11. No unexpected JS errors
+    // 12. No unexpected JS errors
     await expectNoErrorBoundary(page);
     expectNoJSErrors(jsErrors);
 
-    // 12. Cleanup: attempt to delete the created workout record
+    // 13. Cleanup: attempt to delete the created workout record
     if (createdWorkoutId !== null) {
-      await deleteWorkoutById(page, baseURL, createdWorkoutId);
+      await deleteWorkoutById(page, baseURL, Number(createdWorkoutId));
     }
   });
 });

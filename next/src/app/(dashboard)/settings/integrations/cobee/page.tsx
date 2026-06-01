@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { getSecret, setSecret, getUserPreference, setUserPreference } from "@/actions/settings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -125,7 +126,7 @@ export default function CobeeIntegrationPage() {
             {tc("save")}
           </Button>
           {hasExisting && (
-            <Button variant="outline" disabled={isDemo || isPending} onClick={() => alert("Cobee sync is handled by the background scheduler.")}>
+            <Button variant="outline" disabled={isDemo || isPending} onClick={() => toast.info("Cobee sync is handled by the background scheduler.")}>
               {t("sync_now")}
             </Button>
           )}

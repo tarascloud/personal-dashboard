@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -95,7 +96,7 @@ export function EsTaxDashboard({ overview: initialOverview, onRefresh }: EsTaxDa
         const resp = await fetch("/api/upload/tax-document", { method: "POST", body: formData });
         if (!resp.ok) {
           const err = await resp.json();
-          alert(`Error uploading ${file.name}: ${err.error}`);
+          toast.error(`Error uploading ${file.name}`, { description: err.error });
         }
       }
       await reloadData();

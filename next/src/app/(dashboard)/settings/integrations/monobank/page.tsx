@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import {
   getSecret,
   setSecret,
@@ -134,13 +135,15 @@ export default function MonobankIntegrationPage() {
                   const res = await fetch("/api/sync/monobank", { method: "POST" });
                   const data = await res.json();
                   if (data.error) {
-                    alert(data.error);
+                    toast.error(data.error);
                   } else {
                     await setUserPreference("monobank_last_sync", new Date().toISOString());
                     setLastSync(new Date().toISOString());
-                    alert(`Synced: ${data.synced ?? 0} new, ${data.skipped ?? 0} skipped`);
+                    toast.success("Sync complete", {
+                      description: `${data.synced ?? 0} new, ${data.skipped ?? 0} skipped`,
+                    });
                   }
-                } catch { alert("Sync failed"); }
+                } catch { toast.error("Sync failed"); }
               });
             }}
             disabled={isDemo || isPending || !hasExisting}

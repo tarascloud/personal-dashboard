@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { requireUser } from "@/lib/current-user";
+import { requireOwner } from "@/lib/current-user";
 
 const startTime = Date.now();
 
@@ -74,8 +74,12 @@ function formatUptime(seconds: number): string {
 
 export async function GET() {
   try {
-    await requireUser();
-  } catch {
+    await requireOwner();
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg === "Forbidden") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

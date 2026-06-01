@@ -372,7 +372,7 @@ export function ActiveWorkoutPanel({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="active-workout-panel" data-workout-id={activeWorkout.id}>
       {/* Workout header with Timer */}
       <Card>
         <CardHeader>

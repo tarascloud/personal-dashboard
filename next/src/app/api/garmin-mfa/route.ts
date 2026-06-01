@@ -1,8 +1,8 @@
 export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
-import { timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/db";
 import { checkRateLimit, RateLimitError, rateLimitResponse } from "@/lib/rate-limit";
+import { timingSafeCompareStr } from "@/lib/timing-safe";
 
 /**
  * Public API endpoint for receiving Garmin MFA codes.
@@ -21,12 +21,7 @@ export async function POST(request: Request) {
 
     const authHeader = request.headers.get("authorization") || "";
     const expected = `Bearer ${apiToken}`;
-    const authBuf = Buffer.from(authHeader, "utf-8");
-    const expectedBuf = Buffer.from(expected, "utf-8");
-    if (
-      authBuf.length !== expectedBuf.length ||
-      !timingSafeEqual(authBuf, expectedBuf)
-    ) {
+    if (!timingSafeCompareStr(authHeader, expected)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

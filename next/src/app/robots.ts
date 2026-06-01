@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { headers } from "next/headers";
 
 // AI training crawlers — block from training on this content
 // (REV-2026-05-03-100). User-agents drawn from each crawler's public docs.
@@ -20,7 +21,11 @@ const AI_BOTS = [
   "cohere-ai",
 ];
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const host = (await headers()).get("host") ?? "";
+  if (host === "dev.taras.cloud") {
+    return { rules: [{ userAgent: "*", disallow: "/" }] };
+  }
   return {
     rules: [
       {

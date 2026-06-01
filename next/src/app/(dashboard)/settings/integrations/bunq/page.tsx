@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import {
   getSecret,
   setSecret,
@@ -118,7 +119,7 @@ export default function BunqIntegrationPage() {
             {tc("save")}
           </Button>
           {hasExisting && (
-            <Button variant="outline" disabled={isDemo || isPending} onClick={() => alert("bunq sync is handled by the background scheduler.")}>
+            <Button variant="outline" disabled={isDemo || isPending} onClick={() => toast.info("bunq sync is handled by the background scheduler.")}>
               {t("sync_now")}
             </Button>
           )}
