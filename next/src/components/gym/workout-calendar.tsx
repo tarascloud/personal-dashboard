@@ -2,7 +2,12 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronLeftIcon, ChevronRightIcon, PersonStandingIcon, BikeIcon, WavesIcon, StretchHorizontalIcon, DumbbellIcon } from "lucide-react";
+import {
+  ChevronLeftIcon, ChevronRightIcon,
+  PersonStandingIcon, BikeIcon, WavesIcon, StretchHorizontalIcon, DumbbellIcon,
+  WindIcon, FootprintsIcon, MountainIcon, MountainSnowIcon, SailboatIcon,
+  TimerIcon, ActivityIcon,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -146,12 +151,29 @@ export function WorkoutCalendar({
             >
               <span>{day}</span>
               {(hasWorkout || hasGarminActivity) && (() => {
+                // programType holds Garmin activityType keys (e.g. wakeboarding_v2,
+                // gravel_cycling, lap_swimming) for non-strength days, and the
+                // gym workout type for strength days. workoutName is the fallback.
                 const typeStr = (dayData!.programType ?? dayData!.workoutName ?? "").toLowerCase();
-                const IconComp = typeStr.includes("cardio") || typeStr.includes("run") ? PersonStandingIcon
-                  : typeStr.includes("cycl") || typeStr.includes("bike") || typeStr.includes("вело") || typeStr.includes("gravel") ? BikeIcon
-                  : typeStr.includes("swim") ? WavesIcon
-                  : typeStr.includes("yoga") || typeStr.includes("stretch") ? StretchHorizontalIcon
-                  : DumbbellIcon;
+                const pick = () => {
+                  // Most specific Garmin sport types first.
+                  if (typeStr.includes("kiteboarding") || typeStr.includes("kite")) return WindIcon;
+                  if (typeStr.includes("wakeboarding") || typeStr.includes("wakeboard")) return SailboatIcon;
+                  if (typeStr.includes("paddleboard") || typeStr.includes("stand_up_paddle") || typeStr.includes("sup")) return SailboatIcon;
+                  if (typeStr.includes("snowboard") || typeStr.includes("ski")) return MountainSnowIcon;
+                  if (typeStr.includes("hiking") || typeStr.includes("hike")) return MountainIcon;
+                  if (typeStr.includes("walking") || typeStr.includes("walk")) return FootprintsIcon;
+                  if (typeStr.includes("swim")) return WavesIcon;
+                  if (typeStr.includes("yoga") || typeStr.includes("stretch")) return StretchHorizontalIcon;
+                  if (typeStr.includes("cycl") || typeStr.includes("bike") || typeStr.includes("вело") || typeStr.includes("gravel")) return BikeIcon;
+                  if (typeStr.includes("running") || typeStr.includes("run") || typeStr.includes("cardio")) return PersonStandingIcon;
+                  if (typeStr.includes("stop_watch") || typeStr.includes("stopwatch")) return TimerIcon;
+                  if (typeStr.includes("strength")) return DumbbellIcon;
+                  // Default — gym (workoutName like "Chest day") → dumbbell;
+                  // unknown Garmin type → generic activity glyph.
+                  return hasWorkout ? DumbbellIcon : ActivityIcon;
+                };
+                const IconComp = pick();
                 return (
                   <>
                     <IconComp className="size-2.5" />

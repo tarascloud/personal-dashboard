@@ -34,7 +34,7 @@ test("iPhone viewport: all primary tabs visible and clickable", async ({ page })
   const tabs = nav.locator('[role="tab"]');
   const count = await tabs.count();
 
-  // DEFAULT_PINNED_TABS = 4 items + More button = 5
+  // DEFAULT_PINNED_TABS = 3 items + More button = 4
   expect(count).toBeGreaterThanOrEqual(4);
 
   for (let i = 0; i < count; i++) {
@@ -51,13 +51,14 @@ test("iPhone viewport: all primary tabs visible and clickable", async ({ page })
 // ─── Test 2: Active tab state correct after navigation ────────────────────────
 
 test("active tab state correct after navigation", async ({ page }) => {
-  await page.goto("/dashboard");
+  // /finance is in DEFAULT_PINNED_TABS so it appears in the bottom bar with
+  // aria-current="page" when active. /dashboard is now in the More sheet.
+  await page.goto("/finance");
   await page.waitForLoadState("networkidle");
 
   const nav = getMobileNav(page);
   await expect(nav).toBeVisible({ timeout: 15000 });
 
-  // The tab with aria-current="page" should be the dashboard tab
   const activeTab = nav.locator('[role="tab"][aria-current="page"]');
   await expect(activeTab).toBeVisible({ timeout: 10000 });
   await expect(activeTab).toHaveAttribute("aria-selected", "true");

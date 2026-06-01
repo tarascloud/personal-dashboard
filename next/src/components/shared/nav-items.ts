@@ -32,8 +32,12 @@ export const navItems: NavItem[] = [
   { key: "admin", href: "/admin", icon: ShieldIcon, ownerOnly: true },
 ];
 
-/** Default pinned tab keys for mobile bottom bar (Phase 1: fixed order) */
-export const DEFAULT_PINNED_TABS = ["dashboard", "my_day", "finance", "ai_chat"] as const;
+/** Default pinned tab keys for mobile bottom bar (Phase 1: fixed order).
+ *  Order matters — left-to-right in the bottom bar. Anything not listed here
+ *  falls into the "More" sheet behind the "…" button. AI chat is intentionally
+ *  in overflow to free up a thumb-zone slot for the more frequently used
+ *  finance / my_day / gym tabs. */
+export const DEFAULT_PINNED_TABS = ["finance", "my_day", "gym"] as const;
 
 // Finance sub-tabs
 export const financeSubTabs = [
