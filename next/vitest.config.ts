@@ -13,7 +13,7 @@ export default defineConfig({
     exclude: ["tests/**", "node_modules/**"],
     environment: "node",
     coverage: {
-      provider: "@vitest/coverage-v8",
+      provider: "v8",
       thresholds: {
         lines: 60,
         functions: 60,
