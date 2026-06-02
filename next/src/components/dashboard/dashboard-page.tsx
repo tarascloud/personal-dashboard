@@ -63,6 +63,7 @@ import { DailyLogsCard } from "./daily-logs-card";
 import { ExpenseBreakdownCard } from "./expense-breakdown-card";
 import { ScreenTimeWidget } from "./screen-time-widget";
 import { KidsTimeWidget } from "./kids-time-widget";
+import { CorrelationMatrixChart } from "./correlation-matrix-chart";
 import {
   KpiGridSkeleton,
   MoodTimelineSkeleton,
@@ -441,6 +442,36 @@ export function DashboardPage({
         }}
       />
       )}
+      </ErrorBoundary>
+
+      {/* Lifestyle Correlations (screen time × kids × body battery × active min) */}
+      <ErrorBoundary moduleName="Lifestyle Correlations">
+      <CorrelationMatrixChart
+        screenTime={screenTime}
+        kidsTime={kidsTime}
+        garminHealth={garminHealth}
+        labels={{
+          title: t("correlation_title"),
+          subtitle: t("correlation_subtitle"),
+          trendsHeading: t("correlation_trends_heading"),
+          linksHeading: t("correlation_links_heading"),
+          noData: t("correlation_no_data"),
+          noDataHint: t("correlation_no_data_hint"),
+          noLinks: t("correlation_no_links"),
+          avg: t("correlation_avg"),
+          relTogether: t("correlation_rel_together"),
+          relOpposite: t("correlation_rel_opposite"),
+          strengthStrong: t("correlation_strength_strong"),
+          strengthModerate: t("correlation_strength_moderate"),
+          strengthWeak: t("correlation_strength_weak"),
+          unitH: t("correlation_unit_h"),
+          unitMin: t("correlation_unit_min"),
+          screen: t("screen_time"),
+          kids: t("kids_time"),
+          battery: t("body_battery"),
+          active: t("active_min"),
+        }}
+      />
       </ErrorBoundary>
 
       </div>}

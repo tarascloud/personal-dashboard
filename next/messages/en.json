@@ -775,7 +775,22 @@
     "kids_time_minutes": "Minutes",
     "kids_time_no_data": "No kids time data yet",
     "kids_time_no_data_hint": "Log time with kids in My Day",
-    "kids_time_target": "3h target"
+    "kids_time_target": "3h target",
+    "correlation_title": "Trends & connections",
+    "correlation_subtitle": "How screen time, time with kids, Body Battery and active minutes change — and how they affect each other",
+    "correlation_trends_heading": "Daily trends",
+    "correlation_links_heading": "How metrics connect",
+    "correlation_no_data": "Not enough data",
+    "correlation_no_data_hint": "Log metrics daily to see trends",
+    "correlation_no_links": "No clear connections yet — need more days with shared data",
+    "correlation_avg": "average for the period",
+    "correlation_rel_together": "{a} and {b} usually rise together",
+    "correlation_rel_opposite": "More {a}, less {b}",
+    "correlation_strength_strong": "strong link",
+    "correlation_strength_moderate": "moderate link",
+    "correlation_strength_weak": "weak link",
+    "correlation_unit_h": "h",
+    "correlation_unit_min": "m"
   },
   "settings": {
     "title": "Settings",

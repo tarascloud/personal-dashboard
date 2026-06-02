@@ -775,7 +775,22 @@
     "kids_time_minutes": "Хвилин",
     "kids_time_no_data": "Немає даних про час з дітьми",
     "kids_time_no_data_hint": "Записуйте час з дітьми в Мій день",
-    "kids_time_target": "Ціль 3г"
+    "kids_time_target": "Ціль 3г",
+    "correlation_title": "Тренди та зв'язки",
+    "correlation_subtitle": "Як змінюються екранний час, час з дітьми, Body Battery та активні хвилини — і як вони впливають одне на одне",
+    "correlation_trends_heading": "Тренди по днях",
+    "correlation_links_heading": "Як метрики пов'язані",
+    "correlation_no_data": "Недостатньо даних",
+    "correlation_no_data_hint": "Записуйте метрики щодня, щоб побачити тренди",
+    "correlation_no_links": "Поки що немає помітних зв'язків — потрібно більше днів зі спільними даними",
+    "correlation_avg": "у середньому за період",
+    "correlation_rel_together": "{a} та {b} зазвичай ростуть разом",
+    "correlation_rel_opposite": "Чим більше {a}, тим менше {b}",
+    "correlation_strength_strong": "сильний зв'язок",
+    "correlation_strength_moderate": "помірний зв'язок",
+    "correlation_strength_weak": "слабкий зв'язок",
+    "correlation_unit_h": "г",
+    "correlation_unit_min": "хв"
   },
   "settings": {
     "title": "Налаштування",
