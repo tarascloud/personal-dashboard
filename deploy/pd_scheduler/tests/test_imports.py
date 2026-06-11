@@ -13,8 +13,9 @@ def test_main_module_importable():
 def test_schedules_registry():
     from pd_scheduler.schedules import get_schedule
     schedule = get_schedule()
-    # 18 active jobs — Garmin currently disabled, see schedules.py comment.
-    assert len(schedule) == 18, f"Expected 18 active jobs, got {len(schedule)}"
+    # 17 active jobs — Garmin disabled, pg_backup removed (DEV-20260610-0041,
+    # host-cron db-backup.sh is the single backup source). See schedules.py comments.
+    assert len(schedule) == 17, f"Expected 17 active jobs, got {len(schedule)}"
 
     # All ids unique, all callables, all triggers valid (already validated by APScheduler later).
     ids = [s[0] for s in schedule]
@@ -58,7 +59,6 @@ def test_insights_jobs():
 
 
 def test_other_jobs():
-    from pd_scheduler.jobs.backups import job_pg_backup
     from pd_scheduler.jobs.snapshots import job_generate_snapshots
     from pd_scheduler.jobs.maintenance import (
         job_refresh_views,
@@ -66,7 +66,7 @@ def test_other_jobs():
         job_detect_subscriptions,
         job_prod_to_dev_sync,
     )
-    for fn in (job_pg_backup, job_generate_snapshots, job_refresh_views,
+    for fn in (job_generate_snapshots, job_refresh_views,
                job_daily_demo_data, job_detect_subscriptions, job_prod_to_dev_sync):
         assert callable(fn)
 

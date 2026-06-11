@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { EmptyState } from "@/components/shared/empty-state";
 import type { Transaction } from "./finance-types";
 import { formatEur, formatAmount } from "./finance-types";
 
@@ -89,9 +90,7 @@ export function TransactionTable({
       </CardHeader>
       <CardContent className="p-0">
         {sortedTransactions.length === 0 ? (
-          <div className="py-8 text-center text-sm text-muted-foreground">
-            {t("no_transactions")}
-          </div>
+          <EmptyState title={t("no_transactions")} compact />
         ) : (
           <>
             {/* Desktop table */}
@@ -181,10 +180,10 @@ export function TransactionTable({
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onEdit(tx)}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={tc("edit")} onClick={() => onEdit(tx)}>
                             <PencilIcon className="size-3" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => onDelete(tx.id)}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" aria-label={tc("delete")} onClick={() => onDelete(tx.id)}>
                             <TrashIcon className="size-3" />
                           </Button>
                         </div>
@@ -231,10 +230,10 @@ export function TransactionTable({
                     )}
                     </div>
                     <div className="flex flex-col gap-1">
-                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onEdit(tx)}>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" aria-label={tc("edit")} onClick={() => onEdit(tx)}>
                         <PencilIcon className="size-3" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => onDelete(tx.id)}>
+                      <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" aria-label={tc("delete")} onClick={() => onDelete(tx.id)}>
                         <TrashIcon className="size-3" />
                       </Button>
                     </div>

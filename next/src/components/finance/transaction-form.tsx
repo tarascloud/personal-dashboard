@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { useTranslations } from "next-intl";
 import { CalendarIcon, StarIcon, Loader2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -89,6 +90,9 @@ export function TransactionForm({
 }: TransactionFormProps) {
   const t = useTranslations("finance");
   const tc = useTranslations("common");
+  // Unique field id prefix — the form is rendered in both the add and
+  // edit dialogs, so ids must not collide if both are mounted.
+  const fid = useId();
 
   const handleFromAmountChange = (value: string) => {
     onFormFromAmountChange(value);
@@ -153,11 +157,11 @@ export function TransactionForm({
     <div className="grid gap-3">
       {/* Date */}
       <div className="grid gap-1">
-        <Label>{t("date")}</Label>
+        <Label htmlFor={`${fid}-date`}>{t("date")}</Label>
         <Popover open={calFormOpen} onOpenChange={onCalFormOpenChange}>
           <PopoverTrigger
             render={
-              <Button variant="outline" className="w-full justify-start" />
+              <Button id={`${fid}-date`} variant="outline" className="w-full justify-start" />
             }
           >
             <CalendarIcon className="mr-2 size-4" />
@@ -181,12 +185,12 @@ export function TransactionForm({
 
       {/* Type */}
       <div className="grid gap-1">
-        <Label>{tc("type")}</Label>
+        <Label htmlFor={`${fid}-type`}>{tc("type")}</Label>
         <Select
           value={formType}
           onValueChange={(v) => onFormTypeChange(v as string)}
         >
-          <SelectTrigger className="h-10 w-full">
+          <SelectTrigger id={`${fid}-type`} className="h-10 w-full">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -202,12 +206,12 @@ export function TransactionForm({
         <>
           {/* From Account + Amount */}
           <div className="grid gap-1">
-            <Label>{t("from_account")}</Label>
+            <Label htmlFor={`${fid}-from-account`}>{t("from_account")}</Label>
             <Select
               value={formFromAccount}
               onValueChange={(v) => onFormFromAccountChange(v as string)}
             >
-              <SelectTrigger className="h-10 w-full">
+              <SelectTrigger id={`${fid}-from-account`} className="h-10 w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -220,8 +224,9 @@ export function TransactionForm({
             </Select>
           </div>
           <div className="grid gap-1">
-            <Label>{t("amount")} ({accounts.find((a) => a.name === formFromAccount)?.currency ?? "EUR"})</Label>
+            <Label htmlFor={`${fid}-from-amount`}>{t("amount")} ({accounts.find((a) => a.name === formFromAccount)?.currency ?? "EUR"})</Label>
             <Input
+              id={`${fid}-from-amount`}
               type="number"
               step="0.01"
               value={formFromAmount}
@@ -235,12 +240,12 @@ export function TransactionForm({
 
           {/* To Account + Amount */}
           <div className="grid gap-1">
-            <Label>{t("to_account")}</Label>
+            <Label htmlFor={`${fid}-to-account`}>{t("to_account")}</Label>
             <Select
               value={formToAccount}
               onValueChange={(v) => onFormToAccountChange(v as string)}
             >
-              <SelectTrigger className="h-10 w-full">
+              <SelectTrigger id={`${fid}-to-account`} className="h-10 w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -266,8 +271,9 @@ export function TransactionForm({
             }
             return (
               <div className="grid gap-1">
-                <Label>{t("amount")} ({toCur})</Label>
+                <Label htmlFor={`${fid}-to-amount`}>{t("amount")} ({toCur})</Label>
                 <Input
+                  id={`${fid}-to-amount`}
                   type="number"
                   step="0.01"
                   value={formToAmount}
@@ -282,7 +288,7 @@ export function TransactionForm({
         <>
           {/* Account */}
           <div className="grid gap-1">
-            <Label>{t("account")}</Label>
+            <Label htmlFor={`${fid}-account`}>{t("account")}</Label>
             <Select
               value={formAccount}
               onValueChange={(v) => {
@@ -294,7 +300,7 @@ export function TransactionForm({
                 }
               }}
             >
-              <SelectTrigger className="h-10 w-full">
+              <SelectTrigger id={`${fid}-account`} className="h-10 w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -309,12 +315,12 @@ export function TransactionForm({
 
           {/* Category */}
           <div className="grid gap-1">
-            <Label>{t("category")}</Label>
+            <Label htmlFor={`${fid}-category`}>{t("category")}</Label>
             <Select
               value={formCategory}
               onValueChange={(v) => onFormCategoryChange(v as string)}
             >
-              <SelectTrigger className="h-10 w-full">
+              <SelectTrigger id={`${fid}-category`} className="h-10 w-full">
                 <SelectValue placeholder={t("category")} />
               </SelectTrigger>
               <SelectContent>
@@ -333,8 +339,9 @@ export function TransactionForm({
           {/* Amount + Currency */}
           <div className="grid grid-cols-3 gap-2">
             <div className="col-span-2 grid gap-1">
-              <Label>{t("amount")}</Label>
+              <Label htmlFor={`${fid}-amount`}>{t("amount")}</Label>
               <Input
+                id={`${fid}-amount`}
                 type="number"
                 step="0.01"
                 value={formAmount}
@@ -343,12 +350,12 @@ export function TransactionForm({
               />
             </div>
             <div className="grid gap-1">
-              <Label>{t("currency")}</Label>
+              <Label htmlFor={`${fid}-currency`}>{t("currency")}</Label>
               <Select
                 value={formCurrency}
                 onValueChange={(v) => onFormCurrencyChange(v as string)}
               >
-                <SelectTrigger className="h-10 w-full">
+                <SelectTrigger id={`${fid}-currency`} className="h-10 w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -364,8 +371,9 @@ export function TransactionForm({
 
       {/* Description */}
       <div className="grid gap-1">
-        <Label>{tc("description")}</Label>
+        <Label htmlFor={`${fid}-description`}>{tc("description")}</Label>
         <Input
+          id={`${fid}-description`}
           value={formDescription}
           onChange={(e) => onFormDescriptionChange(e.target.value)}
           placeholder={tc("optional")}

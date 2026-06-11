@@ -10,7 +10,6 @@ preserved verbatim from the original deploy/scheduler.py main() function.
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 
-from .jobs.backups import job_pg_backup
 from .jobs.insights import (
     job_export_dpo_pairs,
     job_generate_ai_insights,
@@ -55,7 +54,11 @@ def get_schedule():
         ("daily_report",          job_daily_report,          CronTrigger(hour=21, minute=0)),
         ("weekly_report",         job_weekly_report,         CronTrigger(day_of_week="mon", hour=10, minute=0)),
         ("mood_reminder",         job_mood_reminder,         CronTrigger(hour="12,18", minute=0)),
-        ("pg_backup",             job_pg_backup,             CronTrigger(hour=3, minute=0)),
+        # NOTE: pg_backup job REMOVED deliberately (DEV-20260610-0041, 2026-06-11).
+        # It duplicated host-cron /opt/docker/scripts/db-backup.sh (03:00 daily, all DBs
+        # incl. pd_prod + offsite NAS + weekly restore drill) and failed every night with
+        # Errno 13 (container uid 1001 has no write access to /opt/docker/backups, uid 1000).
+        # DO NOT re-add a backup job here — host-cron is the single source of backups.
         ("refresh_views",         job_refresh_views,         CronTrigger(minute="*/30")),
         ("daily_demo_data",       job_daily_demo_data,       CronTrigger(hour=2, minute=0)),
         ("detect_subscriptions",  job_detect_subscriptions,  CronTrigger(hour=12, minute=0)),

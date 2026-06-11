@@ -18,13 +18,13 @@ export default defineConfig({
     {
       name: "smoke",
       use: { browserName: "chromium" },
-      testMatch: /smoke\.spec|api-health\.spec|api-routes\.spec/,
+      testMatch: /smoke\.spec|api-health\.spec|api-routes\.spec|auth-loop\.spec/,
     },
     // Firefox smoke — cross-browser parity check
     {
       name: "smoke-firefox",
       use: { browserName: "firefox" },
-      testMatch: /smoke\.spec|api-health\.spec|api-routes\.spec/,
+      testMatch: /smoke\.spec|api-health\.spec|api-routes\.spec|auth-loop\.spec/,
     },
     // Dev with demo auth (all tests)
     {
@@ -34,7 +34,7 @@ export default defineConfig({
         storageState: "tests/demo-auth-dev.json",
         baseURL: "https://dev.taras.cloud",
       },
-      testIgnore: /smoke\.spec|api-health\.spec/,
+      testIgnore: /smoke\.spec|api-health\.spec|auth-loop\.spec/,
     },
     // Prod no-auth smoke
     {
@@ -43,7 +43,7 @@ export default defineConfig({
         browserName: "chromium",
         baseURL: "https://pd.taras.cloud",
       },
-      testMatch: /smoke\.spec|api-health\.spec|api-routes\.spec/,
+      testMatch: /smoke\.spec|api-health\.spec|api-routes\.spec|auth-loop\.spec/,
     },
     // Prod with demo auth (full demo suite)
     {
@@ -54,7 +54,7 @@ export default defineConfig({
         storageState: "tests/demo-auth-prod.json",
         baseURL: "https://pd.taras.cloud",
       },
-      testIgnore: /smoke\.spec|api-health\.spec/,
+      testIgnore: /smoke\.spec|api-health\.spec|auth-loop\.spec/,
     },
   ],
 });

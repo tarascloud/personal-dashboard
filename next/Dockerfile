@@ -1,6 +1,6 @@
 # Multi-stage build for Next.js Personal Dashboard
 # Stage 1: Build
-FROM node:22-alpine AS builder
+FROM node:22-alpine@sha256:8ea2348b068a9544dae7317b4f3aafcdc032df1647bb7d768a05a5cad1a7683f AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
 # --legacy-peer-deps is required because next-auth@5.0.0-beta.30 declares a
@@ -19,7 +19,7 @@ RUN npx prisma generate
 RUN npm run build
 
 # Stage 3: Production
-FROM node:22-alpine AS runner
+FROM node:22-alpine@sha256:8ea2348b068a9544dae7317b4f3aafcdc032df1647bb7d768a05a5cad1a7683f AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
