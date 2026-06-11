@@ -88,6 +88,7 @@ export function PeriodSelector({
   onCustomChange,
 }: PeriodSelectorProps) {
   const t = useTranslations("period");
+  const tCommon = useTranslations("common");
   const [calFromOpen, setCalFromOpen] = useState(false);
   const [calToOpen, setCalToOpen] = useState(false);
 
@@ -135,7 +136,7 @@ export function PeriodSelector({
               render={<Button variant="outline" size="sm" className="text-xs h-9 gap-1" />}
             >
               <CalendarIcon className="size-3" />
-              {customFrom || "From"}
+              {customFrom || tCommon("from")}
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
@@ -159,7 +160,7 @@ export function PeriodSelector({
               render={<Button variant="outline" size="sm" className="text-xs h-9 gap-1" />}
             >
               <CalendarIcon className="size-3" />
-              {customTo || "To"}
+              {customTo || tCommon("to")}
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar

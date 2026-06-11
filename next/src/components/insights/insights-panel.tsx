@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -26,6 +27,7 @@ type Props = {
 };
 
 export function InsightsPanel({ page = "finance" }: Props) {
+  const t = useTranslations("ai_chat");
   const activePeriod = "this_month" as const;
 
   const [insights, setInsights] = useState<Insight[]>([]);
@@ -141,7 +143,7 @@ export function InsightsPanel({ page = "finance" }: Props) {
             size="sm"
             className="h-7 w-7 p-0"
             onClick={openPromptEditor}
-            title="Edit prompt"
+            title={t("edit_prompt")}
           >
             <SettingsIcon className="size-3.5" />
           </Button>
@@ -151,7 +153,7 @@ export function InsightsPanel({ page = "finance" }: Props) {
             className="h-7 w-7 p-0"
             onClick={generateInsights}
             disabled={generating}
-            title="Regenerate"
+            title={t("regenerate")}
           >
             {generating ? (
               <Loader2Icon className="size-3.5 animate-spin" />

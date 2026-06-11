@@ -569,7 +569,7 @@ export function ActiveWorkoutPanel({
                             {newPRs[s.id] && (
                               <Badge
                                 variant="default"
-                                className="bg-yellow-500 text-black text-[10px] ml-1 animate-pulse"
+                                className="text-[10px] ml-1 animate-pulse"
                               >
                                 <TrophyIcon className="size-3 mr-0.5" />
                                 {newPRs[s.id].weight

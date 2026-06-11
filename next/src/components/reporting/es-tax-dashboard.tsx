@@ -23,7 +23,6 @@ interface EsTaxDashboardProps {
   onRefresh: () => void;
 }
 
-const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 const PIE_COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
 
 function formatEur(n: number): string {
@@ -67,6 +66,7 @@ function UploadZone({ id, title, hint, accept, uploading, uploadingLabel, onFile
 
 export function EsTaxDashboard({ overview: initialOverview, onRefresh }: EsTaxDashboardProps) {
   const t = useTranslations("reporting");
+  const MONTHS = t("es_months_short").split(",");
   const { colors: CC } = useChartColors();
   const [overview, setOverview] = useState(initialOverview);
   const [uploading, setUploading] = useState<"nomina" | "broker" | "certificado" | null>(null);
@@ -140,10 +140,10 @@ export function EsTaxDashboard({ overview: initialOverview, onRefresh }: EsTaxDa
   });
 
   const pieData = nominas.length > 0 ? [
-    { name: "Salario", value: nominas.reduce((s, n) => s + n.grossPay - n.bonus, 0) },
-    { name: "Bonus", value: nominas.reduce((s, n) => s + n.bonus, 0) },
-    ...(overview.totalDividends > 0 ? [{ name: "Dividendos", value: overview.totalDividends }] : []),
-    ...(overview.totalCapitalGains > 0 ? [{ name: "Capital Gains", value: overview.totalCapitalGains }] : []),
+    { name: t("es_pie_salary"), value: nominas.reduce((s, n) => s + n.grossPay - n.bonus, 0) },
+    { name: t("es_pie_bonus"), value: nominas.reduce((s, n) => s + n.bonus, 0) },
+    ...(overview.totalDividends > 0 ? [{ name: t("es_pie_dividends"), value: overview.totalDividends }] : []),
+    ...(overview.totalCapitalGains > 0 ? [{ name: t("es_pie_capital_gains"), value: overview.totalCapitalGains }] : []),
   ].filter(d => d.value > 0) : [];
 
   return (
@@ -243,7 +243,7 @@ export function EsTaxDashboard({ overview: initialOverview, onRefresh }: EsTaxDa
                     <tr key={doc.id} className="border-b border-dashed">
                       <td className="py-1.5">
                         <Badge variant="secondary" className="text-xs">
-                          {doc.docType === "NOMINA" ? "Nómina" : doc.docType === "CERTIFICADO_RETENCIONES" ? "Certificado" : doc.source || "Broker"}
+                          {doc.docType === "NOMINA" ? t("es_doc_nomina") : doc.docType === "CERTIFICADO_RETENCIONES" ? t("es_doc_certificado") : doc.source || "Broker"}
                         </Badge>
                       </td>
                       <td className="text-xs max-w-[200px] truncate" title={doc.fileName || ""}>
@@ -308,7 +308,7 @@ export function EsTaxDashboard({ overview: initialOverview, onRefresh }: EsTaxDa
                 <CardTitle className="text-base flex items-center gap-2">
                   {t("es_comparison_title")}
                   <Badge variant={irpf.recommendation === "CONJUNTA" ? "default" : "secondary"} className="ml-auto">
-                    {irpf.recommendation} {irpf.savingsAmount > 0 && `(${formatEur(irpf.savingsAmount)} {t("es_savings")})`}
+                    {irpf.recommendation} {irpf.savingsAmount > 0 && `(${formatEur(irpf.savingsAmount)} ${t("es_savings")})`}
                   </Badge>
                 </CardTitle>
               </CardHeader>
@@ -320,16 +320,16 @@ export function EsTaxDashboard({ overview: initialOverview, onRefresh }: EsTaxDa
                     </thead>
                     <tbody>
                       {([
-                        ["Rendimientos íntegros", irpf.individual.rendimientosIntegros, irpf.conjunta.rendimientosIntegros],
-                        ["Gastos deducibles (SS)", irpf.individual.gastosDeducibles, irpf.conjunta.gastosDeducibles],
-                        ["Reducción rendimientos", irpf.individual.reduccionRendimientos, irpf.conjunta.reduccionRendimientos],
-                        ["Base imponible general", irpf.individual.baseImponibleGeneral, irpf.conjunta.baseImponibleGeneral],
-                        ["Mínimo personal+familiar", irpf.individual.minimoTotal, irpf.conjunta.minimoTotal],
-                        ["Cuota estatal", irpf.individual.cuotaEstatal, irpf.conjunta.cuotaEstatal],
-                        ["Cuota autonómica", irpf.individual.cuotaAutonomica, irpf.conjunta.cuotaAutonomica],
-                        ...(irpf.individual.cuotaAhorro > 0 ? [["Cuota ahorro", irpf.individual.cuotaAhorro, irpf.conjunta.cuotaAhorro] as [string, number, number]] : []),
-                        ["Cuota íntegra", irpf.individual.cuotaIntegra, irpf.conjunta.cuotaIntegra],
-                        ["Retenciones aplicadas", irpf.individual.retencionesAplicadas, irpf.conjunta.retencionesAplicadas],
+                        [t("es_irpf_rendimientos"), irpf.individual.rendimientosIntegros, irpf.conjunta.rendimientosIntegros],
+                        [t("es_irpf_gastos_deducibles"), irpf.individual.gastosDeducibles, irpf.conjunta.gastosDeducibles],
+                        [t("es_irpf_reduccion"), irpf.individual.reduccionRendimientos, irpf.conjunta.reduccionRendimientos],
+                        [t("es_irpf_base_general"), irpf.individual.baseImponibleGeneral, irpf.conjunta.baseImponibleGeneral],
+                        [t("es_irpf_minimo"), irpf.individual.minimoTotal, irpf.conjunta.minimoTotal],
+                        [t("es_irpf_cuota_estatal"), irpf.individual.cuotaEstatal, irpf.conjunta.cuotaEstatal],
+                        [t("es_irpf_cuota_autonomica"), irpf.individual.cuotaAutonomica, irpf.conjunta.cuotaAutonomica],
+                        ...(irpf.individual.cuotaAhorro > 0 ? [[t("es_irpf_cuota_ahorro"), irpf.individual.cuotaAhorro, irpf.conjunta.cuotaAhorro] as [string, number, number]] : []),
+                        [t("es_irpf_cuota_integra"), irpf.individual.cuotaIntegra, irpf.conjunta.cuotaIntegra],
+                        [t("es_irpf_retenciones"), irpf.individual.retencionesAplicadas, irpf.conjunta.retencionesAplicadas],
                       ] as [string, number, number][]).map(([label, ind, con]) => (
                         <tr key={label} className="border-b border-dashed">
                           <td className="py-1.5">{label}</td>

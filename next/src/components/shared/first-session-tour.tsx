@@ -153,6 +153,9 @@ export function FirstSessionTour() {
         onClick={skip}
       >
         <defs>
+          {/* NOTE: white/black inside <mask> are SVG luminance values
+              (white = visible, black = cut-out hole), NOT theme colors —
+              do not replace them with theme tokens. */}
           <mask id="first-session-tour-mask">
             <rect x="0" y="0" width="100%" height="100%" fill="white" />
             {spotlight && (
@@ -185,7 +188,7 @@ export function FirstSessionTour() {
             rx={8}
             ry={8}
             fill="none"
-            stroke="rgb(59 130 246)"
+            stroke="var(--ring)"
             strokeWidth="2"
           />
         )}
