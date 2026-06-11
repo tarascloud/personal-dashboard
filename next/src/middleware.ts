@@ -60,7 +60,11 @@ export async function middleware(req: NextRequest) {
   }
 
   // Public routes (no auth required)
-  const publicPaths = ["/login", "/about", "/api/auth", "/api/health", "/api/sync/withings", "/api/sync/monobank/webhook", "/api/garmin-mfa", "/sitemap.xml", "/robots.txt"];
+  // /opengraph-image — Next.js App Router convention (src/app/opengraph-image.tsx),
+  // must be public so social crawlers get the PNG instead of a /login redirect.
+  // twitter:image reuses the same route; manifest/icons are static files in
+  // public/ and already pass via the matcher exclusion + extension check below.
+  const publicPaths = ["/login", "/about", "/api/auth", "/api/health", "/api/sync/withings", "/api/sync/monobank/webhook", "/api/garmin-mfa", "/sitemap.xml", "/robots.txt", "/opengraph-image"];
 
   // Landing page is public (authenticated users get redirected in page.tsx)
   if (pathname === "/") return NextResponse.next();
