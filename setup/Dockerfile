@@ -24,7 +24,11 @@ COPY scripts/ ./scripts/
 
 RUN mkdir -p /data && chown nextjs:nodejs /data
 
-# Run as root so we can access Docker socket
-# (the setup wizard is a short-lived container)
+# Run as non-root. Docker socket access is granted at runtime via
+# --group-add matching the host socket GID, e.g.:
+#   docker run --group-add "$(stat -c %g /var/run/docker.sock)" \
+#     -v /var/run/docker.sock:/var/run/docker.sock -p 3333:3333 ...
+USER nextjs
+
 EXPOSE 3333
 CMD ["node", "server.js"]

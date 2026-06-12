@@ -53,16 +53,13 @@ export async function generateMetadata(): Promise<Metadata> {
       "next.js",
     ],
     metadataBase: new URL("https://pd.taras.cloud"),
-    // REV-20260512-015: align hreflang map with actual supported locales
-    // (en, uk, es — see src/i18n/routing.ts) and add x-default for crawlers.
+    // SMM-20260610-0001 (supersedes REV-20260512-015): same-URL hreflang map
+    // removed — PD serves all locales (en, uk, es) on one URL via cookie-based
+    // negotiation, so per-locale alternates pointing to the same URL are
+    // invalid and ignored by Google. Re-add languages{} only if per-locale
+    // routes (/en, /uk, /es) ever appear.
     alternates: {
       canonical: "https://pd.taras.cloud",
-      languages: {
-        en: "https://pd.taras.cloud",
-        uk: "https://pd.taras.cloud",
-        es: "https://pd.taras.cloud",
-        "x-default": "https://pd.taras.cloud",
-      },
     },
     openGraph: {
       type: "website",

@@ -5,6 +5,7 @@ import logging
 import threading
 
 from telegram import Update
+from telegram.error import NetworkError, TimedOut
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -71,7 +72,16 @@ async def _post_init(application: Application):
 
 
 async def _error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
-    """Global error handler — log and notify user."""
+    """Global error handler — log and notify user.
+
+    Transient network errors (NetworkError/TimedOut) are retried by PTB
+    itself — log as WARNING without user notification (DEV-20260610-0060).
+    """
+    if isinstance(context.error, (NetworkError, TimedOut)):
+        logger.warning(
+            "Transient Telegram network error (PTB retries): %s", context.error
+        )
+        return
     logger.error("Bot exception: %s", context.error, exc_info=context.error)
     if isinstance(update, Update) and update.effective_message:
         try:

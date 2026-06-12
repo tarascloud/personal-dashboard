@@ -27,7 +27,7 @@ const nextConfig: NextConfig = {
           // 'unsafe-eval' was removed — Recharts ESM build does not require it.
           // 'unsafe-inline' in style-src is still needed for Tailwind/styled-jsx.
           // JSON-LD <script type="application/ld+json"> is not executable — CSP does not apply.
-          { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.google-analytics.com https://*.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://*.google.com https://*.googleapis.com https://*.google-analytics.com https://*.googletagmanager.com; frame-ancestors 'none';" },
+          { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.google-analytics.com https://*.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://cloudflareinsights.com https://generativelanguage.googleapis.com https://api.groq.com https://*.google.com https://*.googleapis.com https://*.google-analytics.com https://*.googletagmanager.com; frame-ancestors 'none';" },
         ],
       },
     ];
