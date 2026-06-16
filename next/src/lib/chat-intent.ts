@@ -11,7 +11,6 @@ export type DataDomain =
   | "mood"
   | "investments"
   | "food"
-  | "trading"
   | "weight"
   | "tax";
 
@@ -31,7 +30,6 @@ const DOMAIN_KEYWORDS: Record<DataDomain, string[]> = {
   mood: ["настрій", "mood", "енергі", "energy", "фокус", "focus", "самопочутт", "daily log"],
   investments: ["інвестиц", "портфель", "акці", "позиці", "NAV", "nav", "PnL", "pnl", "брокер", "IBKR", "Trading 212", "eToro", "invest", "stock", "portfolio"],
   food: ["їж", "харч", "протеїн", "protein", "калорі", "calorie", "food", "kcal", "їв", "обід", "вечер", "снідан"],
-  trading: ["трейдинг", "trading", "freqtrade", "крипто", "crypto", "BTC", "ETH", "trade", "бот"],
   weight: ["вага", "weight", "жир", "fat", "BMI", "bmi", "м'язова маса", "muscle", "тіло", "body composition"],
   tax: ["податк", "tax", "декларац", "ФОП", "IRPF", "modelo", "ДПС"],
 };

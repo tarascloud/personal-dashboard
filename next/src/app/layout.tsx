@@ -46,7 +46,6 @@ export async function generateMetadata(): Promise<Metadata> {
       "health dashboard",
       "gym tracker",
       "investment portfolio",
-      "trading bot",
       "tax reporting",
       "privacy-first",
       "PWA",
@@ -124,7 +123,7 @@ export default async function RootLayout({
               applicationCategory: "LifestyleApplication",
               operatingSystem: "Web",
               description:
-                "Open-source, self-hosted dashboard for finance, health, gym, investments, trading, and tax reporting.",
+                "Open-source, self-hosted dashboard for finance, health, gym, investments, and tax reporting.",
               url: "https://pd.taras.cloud",
               author: {
                 "@type": "Person",

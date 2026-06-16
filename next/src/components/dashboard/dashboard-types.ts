@@ -12,13 +12,6 @@ import type {
   ExtendedCorrelations,
 } from "@/actions/dashboard";
 
-export interface TradingPnL {
-  totalFiat: number;
-  totalPct: number;
-  currency: string;
-  openTrades: number;
-}
-
 export interface DashboardPageProps {
   initialKpis: DashboardKPIs;
   initialPeriod: { from: string; to: string };
@@ -32,7 +25,6 @@ export interface DashboardPageProps {
   initialExerciseList?: ExerciseOption[];
   initialWeeklyMuscleVolume?: WeeklyMuscleVolumeRow[];
   initialExtendedCorrelations?: ExtendedCorrelations;
-  tradingPnL?: TradingPnL | null;
   activeTab?: "life" | "finance" | "training";
   [key: string]: unknown;
 }

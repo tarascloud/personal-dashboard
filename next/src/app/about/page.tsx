@@ -9,7 +9,6 @@ import {
   Sun,
   UtensilsCrossed,
   ShoppingCart,
-  BarChart3,
   FileText,
   Link2,
   Server,
@@ -140,7 +139,6 @@ export default async function AboutPage() {
     { icon: <Sun className="h-5 w-5" />, key: "myday", screenshot: "my-day" },
     { icon: <UtensilsCrossed className="h-5 w-5" />, key: "food", screenshot: "food" },
     { icon: <ShoppingCart className="h-5 w-5" />, key: "list", screenshot: "list" },
-    { icon: <BarChart3 className="h-5 w-5" />, key: "trading", screenshot: "trading" },
     { icon: <FileText className="h-5 w-5" />, key: "reporting", screenshot: "reporting" },
     { icon: <Activity className="h-5 w-5" />, key: "dashboard", screenshot: "dashboard" },
   ] as const;
@@ -256,11 +254,8 @@ export default async function AboutPage() {
             <IntBadge name="Interactive Brokers" />
             <IntBadge name="Trading 212" />
             <IntBadge name="eToro" />
-            <IntBadge name="Freqtrade" />
             <IntBadge name="Withings" />
             <IntBadge name="Telegram Bot" />
-            <IntBadge name="Kraken" />
-            <IntBadge name="Binance" />
             <IntBadge name="Cobee" />
             <IntBadge name="DPS (UA Tax)" />
           </div>

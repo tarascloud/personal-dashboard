@@ -33,7 +33,6 @@ const FEATURES = [
   { key: "gym", icon: Dumbbell },
   { key: "investments", icon: TrendingUp },
   { key: "ai", icon: Bot },
-  { key: "trading", icon: BarChart3 },
   { key: "tax", icon: Shield },
   { key: "dashboard", icon: BarChart3 },
   { key: "shopping", icon: Wallet },
@@ -255,7 +254,7 @@ export function LandingPage({ freeSpots, githubEnabled }: { freeSpots: FreeSpots
               {t("integrations_subtitle")}
             </p>
             <div className="flex flex-wrap justify-center gap-3">
-              {["Garmin", "Withings", "Monobank", "bunq", "IBKR", "Trading 212", "eToro", "Freqtrade", "Telegram", "Ollama"].map((s) => (
+              {["Garmin", "Withings", "Monobank", "bunq", "IBKR", "Trading 212", "eToro", "Telegram", "Ollama"].map((s) => (
                 <span key={s} className="rounded-[6px] border border-[var(--landing-border)] bg-[var(--landing-surface)] px-4 py-2 text-sm text-[var(--landing-text-soft)]">
                   {s}
                 </span>

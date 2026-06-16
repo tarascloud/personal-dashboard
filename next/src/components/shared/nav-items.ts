@@ -43,6 +43,5 @@ export const DEFAULT_PINNED_TABS = ["finance", "my_day", "gym"] as const;
 export const financeSubTabs = [
   { key: "my_finances", href: "/finance" },
   { key: "investments", href: "/finance/investments" },
-  { key: "trading", href: "/trading" },
   { key: "reporting", href: "/reporting" },
 ];

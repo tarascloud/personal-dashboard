@@ -175,87 +175,7 @@ async function seedAccountSummaries(userId: number) {
 }
 
 // ---------------------------------------------------------------------------
-// 3. Trading Strategies
-// ---------------------------------------------------------------------------
-
-interface StrategySeed {
-  name: string;
-  strategyFile: string;
-  exchange: string;
-  stakeAmount: string;
-  maxOpenTrades: number;
-  stoploss: number;
-  dryRun: boolean;
-  isActive: boolean;
-}
-
-const STRATEGIES: StrategySeed[] = [
-  {
-    name: "Conservative DCA",
-    strategyFile: "DCAStrategy",
-    exchange: "kraken",
-    stakeAmount: "50",
-    maxOpenTrades: 3,
-    stoploss: -0.05,
-    dryRun: true,
-    isActive: false,
-  },
-  {
-    name: "Trend Follow Live",
-    strategyFile: "TrendFollowStrategy",
-    exchange: "kraken",
-    stakeAmount: "100",
-    maxOpenTrades: 5,
-    stoploss: -0.10,
-    dryRun: false,
-    isActive: true,
-  },
-  {
-    name: "Grid Scalper",
-    strategyFile: "GridStrategy",
-    exchange: "kraken",
-    stakeAmount: "25",
-    maxOpenTrades: 2,
-    stoploss: -0.06,
-    dryRun: true,
-    isActive: false,
-  },
-];
-
-async function seedStrategies(userId: number) {
-  console.log("  Seeding TradingStrategies...");
-  for (const s of STRATEGIES) {
-    await prisma.tradingStrategy.upsert({
-      where: {
-        userId_name: { userId, name: s.name },
-      },
-      update: {
-        strategyFile: s.strategyFile,
-        exchange: s.exchange,
-        stakeAmount: s.stakeAmount,
-        maxOpenTrades: s.maxOpenTrades,
-        stoploss: s.stoploss,
-        dryRun: s.dryRun,
-        isActive: s.isActive,
-      },
-      create: {
-        userId,
-        name: s.name,
-        strategyFile: s.strategyFile,
-        exchange: s.exchange,
-        stakeAmount: s.stakeAmount,
-        maxOpenTrades: s.maxOpenTrades,
-        stoploss: s.stoploss,
-        dryRun: s.dryRun,
-        isActive: s.isActive,
-      },
-    });
-  }
-  console.log(`    -> ${STRATEGIES.length} strategies upserted`);
-}
-
-// ---------------------------------------------------------------------------
-// 4. Tax Documents — Nominas (12 months of 2025)
+// 3. Tax Documents — Nominas (12 months of 2025)
 // ---------------------------------------------------------------------------
 
 function buildNomina(month: number, year: number = 2025): ParsedNomina {
@@ -537,7 +457,6 @@ async function main() {
 
   await seedPositions(userId);
   await seedAccountSummaries(userId);
-  await seedStrategies(userId);
   await seedNominas(userId);
   await seedCertificado(userId);
   await seedBrokerReports(userId);

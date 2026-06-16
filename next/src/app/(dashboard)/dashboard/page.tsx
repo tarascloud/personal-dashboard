@@ -24,7 +24,6 @@ import {
   type ScreenTimeData,
   type KidsTimeData,
 } from "@/actions/dashboard";
-import { getTradingOverview } from "@/actions/trading";
 import { DashboardPage } from "@/components/dashboard/dashboard-page";
 import { DashboardDataHydrator } from "@/components/dashboard/dashboard-data-hydrator";
 import { DeferredDashboardProvider } from "@/components/dashboard/dashboard-context";
@@ -85,7 +84,6 @@ async function PrimaryDashboardContent({ tab }: { tab: "life" | "finance" | "tra
     getExerciseList(),
     getWeeklyMuscleVolume(weeks),
   ]);
-  const tradingPromise = getTradingOverview().catch(() => null);
 
   // Only await KPIs — the shell renders as soon as this resolves
   const kpis = await kpisPromise;
@@ -107,9 +105,6 @@ async function PrimaryDashboardContent({ tab }: { tab: "life" | "finance" | "tra
       </Suspense>
       <Suspense fallback={null}>
         <TrainingDataResolver dataPromise={trainingPromise} />
-      </Suspense>
-      <Suspense fallback={null}>
-        <TradingDataResolver dataPromise={tradingPromise} />
       </Suspense>
     </>
   );
@@ -169,20 +164,3 @@ async function TrainingDataResolver({
   );
 }
 
-async function TradingDataResolver({
-  dataPromise,
-}: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dataPromise: Promise<any>;
-}) {
-  const tradingOverview = await dataPromise;
-
-  const tradingPnL = tradingOverview && !tradingOverview.error ? {
-    totalFiat: tradingOverview.profit?.profit_all_fiat ?? 0,
-    totalPct: tradingOverview.profit?.profit_all_percent_sum ?? 0,
-    currency: tradingOverview.config?.stake_currency ?? "USDT",
-    openTrades: tradingOverview.openTrades.length,
-  } : null;
-
-  return <DashboardDataHydrator slot="tradingPnL" data={tradingPnL} />;
-}

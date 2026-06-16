@@ -13,7 +13,6 @@ const tabs = [
   { key: "subscriptions", href: "/finance/subscriptions", match: ["/finance/subscriptions"] },
   { key: "shopping", href: "/finance/shopping", match: ["/finance/shopping"] },
   { key: "investments", href: "/finance/investments", match: ["/finance/investments"] },
-  { key: "trading", href: "/trading", match: ["/trading"] },
   { key: "reporting", href: "/reporting", match: ["/reporting"] },
 ];
 

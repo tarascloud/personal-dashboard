@@ -116,23 +116,5 @@ export async function buildFinanceContext(
     parts.push(`Budget Progress (${currentMonth}):\n${budgetLines.join("\n")}`);
   }
 
-  // Trading context
-  if (allowedSections.includes("trading")) {
-    try {
-      const { getTradingOverview } = await import("@/actions/trading");
-      const trading = await getTradingOverview();
-      if (trading && !trading.error) {
-        const tItems = [];
-        if (trading.profit?.profit_all_coin != null) tItems.push(`Total P&L: ${trading.profit.profit_all_coin.toFixed(4)}`);
-        if (trading.openTrades?.length) tItems.push(`Open trades: ${trading.openTrades.length}`);
-        if (trading.profit?.winning_trades != null && trading.profit?.losing_trades != null) {
-          const total = trading.profit.winning_trades + trading.profit.losing_trades;
-          if (total > 0) tItems.push(`Win rate: ${((trading.profit.winning_trades / total) * 100).toFixed(1)}%`);
-        }
-        if (tItems.length > 0) parts.push(`Trading: ${tItems.join(", ")}`);
-      }
-    } catch (e) { console.error("[chat/context] Freqtrade context error:", e); }
-  }
-
   return parts;
 }

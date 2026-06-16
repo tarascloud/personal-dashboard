@@ -34,7 +34,6 @@ const groups: Group[] = [
     tabs: [
       { key: "integration_monobank", href: "/settings/integrations/monobank" },
       { key: "integration_bunq", href: "/settings/integrations/bunq" },
-      { key: "integration_freqtrade", href: "/settings/integrations/freqtrade" },
       { key: "integration_ibkr", href: "/settings/integrations/ibkr" },
       { key: "integration_trading212", href: "/settings/integrations/trading212" },
       { key: "integration_etoro", href: "/settings/integrations/etoro" },
@@ -48,12 +47,6 @@ const groups: Group[] = [
         tabs: [
           { key: "integration_monobank", href: "/settings/integrations/monobank" },
           { key: "integration_bunq", href: "/settings/integrations/bunq" },
-        ],
-      },
-      {
-        label: "subcat_trading",
-        tabs: [
-          { key: "integration_freqtrade", href: "/settings/integrations/freqtrade" },
         ],
       },
       {

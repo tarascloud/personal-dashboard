@@ -522,8 +522,6 @@ export async function deleteUserAccount(): Promise<void> {
     await tx.taxSimulation.deleteMany({ where: { userId: id } });
     await tx.taxIncomeRecord.deleteMany({ where: { userId: id } });
     await tx.taxDeadline.deleteMany({ where: { userId: id } });
-    // Trading
-    await tx.tradingStrategy.deleteMany({ where: { userId: id } });
     // Sync & AI
     await tx.syncFailure.deleteMany({ where: { userId: id } });
     await tx.embedding.deleteMany({ where: { userId: id } });

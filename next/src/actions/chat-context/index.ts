@@ -309,22 +309,6 @@ export async function getUserContext(): Promise<string> {
     parts.push(wItems.join(" "));
   }
 
-  // Trading context (if Freqtrade connected)
-  try {
-    const { getTradingOverview } = await import("@/actions/trading");
-    const trading = await getTradingOverview();
-    if (trading && !trading.error) {
-      const tItems = [];
-      if (trading.profit?.profit_all_coin != null) tItems.push(`Total P&L: ${trading.profit.profit_all_coin.toFixed(4)}`);
-      if (trading.openTrades?.length) tItems.push(`Open trades: ${trading.openTrades.length}`);
-      if (trading.profit?.winning_trades != null && trading.profit?.losing_trades != null) {
-        const total = trading.profit.winning_trades + trading.profit.losing_trades;
-        if (total > 0) tItems.push(`Win rate: ${((trading.profit.winning_trades / total) * 100).toFixed(1)}%`);
-      }
-      if (tItems.length > 0) parts.push(`Trading: ${tItems.join(", ")}`);
-    }
-  } catch (e) { console.error("[chat/getUserContext] Freqtrade context error:", e); }
-
   // Tax deadlines
   try {
     const deadlines = await prisma.taxDeadline.findMany({
@@ -397,7 +381,6 @@ export async function getUserContext(): Promise<string> {
  */
 const PAGE_CONTEXT_SECTIONS: Record<string, string[]> = {
   finance: ["transactions", "account_balances", "budget_progress", "finance_summary"],
-  investments: ["trading"],
   "my-day": ["daily_log", "garmin_daily", "garmin_sleep", "food_log", "weight"],
   gym: ["workouts", "weight"],
   // exercises uses getExerciseInsightsContext() directly — not this function
@@ -432,8 +415,7 @@ export async function getPageContext(page: string): Promise<string> {
     allowedSections.includes("transactions") ||
     allowedSections.includes("account_balances") ||
     allowedSections.includes("budget_progress") ||
-    allowedSections.includes("finance_summary") ||
-    allowedSections.includes("trading");
+    allowedSections.includes("finance_summary");
 
   const needsHealth =
     allowedSections.includes("daily_log") ||

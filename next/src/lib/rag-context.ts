@@ -309,25 +309,6 @@ const builders: Record<DataDomain, ContextBuilder> = {
     return `Food (${range.start} — ${range.end}):\n${lines.join("\n")}`;
   },
 
-  trading: async () => {
-    try {
-      const { getTradingOverview } = await import("@/actions/trading");
-      const trading = await getTradingOverview();
-      if (!trading || trading.error) return "";
-
-      const items: string[] = [];
-      if (trading.profit?.profit_all_coin != null) items.push(`Total P&L: ${trading.profit.profit_all_coin.toFixed(4)}`);
-      if (trading.openTrades?.length) items.push(`Open trades: ${trading.openTrades.length}`);
-      if (trading.profit?.winning_trades != null && trading.profit?.losing_trades != null) {
-        const total = trading.profit.winning_trades + trading.profit.losing_trades;
-        if (total > 0) items.push(`Win rate: ${((trading.profit.winning_trades / total) * 100).toFixed(1)}%`);
-      }
-      return items.length > 0 ? `Trading: ${items.join(", ")}` : "";
-    } catch {
-      return "";
-    }
-  },
-
   weight: async (userId) => {
     const records = await prisma.garminBodyComposition.findMany({
       where: { userId },

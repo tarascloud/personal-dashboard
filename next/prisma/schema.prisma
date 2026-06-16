@@ -993,25 +993,6 @@ model BrokerTransaction {
   @@map("broker_transactions")
 }
 
-model TradingStrategy {
-  id            Int      @id @default(autoincrement())
-  userId        Int      @map("user_id")
-  name          String
-  strategyFile  String   @map("strategy_file")
-  exchange      String   @default("kraken")
-  stakeCurrency String   @default("USDT") @map("stake_currency")
-  stakeAmount   String   @default("unlimited") @map("stake_amount")
-  maxOpenTrades Int      @default(5) @map("max_open_trades")
-  stoploss      Float    @default(-0.05)
-  dryRun        Boolean  @default(true) @map("dry_run")
-  isActive      Boolean  @default(false) @map("is_active")
-  createdAt     DateTime @default(now()) @map("created_at")
-
-  @@unique([userId, name])
-  @@index([userId, isActive])
-  @@map("trading_strategies")
-}
-
 // =========================================================================
 // Portfolio Snapshots
 // =========================================================================

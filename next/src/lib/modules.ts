@@ -13,7 +13,6 @@ import { FEATURES, type FeatureKey } from "./features";
 const MODULE_TO_FEATURE: Record<string, FeatureKey> = {
   finance: "finance",
   investments: "investments",
-  trading: "trading",
   reporting: "reporting",
   gym: "gym",
   my_day: "health",
@@ -63,15 +62,6 @@ export const ALL_MODULES: ModuleDefinition[] = [
     navKeys: [],
     routes: ["/finance/investments"],
     financeSubTabKeys: ["investments"],
-    group: "finance",
-  },
-  {
-    key: "trading",
-    labelKey: "Trading",
-    descriptionKey: "trading_desc",
-    navKeys: [],
-    routes: ["/trading"],
-    financeSubTabKeys: ["trading"],
     group: "finance",
   },
   {
@@ -156,9 +146,9 @@ export function isNavKeyEnabled(navKey: string, enabledModules: string[]): boole
   // Settings and admin are always visible
   if (navKey === "settings" || navKey === "admin") return true;
 
-  // Finance nav key is special: visible if any of finance/investments/trading/reporting enabled
+  // Finance nav key is special: visible if any of finance/investments/reporting enabled
   if (navKey === "finance") {
-    const financeModules = ["finance", "investments", "trading", "reporting"];
+    const financeModules = ["finance", "investments", "reporting"];
     return financeModules.some((k) =>
       isModuleGloballyEnabled(k) && enabledModules.includes(k)
     );

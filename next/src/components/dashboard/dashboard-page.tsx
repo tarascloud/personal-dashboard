@@ -11,7 +11,6 @@ import {
   BanknoteIcon,
   HeartPulseIcon,
   ScaleIcon,
-  TrendingUpIcon,
   SmartphoneIcon,
 } from "lucide-react";
 import { PeriodSelector, type PeriodPreset, getDateRange } from "@/components/ui/period-selector";
@@ -73,7 +72,7 @@ import {
   IncomeExpensesSkeleton,
 } from "./dashboard-skeletons";
 import { useDeferredDashboardData } from "./dashboard-context";
-import { MONTH_LABELS, pctChange, type TradingPnL, type DashboardPageProps } from "./dashboard-types";
+import { MONTH_LABELS, pctChange, type DashboardPageProps } from "./dashboard-types";
 
 export function DashboardPage({
   initialKpis,
@@ -87,7 +86,6 @@ export function DashboardPage({
   initialExerciseList,
   initialWeeklyMuscleVolume,
   initialExtendedCorrelations,
-  tradingPnL: tradingPnLProp,
   activeTab = "life",
 }: DashboardPageProps) {
   const t = useTranslations("dashboard");
@@ -131,7 +129,6 @@ export function DashboardPage({
   const [isPending, startTransition] = useTransition();
   /** Tracks whether user changed period (disables deferred hydration) */
   const [periodChanged, setPeriodChanged] = useState(false);
-  const [tradingPnL, setTradingPnL] = useState<TradingPnL | null | undefined>(tradingPnLProp);
 
   /* ---- Hydrate state from deferred data as it streams in ---- */
   useEffect(() => {
@@ -152,7 +149,6 @@ export function DashboardPage({
     if (deferred.extendedCorrelations && !extCorrelations) setExtCorrelations(deferred.extendedCorrelations);
     if (deferred.screenTime && !screenTime) setScreenTime(deferred.screenTime);
     if (deferred.kidsTime && !kidsTime) setKidsTime(deferred.kidsTime);
-    if (deferred.tradingPnL !== undefined && tradingPnL === undefined) setTradingPnL(deferred.tradingPnL);
   }, [deferred, periodChanged]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Keyboard shortcuts: Escape → close full-screen chart dialog
@@ -284,7 +280,6 @@ export function DashboardPage({
     ...(capitalEur !== null ? [{ title: t("capital") || "Capital", value: `EUR ${capitalEur.toLocaleString("en")}`, icon: <WalletIcon className="h-4 w-4" /> }] : []),
     { title: `${t("income_vs_expense").split(" vs ")[0] ?? "Income"} / ${t("income_vs_expense").split(" vs ")[1] ?? "Expense"}`, value: `EUR ${kpis.finance.income.toLocaleString("en")}`, subtitle: `-EUR ${kpis.finance.expenses.toLocaleString("en")}`, icon: <BanknoteIcon className="h-4 w-4" /> },
     { title: t("savings_rate") || "Savings", value: `${kpis.finance.savingsRate}%`, icon: <WalletIcon className="h-4 w-4" /> },
-    ...(tradingPnL ? [{ title: t("trading_pnl"), value: `${tradingPnL.totalFiat >= 0 ? "+" : ""}${tradingPnL.totalFiat.toFixed(2)}`, subtitle: `${tradingPnL.totalPct.toFixed(1)}% | ${tradingPnL.openTrades} open`, icon: <TrendingUpIcon className="h-4 w-4" /> }] : []),
   ];
 
   const trainingCards: KpiCardProps[] = [

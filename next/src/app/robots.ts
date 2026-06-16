@@ -31,7 +31,7 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/dashboard/", "/finance/", "/gym/", "/trading/", "/settings/", "/login"],
+        disallow: ["/api/", "/dashboard/", "/finance/", "/gym/", "/settings/", "/login"],
       },
       ...AI_BOTS.map((ua) => ({ userAgent: ua, disallow: "/" })),
     ],

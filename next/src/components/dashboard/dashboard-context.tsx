@@ -19,13 +19,6 @@ import type {
 /* Types                                                               */
 /* ------------------------------------------------------------------ */
 
-interface TradingPnL {
-  totalFiat: number;
-  totalPct: number;
-  currency: string;
-  openTrades: number;
-}
-
 export interface DeferredDashboardData {
   trends?: MonthlyTrend[];
   correlations?: CorrelationPoint[];
@@ -38,7 +31,6 @@ export interface DeferredDashboardData {
   extendedCorrelations?: ExtendedCorrelations;
   screenTime?: ScreenTimeData;
   kidsTime?: KidsTimeData;
-  tradingPnL?: TradingPnL | null;
 }
 
 type SlotKey = keyof DeferredDashboardData;

@@ -26,8 +26,6 @@ export const CACHE_TAGS = {
   admin: "admin",
   /** Broker data (IBKR, T212, eToro) */
   investments: "investments",
-  /** Trading strategies, Freqtrade */
-  trading: "trading",
   /** Tax data, reporting */
   reporting: "reporting",
 } as const;

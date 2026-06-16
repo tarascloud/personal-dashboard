@@ -8,7 +8,6 @@ export const FEATURES = {
   health: process.env.NEXT_PUBLIC_FEATURE_HEALTH !== "false",
   food: process.env.NEXT_PUBLIC_FEATURE_FOOD !== "false",
   shopping: process.env.NEXT_PUBLIC_FEATURE_SHOPPING !== "false",
-  trading: process.env.NEXT_PUBLIC_FEATURE_TRADING !== "false",
   reporting: process.env.NEXT_PUBLIC_FEATURE_REPORTING !== "false",
   aiChat: process.env.NEXT_PUBLIC_FEATURE_AI_CHAT !== "false",
   aiInsights: process.env.NEXT_PUBLIC_FEATURE_AI_INSIGHTS !== "false",
