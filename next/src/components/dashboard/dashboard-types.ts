@@ -10,6 +10,7 @@ import type {
   ExerciseOption,
   WeeklyMuscleVolumeRow,
   ExtendedCorrelations,
+  SportTimeRow,
 } from "@/actions/dashboard";
 
 export interface DashboardPageProps {
@@ -25,6 +26,7 @@ export interface DashboardPageProps {
   initialExerciseList?: ExerciseOption[];
   initialWeeklyMuscleVolume?: WeeklyMuscleVolumeRow[];
   initialExtendedCorrelations?: ExtendedCorrelations;
+  sportTime?: SportTimeRow[];
   activeTab?: "life" | "finance" | "training";
   [key: string]: unknown;
 }

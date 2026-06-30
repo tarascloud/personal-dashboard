@@ -13,6 +13,7 @@ import type {
   ExtendedCorrelations,
   ScreenTimeData,
   KidsTimeData,
+  SportTimeRow,
 } from "@/actions/dashboard";
 
 /* ------------------------------------------------------------------ */
@@ -31,6 +32,7 @@ export interface DeferredDashboardData {
   extendedCorrelations?: ExtendedCorrelations;
   screenTime?: ScreenTimeData;
   kidsTime?: KidsTimeData;
+  sportTime?: SportTimeRow[];
 }
 
 type SlotKey = keyof DeferredDashboardData;

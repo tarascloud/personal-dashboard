@@ -58,6 +58,44 @@ export interface HRVTrendPoint {
   hrvWeeklyAvg: number | null;
 }
 
+export interface SportTimeRow {
+  sport: string;
+  hours: number;
+  sessions: number;
+}
+
+/** Time spent per sport (sum of activity duration), sorted by hours desc, for [from, to). */
+export async function getSportTimeBreakdown(from: string, to: string): Promise<SportTimeRow[]> {
+  const user = await requireUser();
+
+  return cached<SportTimeRow[]>(
+    `sport-time:${user.id}:${from}:${to}`,
+    900, // 15 minutes
+    async () => {
+      const grouped = await prisma.garminActivity.groupBy({
+        by: ["activityType"],
+        where: {
+          userId: user.id,
+          date: { gte: toDateOnly(from), lt: toDateOnly(to) },
+          activityType: { not: null },
+          durationSeconds: { not: null },
+        },
+        _sum: { durationSeconds: true },
+        _count: { activityId: true },
+      });
+
+      return grouped
+        .map((g) => ({
+          sport: g.activityType as string,
+          hours: Math.round(((g._sum.durationSeconds ?? 0) / 3600) * 10) / 10,
+          sessions: g._count.activityId,
+        }))
+        .filter((r) => r.hours > 0)
+        .sort((a, b) => b.hours - a.hours);
+    },
+  );
+}
+
 export async function getGarminHealthTrends(days: number = 30): Promise<GarminHealthTrends> {
   const user = await requireUser();
   const now = new Date();

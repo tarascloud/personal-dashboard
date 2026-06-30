@@ -3,7 +3,7 @@ export { addExerciseToWorkout, removeExerciseFromWorkout, reorderExercises, addS
 export { createExercise, updateExercise, deleteExercise, getCustomExercises, getExerciseUsageStats, getExercises, getExercise, getDefaultExercises, addDefaultExercise } from "./exercises";
 export { DEFAULT_EXERCISES } from "./utils";
 export { getPrograms, getProgram, createProgram, updateProgram, deleteProgram, addProgramDay, deleteProgramDay, addExerciseToProgram, addExerciseToProgramDay, updateProgramExercise, removeProgramExercise } from "./programs";
-export { startWorkoutFromTemplate } from "./templates";
+export { startWorkoutFromTemplate, startWorkoutFromLastSession, getLastSessionsByDay } from "./templates";
 export { getGymStats, getMuscleRecovery } from "./stats";
 export { getExercisePRs, checkSetPR } from "./performance";
 export type { ExercisePR } from "./performance";

@@ -89,7 +89,7 @@ export async function addSet(
       reps: validated.data.reps ?? null,
       rpe: validated.data.rpe ?? null,
       isWarmup: intensity === "warmup" ? true : (validated.data.isWarmup ? true : false),
-      isFailure: (intensity === "tech-fail" || intensity === "full-fail") ? true : false,
+      isFailure: intensity === "limit",
       intensity,
     },
   });
@@ -114,7 +114,7 @@ export async function updateSet(
   const updateData: Record<string, unknown> = { ...validated.data };
   if (validated.data.intensity !== undefined) {
     updateData.isWarmup = validated.data.intensity === "warmup";
-    updateData.isFailure = (validated.data.intensity === "tech-fail" || validated.data.intensity === "full-fail");
+    updateData.isFailure = validated.data.intensity === "limit";
   }
   const set = await prisma.gymSet.update({
     where: { id: validated.setId, userId: user.id },

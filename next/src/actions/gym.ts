@@ -9,7 +9,7 @@ export {
   // programs
   getPrograms, getProgram, createProgram, updateProgram, deleteProgram, addProgramDay, deleteProgramDay, addExerciseToProgram, addExerciseToProgramDay, updateProgramExercise, removeProgramExercise,
   // templates
-  startWorkoutFromTemplate,
+  startWorkoutFromTemplate, startWorkoutFromLastSession, getLastSessionsByDay,
   // stats
   getGymStats, getMuscleRecovery,
   // performance

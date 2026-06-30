@@ -16,6 +16,7 @@ import {
 import { PeriodSelector, type PeriodPreset, getDateRange } from "@/components/ui/period-selector";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrainingReadinessChart } from "./training-readiness-chart";
+import { SportTimeChart } from "./sport-time-chart";
 import {
   getDashboardKPIs,
   getMonthlyTrends,
@@ -43,6 +44,7 @@ import {
   type ExtendedCorrelations,
   type ScreenTimeData,
   type KidsTimeData,
+  type SportTimeRow,
   getScreenTimeData,
   getKidsTimeData,
 } from "@/actions/dashboard";
@@ -120,6 +122,7 @@ export function DashboardPage({
   );
   const [exerciseProgress, setExerciseProgress] = useState<ExerciseProgressPoint[]>([]);
   const [weeklyMuscleVolume, setWeeklyMuscleVolume] = useState<WeeklyMuscleVolumeRow[]>(initialWeeklyMuscleVolume ?? []);
+  const [sportTime, setSportTime] = useState<SportTimeRow[]>([]);
   const [extCorrelations, setExtCorrelations] = useState<ExtendedCorrelations | null>(initialExtendedCorrelations ?? null);
   const [screenTime, setScreenTime] = useState<ScreenTimeData | undefined>(undefined);
   const [kidsTime, setKidsTime] = useState<KidsTimeData | undefined>(undefined);
@@ -146,6 +149,7 @@ export function DashboardPage({
       }
     }
     if (deferred.weeklyMuscleVolume && weeklyMuscleVolume.length === 0) setWeeklyMuscleVolume(deferred.weeklyMuscleVolume);
+    if (deferred.sportTime && sportTime.length === 0) setSportTime(deferred.sportTime);
     if (deferred.extendedCorrelations && !extCorrelations) setExtCorrelations(deferred.extendedCorrelations);
     if (deferred.screenTime && !screenTime) setScreenTime(deferred.screenTime);
     if (deferred.kidsTime && !kidsTime) setKidsTime(deferred.kidsTime);
@@ -543,6 +547,9 @@ export function DashboardPage({
 
       {/* Training Readiness from Garmin */}
       {garminHealth && <TrainingReadinessChart garminHealth={garminHealth} tooltipStyle={tooltipStyle} />}
+
+      {/* Time per sport from Garmin activities */}
+      {sportTime.length > 0 && <SportTimeChart sportTime={sportTime} tooltipStyle={tooltipStyle} />}
 
       {/* AI Insights for Gym & Exercises */}
       <InsightsPanel page="gym" />

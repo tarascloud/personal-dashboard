@@ -212,7 +212,7 @@ export function useGymHandlers({ state, dispatch, timer }: UseGymHandlersParams)
           ...e,
           sets: e.sets.map((s) => s.id === setId ? {
             ...s, weightKg: weightVal, reps: repsVal, intensity: editIntensity || "normal",
-            isWarmup: editIntensity === "warmup", isFailure: editIntensity === "tech-fail" || editIntensity === "full-fail",
+            isWarmup: editIntensity === "warmup", isFailure: editIntensity === "limit",
           } : s),
         })),
       });

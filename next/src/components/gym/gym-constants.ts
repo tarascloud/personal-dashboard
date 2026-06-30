@@ -1,22 +1,13 @@
 /**
  * Shared gym intensity constants.
  *
- * INTENSITY_OPTIONS — the canonical set used in the AddSetDialog picker.
- * ALL_INTENSITY_VALUES — superset that includes legacy values for backward compatibility.
+ * INTENSITY_OPTIONS — the canonical set of intensity values. Legacy values
+ * ("1-2 fail", "tech-fail", "full-fail", "high") were migrated out of the DB on
+ * 2026-06-30, so the backward-compat superset/types are no longer needed.
  */
 
 export const INTENSITY_OPTIONS = ["warmup", "easy", "normal", "hard", "limit"] as const;
 export type Intensity = (typeof INTENSITY_OPTIONS)[number];
-
-/** Legacy values that may exist in the database from older UI versions. */
-export const LEGACY_INTENSITY_VALUES = ["1-2 fail", "tech-fail", "full-fail"] as const;
-
-/** Every intensity value the system may encounter (current + legacy). */
-export const ALL_INTENSITY_VALUES = [
-  ...INTENSITY_OPTIONS,
-  ...LEGACY_INTENSITY_VALUES,
-] as const;
-export type AnyIntensity = (typeof ALL_INTENSITY_VALUES)[number];
 
 // ---------------------------------------------------------------------------
 // Colors
@@ -29,10 +20,6 @@ export const INTENSITY_COLORS: Record<string, string> = {
   normal: "text-amber-500",
   hard: "text-red-500",
   limit: "text-red-400",
-  // legacy
-  "1-2 fail": "text-red-500",
-  "tech-fail": "text-red-500",
-  "full-fail": "text-red-400",
 };
 
 /** Active / inactive button styles for the segmented control in AddSetDialog. */
@@ -69,10 +56,6 @@ const INTENSITY_BORDER_COLORS: Record<string, string> = {
   normal: "#f59e0b",
   hard: "#ef4444",
   limit: "#7f1d1d",
-  // legacy
-  "1-2 fail": "#ef4444",
-  "tech-fail": "#991b1b",
-  "full-fail": "#991b1b",
 };
 
 /** Return a hex color for an intensity value (defaults to amber / "normal"). */

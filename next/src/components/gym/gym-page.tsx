@@ -10,6 +10,7 @@ import {
   getWorkouts,
   getGymStats,
   startWorkoutFromTemplate,
+  startWorkoutFromLastSession,
   createWorkout,
 } from "@/actions/gym";
 import type { CalendarDayData } from "@/actions/gym";
@@ -326,6 +327,14 @@ export function GymPage({
           onStartFromTemplate={(dayId) => {
             startTransition(async () => {
               await startWorkoutFromTemplate(dayId, todayString());
+              await handlers.refreshActiveWorkout();
+              timer.reset();
+              timer.start();
+            });
+          }}
+          onStartFromLastSession={(dayId) => {
+            startTransition(async () => {
+              await startWorkoutFromLastSession(dayId, todayString());
               await handlers.refreshActiveWorkout();
               timer.reset();
               timer.start();

@@ -34,14 +34,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -181,55 +173,43 @@ function PreviousSetsReference({
         <ClockIcon className="size-3" />
         {t("previous_sets")}
       </p>
-      <Table>
-        <TableHeader>
-          <TableRow className="opacity-40">
-            <TableHead className="w-12 py-1 text-xs">{t("set")}</TableHead>
-            <TableHead className="text-right py-1 text-xs">
-              {t("weight")} ({t("kg")})
-            </TableHead>
-            <TableHead className="text-right py-1 text-xs">{t("reps")}</TableHead>
-            <TableHead className="py-1 text-xs">{t("intensity")}</TableHead>
-            <TableHead className="w-12 py-1"></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {prevSets.map((ps) => (
-            <TableRow key={ps.setNum} className="text-muted-foreground/50">
-              <TableCell className="py-1 text-xs">
-                {(ps.intensity === "warmup") ? "W" : ps.setNum}
-              </TableCell>
-              <TableCell className="text-right py-1 text-xs">
-                {ps.weightKg ?? "\u2014"}
-              </TableCell>
-              <TableCell className="text-right py-1 text-xs">
-                {ps.reps ?? "\u2014"}
-              </TableCell>
-              <TableCell className={`py-1 text-xs ${INTENSITY_COLORS[ps.intensity || "normal"] || ""} opacity-50`}>
-                {ps.intensity || "normal"}
-              </TableCell>
-              <TableCell className="py-1">
-                <Button
-                  variant="ghost"
-                  size="xs"
-                  className="text-muted-foreground/60 hover:text-foreground"
-                  onClick={() =>
-                    onCopySet({
-                      weightKg: ps.weightKg ?? undefined,
-                      reps: ps.reps ?? undefined,
-                      intensity: ps.intensity ?? undefined,
-                    })
-                  }
-                  disabled={isPending}
-                  title={t("copy_set")}
-                >
-                  <PlusIcon className="size-3" />
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <div className="divide-y divide-border/40">
+        {prevSets.map((ps) => (
+          <div
+            key={ps.setNum}
+            className="flex items-center gap-2 py-1 text-xs text-muted-foreground/50"
+          >
+            <span className="w-6 shrink-0">
+              {ps.intensity === "warmup" ? "W" : ps.setNum}
+            </span>
+            <span className="flex-1 flex items-baseline gap-1 min-w-0">
+              <span className="tabular-nums">{ps.weightKg ?? "\u2014"}</span>
+              <span>{t("kg")}</span>
+              <span className="mx-1">\u00d7</span>
+              <span className="tabular-nums">{ps.reps ?? "\u2014"}</span>
+            </span>
+            <span className={`shrink-0 ${INTENSITY_COLORS[ps.intensity || "normal"] || ""} opacity-60`}>
+              {ps.intensity || "normal"}
+            </span>
+            <Button
+              variant="ghost"
+              size="xs"
+              className="shrink-0 text-muted-foreground/60 hover:text-foreground"
+              onClick={() =>
+                onCopySet({
+                  weightKg: ps.weightKg ?? undefined,
+                  reps: ps.reps ?? undefined,
+                  intensity: ps.intensity ?? undefined,
+                })
+              }
+              disabled={isPending}
+              title={t("copy_set")}
+            >
+              <PlusIcon className="size-3" />
+            </Button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -474,132 +454,103 @@ export function ActiveWorkoutPanel({
               isPending={isPending}
             />
             {we.sets.length > 0 && (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-12">{t("set")}</TableHead>
-                    <TableHead className="text-right">
-                      {t("weight")} ({t("kg")})
-                    </TableHead>
-                    <TableHead className="text-right">
-                      {t("reps")}
-                    </TableHead>
-                    <TableHead>{t("intensity")}</TableHead>
-                    <TableHead className="w-20"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {we.sets.map((s) => (
-                    <TableRow key={s.id}>
-                      <TableCell>
-                        {(s.intensity === "warmup" || s.isWarmup) ? "W" : s.setNum}
-                      </TableCell>
-                      {editingSetId === s.id ? (
-                        <>
-                          <TableCell className="text-right">
+              <div className="divide-y divide-border/60">
+                {we.sets.map((s) => {
+                  const isWarm = s.intensity === "warmup" || s.isWarmup;
+                  const label = isWarm ? "W" : s.setNum;
+                  if (editingSetId === s.id) {
+                    return (
+                      <div key={s.id} className="py-2 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="w-6 shrink-0 text-sm font-medium text-muted-foreground">
+                            {label}
+                          </span>
+                          <div className="flex flex-1 items-center gap-1.5">
                             <Input
                               type="number"
+                              inputMode="decimal"
                               value={editWeight}
-                              onChange={(e) =>
-                                onEditWeightChange(e.target.value)
-                              }
-                              className="w-16 ml-auto text-right"
+                              onChange={(e) => onEditWeightChange(e.target.value)}
+                              className="w-full min-w-0 text-right"
                               placeholder={t("kg")}
                             />
-                          </TableCell>
-                          <TableCell className="text-right">
+                            <span className="shrink-0 text-muted-foreground">\u00d7</span>
                             <Input
                               type="number"
+                              inputMode="numeric"
                               value={editReps}
-                              onChange={(e) =>
-                                onEditRepsChange(e.target.value)
-                              }
-                              className="w-16 ml-auto text-right"
+                              onChange={(e) => onEditRepsChange(e.target.value)}
+                              className="w-full min-w-0 text-right"
                               placeholder={t("reps")}
                             />
-                          </TableCell>
-                          <TableCell>
-                            <Select value={editIntensity} onValueChange={(v) => v && onEditIntensityChange(v)}>
-                              <SelectTrigger className="w-28 h-7 text-xs">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {INTENSITY_OPTIONS.map((opt) => (
-                                  <SelectItem key={opt} value={opt}>
-                                    <span className={INTENSITY_COLORS[opt]}>{opt}</span>
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-1">
-                              <Button
-                                size="xs"
-                                onClick={() =>
-                                  onSaveSet(s.id, we.exerciseId)
-                                }
-                                disabled={isPending}
-                              >
-                                {tc("save")}
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="xs"
-                                onClick={onCancelEditSet}
-                              >
-                                {tc("cancel")}
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </>
-                      ) : (
-                        <>
-                          <TableCell
-                            className="text-right cursor-pointer"
-                            onClick={() => onEditSet(s)}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 pl-8">
+                          <Select value={editIntensity} onValueChange={(v) => v && onEditIntensityChange(v)}>
+                            <SelectTrigger className="h-9 flex-1 min-w-0 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {INTENSITY_OPTIONS.map((opt) => (
+                                <SelectItem key={opt} value={opt}>
+                                  <span className={INTENSITY_COLORS[opt]}>{opt}</span>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Button
+                            size="sm"
+                            onClick={() => onSaveSet(s.id, we.exerciseId)}
+                            disabled={isPending}
                           >
-                            {s.weightKg ?? "\u2014"}
-                          </TableCell>
-                          <TableCell
-                            className="text-right cursor-pointer"
-                            onClick={() => onEditSet(s)}
-                          >
-                            {s.reps ?? "\u2014"}
-                            {newPRs[s.id] && (
-                              <Badge
-                                variant="default"
-                                className="text-[10px] ml-1 animate-pulse"
-                              >
-                                <TrophyIcon className="size-3 mr-0.5" />
-                                {newPRs[s.id].weight
-                                  ? t("weight_pr")
-                                  : t("volume_pr")}
-                              </Badge>
-                            )}
-                          </TableCell>
-                          <TableCell
-                            className={`cursor-pointer text-xs ${INTENSITY_COLORS[s.intensity || "normal"] || ""}`}
-                            onClick={() => onEditSet(s)}
-                          >
-                            {s.intensity || "normal"}
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              variant="ghost"
-                              size="xs"
-                              onClick={() => onDeleteSet(s.id)}
-                              disabled={isPending}
-                            >
-                              <Trash2Icon className="size-3 text-destructive" />
-                            </Button>
-                          </TableCell>
-                        </>
-                      )}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                            {tc("save")}
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={onCancelEditSet}>
+                            {tc("cancel")}
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div key={s.id} className="flex items-center gap-2 py-2.5">
+                      <button
+                        type="button"
+                        className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                        onClick={() => onEditSet(s)}
+                      >
+                        <span className="w-6 shrink-0 text-sm font-medium text-muted-foreground">
+                          {label}
+                        </span>
+                        <span className="flex min-w-0 flex-1 items-baseline gap-1">
+                          <span className="text-sm font-semibold tabular-nums">{s.weightKg ?? "\u2014"}</span>
+                          <span className="text-xs text-muted-foreground">{t("kg")}</span>
+                          <span className="mx-1 text-muted-foreground">\u00d7</span>
+                          <span className="text-sm font-semibold tabular-nums">{s.reps ?? "\u2014"}</span>
+                          {newPRs[s.id] && (
+                            <Badge variant="default" className="ml-1 animate-pulse text-[10px]">
+                              <TrophyIcon className="mr-0.5 size-3" />
+                              {newPRs[s.id].weight ? t("weight_pr") : t("volume_pr")}
+                            </Badge>
+                          )}
+                        </span>
+                        <span className={`shrink-0 text-xs ${INTENSITY_COLORS[s.intensity || "normal"] || ""}`}>
+                          {s.intensity || "normal"}
+                        </span>
+                      </button>
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        className="shrink-0"
+                        onClick={() => onDeleteSet(s.id)}
+                        disabled={isPending}
+                      >
+                        <Trash2Icon className="size-3.5 text-destructive" />
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
             )}
             <div className="flex items-center gap-2 mt-2">
               <Button

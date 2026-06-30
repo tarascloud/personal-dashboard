@@ -9,6 +9,7 @@ import {
   getHRVTrend,
   getExerciseList,
   getWeeklyMuscleVolume,
+  getSportTimeBreakdown,
   getExtendedCorrelations,
   getScreenTimeData,
   getKidsTimeData,
@@ -20,6 +21,7 @@ import {
   type HRVTrendPoint,
   type ExerciseOption,
   type WeeklyMuscleVolumeRow,
+  type SportTimeRow,
   type ExtendedCorrelations,
   type ScreenTimeData,
   type KidsTimeData,
@@ -83,6 +85,7 @@ async function PrimaryDashboardContent({ tab }: { tab: "life" | "finance" | "tra
   const trainingPromise = Promise.all([
     getExerciseList(),
     getWeeklyMuscleVolume(weeks),
+    getSportTimeBreakdown(period.from, period.to),
   ]);
 
   // Only await KPIs — the shell renders as soon as this resolves
@@ -152,14 +155,15 @@ async function FinanceDataResolver({
 async function TrainingDataResolver({
   dataPromise,
 }: {
-  dataPromise: Promise<[ExerciseOption[], WeeklyMuscleVolumeRow[]]>;
+  dataPromise: Promise<[ExerciseOption[], WeeklyMuscleVolumeRow[], SportTimeRow[]]>;
 }) {
-  const [exerciseList, weeklyMuscleVolume] = await dataPromise;
+  const [exerciseList, weeklyMuscleVolume, sportTime] = await dataPromise;
 
   return (
     <>
       <DashboardDataHydrator slot="exerciseList" data={exerciseList} />
       <DashboardDataHydrator slot="weeklyMuscleVolume" data={weeklyMuscleVolume} />
+      <DashboardDataHydrator slot="sportTime" data={sportTime} />
     </>
   );
 }

@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { PlusIcon, DumbbellIcon, PlayIcon, LightbulbIcon } from "lucide-react";
+import { PlusIcon, DumbbellIcon, PlayIcon, LightbulbIcon, RotateCcwIcon } from "lucide-react";
+import { getLastSessionsByDay } from "@/actions/gym";
 import { Button } from "@/components/ui/button";
 import { Fab } from "@/components/ui/fab";
 import { Separator } from "@/components/ui/separator";
@@ -28,7 +30,10 @@ interface StartWorkoutDialogProps {
   onOpenChange?: (open: boolean) => void;
   onStartFreeWorkout: () => void;
   onStartFromTemplate: (programDayId: number) => void;
+  onStartFromLastSession: (programDayId: number) => void;
 }
+
+type LastSession = { workoutId: number; exerciseCount: number; date: string };
 
 export function StartWorkoutDialog({
   programs,
@@ -38,8 +43,24 @@ export function StartWorkoutDialog({
   onOpenChange,
   onStartFreeWorkout,
   onStartFromTemplate,
+  onStartFromLastSession,
 }: StartWorkoutDialogProps) {
   const t = useTranslations("gym");
+
+  // Last completed session per program day → drives the "repeat last" option
+  const [lastSessions, setLastSessions] = useState<Record<number, LastSession>>({});
+  useEffect(() => {
+    if (!open) return;
+    let active = true;
+    getLastSessionsByDay()
+      .then((map) => {
+        if (active) setLastSessions(map);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [open]);
 
   // Find program days matching the recommendation
   const recommendedDayIds = new Set<number>();
@@ -89,9 +110,10 @@ export function StartWorkoutDialog({
                 <div className="space-y-1">
                   {prog.days.map((day) => {
                     const isRecommended = recommendedDayIds.has(day.id);
+                    const lastSession = lastSessions[day.id];
                     return (
+                      <div key={day.id} className="space-y-1">
                       <DialogClose
-                        key={day.id}
                         render={
                           <button
                             type="button"
@@ -125,6 +147,29 @@ export function StartWorkoutDialog({
                           {day.exercises.length} {t("exercises_count")}
                         </span>
                       </DialogClose>
+                      {lastSession && (
+                        <DialogClose
+                          render={
+                            <button
+                              type="button"
+                              className={`w-full flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2 text-left transition-colors hover:bg-accent ml-0
+                                ${isPending ? "opacity-50 pointer-events-none" : ""}
+                              `}
+                              onClick={() => onStartFromLastSession(day.id)}
+                              disabled={isPending}
+                            />
+                          }
+                        >
+                          <RotateCcwIcon className="size-3.5 shrink-0 text-muted-foreground" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium truncate">{t("repeat_last")}</p>
+                          </div>
+                          <span className="text-xs text-muted-foreground whitespace-nowrap">
+                            {lastSession.exerciseCount} {t("exercises_count")}
+                          </span>
+                        </DialogClose>
+                      )}
+                      </div>
                     );
                   })}
                 </div>

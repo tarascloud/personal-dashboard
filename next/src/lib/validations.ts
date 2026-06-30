@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ALL_INTENSITY_VALUES } from "@/components/gym/gym-constants";
+import { INTENSITY_OPTIONS } from "@/components/gym/gym-constants";
 
 // dateSchema accepts strict ISO YYYY-MM-DD and also rejects calendar-invalid
 // strings (e.g. "2026-02-30", "NaN-NaN-NaN") that would otherwise reach Prisma
@@ -157,7 +157,7 @@ export const addSetSchema = z.object({
     reps: z.number().int().min(0).optional(),
     rpe: z.number().min(0).max(10).optional(),
     isWarmup: z.boolean().optional(),
-    intensity: z.enum(ALL_INTENSITY_VALUES).optional(),
+    intensity: z.enum(INTENSITY_OPTIONS).optional(),
   }),
 });
 
@@ -169,7 +169,7 @@ export const updateSetSchema = z.object({
     rpe: z.number().min(0).max(10).nullable().optional(),
     isWarmup: z.boolean().optional(),
     isFailure: z.boolean().optional(),
-    intensity: z.enum(ALL_INTENSITY_VALUES).nullable().optional(),
+    intensity: z.enum(INTENSITY_OPTIONS).nullable().optional(),
   }),
 });
 
