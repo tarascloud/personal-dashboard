@@ -177,7 +177,7 @@ export async function getSubscriptionAnalytics(): Promise<SubscriptionAnalytics>
     SELECT description, amount_eur, date
     FROM transactions
     WHERE user_id = ${user.id}
-      AND category = 'Підписки'
+      AND category LIKE 'Підписки%'
       AND description IS NOT NULL
     ORDER BY date DESC
   `;
@@ -276,12 +276,18 @@ export async function getSubscriptionAnalytics(): Promise<SubscriptionAnalytics>
     spending: spendingMap.get(r.name) || null,
   }));
 
+  // Normalize subscription amounts to EUR before summing — amounts are stored
+  // per-currency, so mixing EUR/USD/UAH raw would produce a meaningless total.
+  const EUR_RATE: Record<string, number> = { EUR: 1, USD: 0.92, UAH: 0.023 };
+  const toEur = (amount: number, currency: string) => amount * (EUR_RATE[currency] ?? 1);
+
   const active = subsData.filter((s) => s.isActive);
   let totalMonthly = 0;
   for (const s of active) {
-    if (s.billingCycle === "yearly") totalMonthly += s.amount / 12;
-    else if (s.billingCycle === "weekly") totalMonthly += s.amount * (52 / 12);
-    else totalMonthly += s.amount;
+    const eur = toEur(s.amount, s.currency);
+    if (s.billingCycle === "yearly") totalMonthly += eur / 12;
+    else if (s.billingCycle === "weekly") totalMonthly += eur * (52 / 12);
+    else totalMonthly += eur;
   }
 
   const totalAllTime = subsData.reduce((a, s) => a + (s.spending?.totalSpent ?? 0), 0);

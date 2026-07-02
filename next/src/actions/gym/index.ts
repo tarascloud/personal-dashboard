@@ -10,3 +10,5 @@ export type { ExercisePR } from "./performance";
 export { getFavoriteExerciseIds, toggleFavoriteExercise } from "./favorites";
 export { getRecentGarminActivities, linkGarminActivity, unlinkGarminActivity, getWorkoutCalendar } from "./garmin";
 export type { CalendarWorkoutDay, CalendarDayData } from "./garmin";
+export { getAthleteProfile, setAthleteProfile } from "./profile";
+export type { AthleteProfile } from "./profile";

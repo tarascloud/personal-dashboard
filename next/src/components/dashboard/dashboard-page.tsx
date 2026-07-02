@@ -29,6 +29,7 @@ import {
   getHRVTrend,
   getExerciseProgress,
   getWeeklyMuscleVolume,
+  getWeeklyExercise1RM,
   getExtendedCorrelations,
   type DashboardKPIs,
   type MonthlyTrend,
@@ -41,6 +42,7 @@ import {
   type ExerciseProgressPoint,
   type ExerciseOption,
   type WeeklyMuscleVolumeRow,
+  type WeeklyExercise1RMData,
   type ExtendedCorrelations,
   type ScreenTimeData,
   type KidsTimeData,
@@ -57,6 +59,7 @@ import { KpiGrid, type KpiCardProps } from "./kpi-grid";
 import { MoodTimeline } from "./mood-timeline";
 import { GarminHealthCharts } from "./garmin-health-charts";
 import { ExerciseProgressChart } from "./exercise-progress-chart";
+import { WeeklyExercise1RMChart } from "./weekly-exercise-1rm-chart";
 import { IncomeExpensesChart } from "./income-expenses-chart";
 import { PortfolioHistoryChart, type PortfolioHistoryPoint } from "./portfolio-history-chart";
 import { PortfolioSummaryCard } from "./portfolio-summary-card";
@@ -75,6 +78,16 @@ import {
 } from "./dashboard-skeletons";
 import { useDeferredDashboardData } from "./dashboard-context";
 import { MONTH_LABELS, pctChange, type DashboardPageProps } from "./dashboard-types";
+
+// Number of weeks from the range start to today (min 1). Empty range → 52w.
+// Mirrors the daysFromStart→weeks math used for the other period-driven charts.
+function weeksFromRange(dateFrom: string): number {
+  const rangeStart = dateFrom ? new Date(dateFrom).getTime() : NaN;
+  const daysFromStart = Number.isFinite(rangeStart)
+    ? Math.max(7, Math.ceil((Date.now() - rangeStart) / 86400000))
+    : 365;
+  return Math.max(1, Math.ceil(daysFromStart / 7));
+}
 
 export function DashboardPage({
   initialKpis,
@@ -122,6 +135,7 @@ export function DashboardPage({
   );
   const [exerciseProgress, setExerciseProgress] = useState<ExerciseProgressPoint[]>([]);
   const [weeklyMuscleVolume, setWeeklyMuscleVolume] = useState<WeeklyMuscleVolumeRow[]>(initialWeeklyMuscleVolume ?? []);
+  const [weeklyExercise1RM, setWeeklyExercise1RM] = useState<WeeklyExercise1RMData>({ weeks: [], exercises: [] });
   const [sportTime, setSportTime] = useState<SportTimeRow[]>([]);
   const [extCorrelations, setExtCorrelations] = useState<ExtendedCorrelations | null>(initialExtendedCorrelations ?? null);
   const [screenTime, setScreenTime] = useState<ScreenTimeData | undefined>(undefined);
@@ -183,6 +197,13 @@ export function DashboardPage({
       getExerciseProgress(selectedExerciseId, 180).then(setExerciseProgress);
     }
   }, [selectedExerciseId]);
+
+  // Initial weekly-1RM load for the default period (refetched on period change)
+  useEffect(() => {
+    const range = getDateRange(period);
+    getWeeklyExercise1RM(weeksFromRange(range.dateFrom)).then(setWeeklyExercise1RM).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handlePeriodChange = useCallback(
     (preset: PeriodPreset, dateRange: { dateFrom: string; dateTo: string }) => {
@@ -543,6 +564,11 @@ export function DashboardPage({
         }}
       />
       )}
+      </ErrorBoundary>
+
+      {/* Weekly estimated 1RM trend — all exercises on one chart */}
+      <ErrorBoundary moduleName="Weekly Exercise 1RM">
+        <WeeklyExercise1RMChart />
       </ErrorBoundary>
 
       {/* Training Readiness from Garmin */}

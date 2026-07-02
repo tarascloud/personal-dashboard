@@ -25,25 +25,30 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const state = searchParams.get("state"); // user email encoded in state
 
+  // Browser-facing redirects must use the public URL, not request.url —
+  // inside the container request.url resolves to the internal bind
+  // (e.g. http://0.0.0.0:3333) behind the Cloudflare tunnel.
+  const base = process.env.NEXTAUTH_URL || new URL(request.url).origin;
+
   // Withings validates callback URL without params — return 200
   if (!code && !state) {
     return NextResponse.json({ status: "ok", message: "Withings callback endpoint ready" });
   }
 
   if (!code) {
-    return NextResponse.redirect(new URL("/settings/integrations/withings?error=no_code", request.url));
+    return NextResponse.redirect(new URL("/settings/integrations/withings?error=no_code", base));
   }
 
   try {
     // Verify HMAC-signed state and extract email
     const userEmail = state ? verifyOAuthState(state) : null;
     if (!userEmail) {
-      return NextResponse.redirect(new URL("/settings/integrations/withings?error=no_state", request.url));
+      return NextResponse.redirect(new URL("/settings/integrations/withings?error=no_state", base));
     }
 
     const user = await prisma.user.findUnique({ where: { email: userEmail } });
     if (!user) {
-      return NextResponse.redirect(new URL("/settings/integrations/withings?error=user_not_found", request.url));
+      return NextResponse.redirect(new URL("/settings/integrations/withings?error=user_not_found", base));
     }
 
     // Get client credentials from secrets (decrypted)
@@ -53,7 +58,7 @@ export async function GET(request: NextRequest) {
     ]);
 
     if (!clientId || !clientSecret) {
-      return NextResponse.redirect(new URL("/settings/integrations/withings?error=no_credentials", request.url));
+      return NextResponse.redirect(new URL("/settings/integrations/withings?error=no_credentials", base));
     }
 
     // Exchange code for tokens
@@ -75,7 +80,7 @@ export async function GET(request: NextRequest) {
     if (tokenData.status !== 0 || !tokenData.body?.access_token) {
       console.error("[Withings] Token exchange failed, status:", tokenData.status);
       return NextResponse.redirect(
-        new URL(`/settings/integrations/withings?error=token_exchange_failed`, request.url)
+        new URL(`/settings/integrations/withings?error=token_exchange_failed`, base)
       );
     }
 
@@ -95,11 +100,11 @@ export async function GET(request: NextRequest) {
     await setSecretValue(user.id, "withings_tokens", tokensJson);
 
     console.log(`[Withings] OAuth complete for user ${user.id}`);
-    return NextResponse.redirect(new URL("/settings/integrations/withings?connected=true", request.url));
+    return NextResponse.redirect(new URL("/settings/integrations/withings?connected=true", base));
   } catch (error) {
     console.error("[Withings] Callback error:", error);
     return NextResponse.redirect(
-      new URL("/settings/integrations/withings?error=callback_failed", request.url)
+      new URL("/settings/integrations/withings?error=callback_failed", base)
     );
   }
 }

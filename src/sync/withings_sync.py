@@ -213,11 +213,15 @@ def upsert_measurement(conn, date_str: str, values: dict):
         values.get("bmi"),
     )
 
+    # Single-user (owner) module: user_id is hardcoded to 1 to match the
+    # withings_measurements_user_date_uq (user_id, date) unique constraint.
+    # ON CONFLICT(date) failed because the standalone date index is partial
+    # (WHERE user_id = 1) and cannot be used as an arbiter without its predicate.
     _exec(conn, """
         INSERT INTO withings_measurements
-        (date, weight, fat_ratio, fat_mass, fat_free_mass, heart_rate, bmi)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        ON CONFLICT(date) DO UPDATE SET
+        (user_id, date, weight, fat_ratio, fat_mass, fat_free_mass, heart_rate, bmi)
+        VALUES (1, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT (user_id, date) DO UPDATE SET
             weight=COALESCE(excluded.weight, withings_measurements.weight),
             fat_ratio=COALESCE(excluded.fat_ratio, withings_measurements.fat_ratio),
             fat_mass=COALESCE(excluded.fat_mass, withings_measurements.fat_mass),

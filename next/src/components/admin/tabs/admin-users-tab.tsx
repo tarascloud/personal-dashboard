@@ -27,6 +27,7 @@ type User = {
   name: string | null;
   role: string;
   createdAt: Date | null;
+  lastSeen: Date | null;
 };
 
 type AdminStats = {
@@ -121,6 +122,7 @@ export function AdminUsersTab({
                 <TableHead>{tc("name")}</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>{tc("date")}</TableHead>
+                <TableHead>{t("last_activity")}</TableHead>
                 <TableHead></TableHead>
               </TableRow>
             </TableHeader>
@@ -155,6 +157,11 @@ export function AdminUsersTab({
                   <TableCell className="text-xs text-muted-foreground">
                     {user.createdAt
                       ? new Date(user.createdAt).toLocaleDateString()
+                      : "—"}
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground">
+                    {user.lastSeen
+                      ? new Date(user.lastSeen).toLocaleString()
                       : "—"}
                   </TableCell>
                   <TableCell>

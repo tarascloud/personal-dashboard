@@ -25,6 +25,7 @@ type User = {
   name: string | null;
   role: string;
   createdAt: Date | null;
+  lastSeen: Date | null;
 };
 
 type AuditEntry = {

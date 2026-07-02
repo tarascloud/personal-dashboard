@@ -185,7 +185,7 @@ function PreviousSetsReference({
             <span className="flex-1 flex items-baseline gap-1 min-w-0">
               <span className="tabular-nums">{ps.weightKg ?? "\u2014"}</span>
               <span>{t("kg")}</span>
-              <span className="mx-1">\u00d7</span>
+              <span className="mx-1">{"\u00d7"}</span>
               <span className="tabular-nums">{ps.reps ?? "\u2014"}</span>
             </span>
             <span className={`shrink-0 ${INTENSITY_COLORS[ps.intensity || "normal"] || ""} opacity-60`}>
@@ -474,7 +474,7 @@ export function ActiveWorkoutPanel({
                               className="w-full min-w-0 text-right"
                               placeholder={t("kg")}
                             />
-                            <span className="shrink-0 text-muted-foreground">\u00d7</span>
+                            <span className="shrink-0 text-muted-foreground">{"\u00d7"}</span>
                             <Input
                               type="number"
                               inputMode="numeric"
@@ -525,7 +525,7 @@ export function ActiveWorkoutPanel({
                         <span className="flex min-w-0 flex-1 items-baseline gap-1">
                           <span className="text-sm font-semibold tabular-nums">{s.weightKg ?? "\u2014"}</span>
                           <span className="text-xs text-muted-foreground">{t("kg")}</span>
-                          <span className="mx-1 text-muted-foreground">\u00d7</span>
+                          <span className="mx-1 text-muted-foreground">{"\u00d7"}</span>
                           <span className="text-sm font-semibold tabular-nums">{s.reps ?? "\u2014"}</span>
                           {newPRs[s.id] && (
                             <Badge variant="default" className="ml-1 animate-pulse text-[10px]">

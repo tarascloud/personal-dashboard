@@ -4,6 +4,34 @@ import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/current-user";
 import { toDateOnly, dateToString } from "@/lib/date-utils";
 
+// Canonical muscle groups shown in the recovery tracker.
+const MUSCLE_GROUPS = [
+  "Chest",
+  "Shoulders",
+  "Biceps",
+  "Triceps",
+  "Core",
+  "Quads",
+  "Hamstrings",
+  "Calves",
+  "Back",
+  "Glutes",
+];
+
+// muscle_group values in the DB are case-inconsistent ("quads" vs "Quads",
+// "back" vs "Back"), so canonicalize before grouping — otherwise a "quads" leg
+// day never surfaces under "Quads" and volume charts split the same muscle in two.
+const CANONICAL_MUSCLE: Record<string, string> = Object.fromEntries(
+  MUSCLE_GROUPS.map((m) => [m.toLowerCase(), m])
+);
+function canonMuscle(raw: string): string {
+  const key = raw.trim().toLowerCase();
+  return (
+    CANONICAL_MUSCLE[key] ??
+    (key ? key.charAt(0).toUpperCase() + key.slice(1) : raw.trim())
+  );
+}
+
 export async function getGymStats(period: { from: string; to: string }) {
   const user = await requireUser();
   const workouts = await prisma.gymWorkout.findMany({
@@ -26,7 +54,7 @@ export async function getGymStats(period: { from: string; to: string }) {
 
   for (const w of workouts) {
     for (const we of w.exercises) {
-      const mg = we.exercise.muscleGroup ?? "Other";
+      const mg = canonMuscle(we.exercise.muscleGroup ?? "Other");
       for (const s of we.sets) {
         const vol = (s.weightKg ?? 0) * (s.reps ?? 0);
         totalVolume += vol;
@@ -57,18 +85,6 @@ export async function getMuscleRecovery(): Promise<
   { name: string; lastWorked: string | null; recoveryHours: number }[]
 > {
   const user = await requireUser();
-  const MUSCLE_GROUPS = [
-    "Chest",
-    "Shoulders",
-    "Biceps",
-    "Triceps",
-    "Core",
-    "Quads",
-    "Hamstrings",
-    "Calves",
-    "Back",
-    "Glutes",
-  ];
 
   const fiveDaysAgo = new Date();
   fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
@@ -90,7 +106,7 @@ export async function getMuscleRecovery(): Promise<
   for (const w of workouts) {
     const wds = dateToString(w.date);
     for (const we of w.exercises) {
-      const mg = we.exercise.muscleGroup ?? "Other";
+      const mg = canonMuscle(we.exercise.muscleGroup ?? "Other");
       const recHours = we.exercise.recoveryHours ?? 72;
 
       // Primary muscle group
@@ -111,7 +127,7 @@ export async function getMuscleRecovery(): Promise<
 
       // Secondary muscles at 50% recovery
       if (we.exercise.secondaryMuscles) {
-        const secondaries = we.exercise.secondaryMuscles.split(",").map(s => s.trim());
+        const secondaries = we.exercise.secondaryMuscles.split(",").map(s => canonMuscle(s));
         for (const sec of secondaries) {
           if (MUSCLE_GROUPS.includes(sec)) {
             if (!lastWorkedMap[sec] || wds > lastWorkedMap[sec]) {

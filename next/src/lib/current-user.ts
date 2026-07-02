@@ -9,6 +9,8 @@ const DEMO_EMAIL = "demo@example.com";
 // 5 seconds: fast enough for burst requests, short enough that role changes
 // propagate quickly (avoids stale privilege escalation window).
 const USER_CACHE_TTL_MS = 5_000; // 5 seconds
+// Only rewrite lastSeen once per this window to avoid a DB write on every fetch.
+const LAST_SEEN_THROTTLE_MS = 5 * 60_000; // 5 minutes
 const userCache = new Map<string, { user: NonNullable<Awaited<ReturnType<typeof prisma.user.findUnique>>>; expiresAt: number }>();
 
 export async function getCurrentUser() {
@@ -53,6 +55,15 @@ export async function getCurrentUser() {
   });
 
   if (user) {
+    // Track last activity (shown in /admin Users tab). Throttle to at most once
+    // per LAST_SEEN_THROTTLE_MS so we don't write on every DB fetch.
+    const now = new Date();
+    if (!user.lastSeen || now.getTime() - user.lastSeen.getTime() > LAST_SEEN_THROTTLE_MS) {
+      user.lastSeen = now;
+      prisma.user
+        .update({ where: { id: user.id }, data: { lastSeen: now } })
+        .catch(() => {}); // best-effort: activity tracking must never break auth
+    }
     userCache.set(email, { user, expiresAt: Date.now() + USER_CACHE_TTL_MS });
   }
 

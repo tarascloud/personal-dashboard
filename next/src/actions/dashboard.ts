@@ -66,10 +66,13 @@ export {
   getExerciseList,
   getExerciseProgress,
   getWeeklyMuscleVolume,
+  getWeeklyExercise1RM,
   type GymWorkoutSummary,
   type MuscleGroupVolume,
   type GymDashboardData,
   type ExerciseProgressPoint,
   type ExerciseOption,
   type WeeklyMuscleVolumeRow,
+  type WeeklyExercise1RMRow,
+  type WeeklyExercise1RMData,
 } from "./dashboard/fitness";

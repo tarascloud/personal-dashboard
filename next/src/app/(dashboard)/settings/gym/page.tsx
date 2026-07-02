@@ -36,6 +36,7 @@ import {
   CheckIcon,
   XIcon,
 } from "lucide-react";
+import AthleteProfileCard from "./athlete-profile-card";
 
 type Exercise = { id: number; name: string; nameUa: string | null; muscleGroup: string | null; equipment: string | null };
 
@@ -210,6 +211,9 @@ export default function GymPlanningPage() {
 
   return (
     <div className="space-y-4">
+      {/* Athlete Profile — context for the trainer agent */}
+      <AthleteProfileCard />
+
       {/* Program List */}
       {programs.length === 0 ? (
         <Card className="p-4">

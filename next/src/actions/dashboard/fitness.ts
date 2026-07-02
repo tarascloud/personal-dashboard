@@ -42,6 +42,16 @@ export interface WeeklyMuscleVolumeRow {
   [muscleGroup: string]: number | string;
 }
 
+export interface WeeklyExercise1RMRow {
+  week: string;
+  [exercise: string]: number | string;
+}
+
+export interface WeeklyExercise1RMData {
+  weeks: WeeklyExercise1RMRow[];
+  exercises: string[];
+}
+
 export async function getGymDashboard(period: {
   from: string;
   to: string;
@@ -247,4 +257,82 @@ export async function getWeeklyMuscleVolume(
       row._durationMin = durationMap.get(week) ?? 0;
       return row;
     });
+}
+
+// Weekly estimated 1RM trend per exercise — every weighted exercise on one
+// chart, bucketed by ISO week (same weekly grouping as getWeeklyMuscleVolume)
+// so the user can compare strength trends across lifts.
+export async function getWeeklyExercise1RM(
+  weeks: number = 12,
+): Promise<WeeklyExercise1RMData> {
+  const user = await requireUser();
+  const now = new Date();
+  const fromDate = new Date(now.getTime() - weeks * 7 * 86400000);
+  const from = `${fromDate.getFullYear()}-${String(fromDate.getMonth() + 1).padStart(2, "0")}-${String(fromDate.getDate()).padStart(2, "0")}`;
+
+  const workoutExercises = await prisma.gymWorkoutExercise.findMany({
+    where: {
+      userId: user.id,
+      workout: { date: { gte: toDateOnly(from) } },
+    },
+    include: {
+      workout: { select: { date: true } },
+      exercise: { select: { name: true, nameUa: true } },
+      sets: {
+        where: { isWarmup: { not: true } },
+        select: { weightKg: true, reps: true },
+      },
+    },
+    orderBy: { workout: { date: "asc" } },
+  });
+
+  // week -> exercise -> best e1rm that week
+  const weekMap = new Map<string, Map<string, number>>();
+  // exercise -> set of weeks it appears in (trend filter + line ordering)
+  const exerciseWeeks = new Map<string, Set<string>>();
+
+  for (const we of workoutExercises) {
+    let best = 0;
+    for (const s of we.sets) {
+      if (s.weightKg && s.reps) {
+        const e1rm = s.weightKg * (1 + s.reps / 30); // Epley
+        if (e1rm > best) best = e1rm;
+      }
+    }
+    if (best <= 0) continue; // bodyweight / cardio → no 1RM
+
+    const d = new Date(we.workout.date);
+    const dayOfWeek = d.getDay() || 7; // Mon=1..Sun=7
+    const monday = new Date(d.getTime() - (dayOfWeek - 1) * 86400000);
+    const weekKey = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
+    const name = we.exercise.nameUa || we.exercise.name;
+
+    if (!weekMap.has(weekKey)) weekMap.set(weekKey, new Map());
+    const wd = weekMap.get(weekKey)!;
+    const rounded = Math.round(best * 10) / 10;
+    if (rounded > (wd.get(name) ?? 0)) wd.set(name, rounded);
+
+    if (!exerciseWeeks.has(name)) exerciseWeeks.set(name, new Set());
+    exerciseWeeks.get(name)!.add(weekKey);
+  }
+
+  // A trend needs ≥2 weeks; cap at 12 lines (most-tracked first) to stay readable
+  const exercises = Array.from(exerciseWeeks.entries())
+    .filter(([, wks]) => wks.size >= 2)
+    .sort((a, b) => b[1].size - a[1].size)
+    .slice(0, 12)
+    .map(([name]) => name);
+  const keep = new Set(exercises);
+
+  const weeksOut = Array.from(weekMap.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([week, exMap]) => {
+      const row: WeeklyExercise1RMRow = { week: week.slice(5) }; // MM-DD
+      for (const [name, val] of exMap) {
+        if (keep.has(name)) row[name] = val;
+      }
+      return row;
+    });
+
+  return { weeks: weeksOut, exercises };
 }

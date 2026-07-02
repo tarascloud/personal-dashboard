@@ -18,6 +18,8 @@ export {
   getFavoriteExerciseIds, toggleFavoriteExercise,
   // garmin
   getRecentGarminActivities, linkGarminActivity, unlinkGarminActivity, getWorkoutCalendar,
+  // athlete profile
+  getAthleteProfile, setAthleteProfile,
 } from "./gym/index";
 
-export type { ExercisePR, CalendarWorkoutDay, CalendarDayData } from "./gym/index";
+export type { ExercisePR, CalendarWorkoutDay, CalendarDayData, AthleteProfile } from "./gym/index";
