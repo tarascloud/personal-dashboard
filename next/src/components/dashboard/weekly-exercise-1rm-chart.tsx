@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { TrendingUpIcon } from "lucide-react";
 import {
   LineChart,
@@ -14,7 +13,7 @@ import {
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartTooltip } from "@/components/charts/chart-tooltip";
-import { getWeeklyExercise1RM, type WeeklyExercise1RMData } from "@/actions/dashboard";
+import type { WeeklyExercise1RMData } from "@/actions/dashboard";
 
 // Categorical palette for up to 12 exercise lines (distinct hues, theme-neutral).
 const PALETTE = [
@@ -22,19 +21,10 @@ const PALETTE = [
   "#14b8a6", "#f97316", "#8b5cf6", "#06b6d4", "#eab308", "#64748b",
 ];
 
-export function WeeklyExercise1RMChart() {
+export function WeeklyExercise1RMChart({ data }: { data: WeeklyExercise1RMData }) {
   const t = useTranslations("gym");
-  const [data, setData] = useState<WeeklyExercise1RMData | null>(null);
 
-  useEffect(() => {
-    let active = true;
-    getWeeklyExercise1RM()
-      .then((d) => { if (active) setData(d); })
-      .catch(() => {});
-    return () => { active = false; };
-  }, []);
-
-  if (!data || data.exercises.length === 0) return null;
+  if (data.exercises.length === 0) return null;
 
   return (
     <Card>

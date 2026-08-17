@@ -162,11 +162,16 @@ export async function getExerciseProgress(
     orderBy: { workout: { date: "asc" } },
   });
 
-  const byDate = new Map<string, { est1rm: number; maxWeight: number; totalVolume: number }>();
+  // Bucket by ISO week (Mon) so this chart is weekly-consistent with the other
+  // training charts (weekly muscle volume, weekly 1RM).
+  const byWeek = new Map<string, { est1rm: number; maxWeight: number; totalVolume: number }>();
 
   for (const we of workoutExercises) {
-    const date = dateToString(we.workout.date);
-    const entry = byDate.get(date) ?? { est1rm: 0, maxWeight: 0, totalVolume: 0 };
+    const d = new Date(we.workout.date);
+    const dayOfWeek = d.getDay() || 7; // Mon=1..Sun=7
+    const monday = new Date(d.getTime() - (dayOfWeek - 1) * 86400000);
+    const weekKey = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
+    const entry = byWeek.get(weekKey) ?? { est1rm: 0, maxWeight: 0, totalVolume: 0 };
 
     for (const s of we.sets) {
       if (s.weightKg && s.reps) {
@@ -177,10 +182,10 @@ export async function getExerciseProgress(
       }
     }
 
-    byDate.set(date, entry);
+    byWeek.set(weekKey, entry);
   }
 
-  return Array.from(byDate.entries())
+  return Array.from(byWeek.entries())
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([date, data]) => ({
       date,

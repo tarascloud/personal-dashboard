@@ -49,6 +49,7 @@ import {
   type SportTimeRow,
   getScreenTimeData,
   getKidsTimeData,
+  getSportTimeBreakdown,
 } from "@/actions/dashboard";
 
 import { ErrorBoundary } from "@/components/shared/error-boundary";
@@ -191,19 +192,29 @@ export function DashboardPage({
     }).catch(() => {});
   }, []);
 
-  // Load exercise progress when selectedExerciseId is available
+  // Days from the selected period's start to today — drives the period-reactive
+  // gym charts (exercise progress, weekly 1RM) the same way as the other charts.
+  const periodDays = useMemo(() => {
+    const r = getDateRange(period);
+    const rangeStart = r.dateFrom ? new Date(r.dateFrom).getTime() : NaN;
+    return Number.isFinite(rangeStart)
+      ? Math.max(7, Math.ceil((Date.now() - rangeStart) / 86400000))
+      : 365;
+  }, [period]);
+
+  // Load exercise progress when the selected exercise or period changes
   useEffect(() => {
     if (selectedExerciseId !== null) {
-      getExerciseProgress(selectedExerciseId, 180).then(setExerciseProgress);
+      getExerciseProgress(selectedExerciseId, periodDays).then(setExerciseProgress);
     }
-  }, [selectedExerciseId]);
+  }, [selectedExerciseId, periodDays]);
 
-  // Initial weekly-1RM load for the default period (refetched on period change)
+  // Weekly-1RM reacts to the period like every other chart on the page
   useEffect(() => {
-    const range = getDateRange(period);
-    getWeeklyExercise1RM(weeksFromRange(range.dateFrom)).then(setWeeklyExercise1RM).catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    getWeeklyExercise1RM(Math.max(1, Math.ceil(periodDays / 7)))
+      .then(setWeeklyExercise1RM)
+      .catch(() => {});
+  }, [periodDays]);
 
   const handlePeriodChange = useCallback(
     (preset: PeriodPreset, dateRange: { dateFrom: string; dateTo: string }) => {
@@ -218,11 +229,11 @@ export function DashboardPage({
           const daysFromStart = Number.isFinite(rangeStart)
             ? Math.max(7, Math.ceil((Date.now() - rangeStart) / 86400000))
             : 365;
-          const weeks = Math.max(1, Math.ceil(daysFromStart / 7));
+          const weeks = weeksFromRange(range.from);
           const rangeYear = range.from
             ? new Date(range.from).getFullYear()
             : new Date().getFullYear();
-          const [newKpis, newTrends, newCorrelations, newDeepDive, newGarminHealth, newMoodTimeline, newHRVTrend, newWeeklyMuscle, newExtCorr, newScreenTime, newKidsTime] =
+          const [newKpis, newTrends, newCorrelations, newDeepDive, newGarminHealth, newMoodTimeline, newHRVTrend, newWeeklyMuscle, newExtCorr, newScreenTime, newKidsTime, newSportTime] =
             await Promise.all([
               getDashboardKPIs({ ...range, preset }),
               getMonthlyTrends(rangeYear),
@@ -235,6 +246,12 @@ export function DashboardPage({
               getExtendedCorrelations(range),
               getScreenTimeData(daysFromStart),
               getKidsTimeData(daysFromStart),
+              // Empty range (preset "all") → toDateOnly("") is invalid, so fall
+              // back to a 1-year window like the other period-derived fetches.
+              getSportTimeBreakdown(
+                range.from || new Date(Date.now() - 365 * 86400000).toISOString().slice(0, 10),
+                range.to || new Date(Date.now() + 86400000).toISOString().slice(0, 10),
+              ),
             ]);
           setKpis(newKpis);
           setTrends(newTrends);
@@ -247,6 +264,7 @@ export function DashboardPage({
           setExtCorrelations(newExtCorr);
           setScreenTime(newScreenTime);
           setKidsTime(newKidsTime);
+          setSportTime(newSportTime);
         } catch (e) {
           console.error("[Dashboard] Period change error:", e);
         }
@@ -262,11 +280,11 @@ export function DashboardPage({
       if (isNaN(id)) return;
       setSelectedExerciseId(id);
       startTransition(async () => {
-        const progress = await getExerciseProgress(id, 180);
+        const progress = await getExerciseProgress(id, periodDays);
         setExerciseProgress(progress);
       });
     },
-    [startTransition],
+    [startTransition, periodDays],
   );
 
   const handleDailyLogsToggle = useCallback(() => {
@@ -568,7 +586,7 @@ export function DashboardPage({
 
       {/* Weekly estimated 1RM trend — all exercises on one chart */}
       <ErrorBoundary moduleName="Weekly Exercise 1RM">
-        <WeeklyExercise1RMChart />
+        <WeeklyExercise1RMChart data={weeklyExercise1RM} />
       </ErrorBoundary>
 
       {/* Training Readiness from Garmin */}
